@@ -37,13 +37,25 @@ public:
 
     virtual std::any visitCall(FridayParser::CallContext *context) = 0;
 
-    virtual std::any visitPrimary(FridayParser::PrimaryContext *context) = 0;
+    virtual std::any visitIdentifier(FridayParser::IdentifierContext *context) = 0;
+
+    virtual std::any visitCharLiteral(FridayParser::CharLiteralContext *context) = 0;
+
+    virtual std::any visitStringLiteral(FridayParser::StringLiteralContext *context) = 0;
+
+    virtual std::any visitBoolLiteral(FridayParser::BoolLiteralContext *context) = 0;
+
+    virtual std::any visitFloatLiteral(FridayParser::FloatLiteralContext *context) = 0;
+
+    virtual std::any visitIntLiteral(FridayParser::IntLiteralContext *context) = 0;
 
     virtual std::any visitGrouping(FridayParser::GroupingContext *context) = 0;
 
     virtual std::any visitSubscript(FridayParser::SubscriptContext *context) = 0;
 
     virtual std::any visitBinary(FridayParser::BinaryContext *context) = 0;
+
+    virtual std::any visitNullLiteral(FridayParser::NullLiteralContext *context) = 0;
 
     virtual std::any visitUnary(FridayParser::UnaryContext *context) = 0;
 

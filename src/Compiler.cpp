@@ -38,7 +38,7 @@ namespace friday::inline api::inline compiler {
     auto typeErrors = TypeChecker{ unit }.check();
     
     if(not typeErrors.empty()) {
-      std::ranges::for_each(typeErrors, SyntaxError::report);
+      std::ranges::for_each(typeErrors, SemanticError::report);
 
       return Console::note(
         "{} {}{}error(s){} encountered during semantic analysis of this source file. "_f.format(
@@ -85,9 +85,31 @@ namespace friday::inline api::inline compiler {
     return visitChildren(ctx);
   }
 
-  auto Compiler::visitPrimary(FridayParser::PrimaryContext *ctx) -> std::any {
+  auto Compiler::visitIdentifier(FridayParser::IdentifierContext *ctx) -> std::any {
     return visitChildren(ctx);
   }
+  
+  auto Compiler::visitCharLiteral(FridayParser::CharLiteralContext *ctx) -> std::any {
+    return visitChildren(ctx);
+  }
+  
+  auto Compiler::visitStringLiteral(FridayParser::StringLiteralContext *ctx) -> std::any {
+    return visitChildren(ctx);
+  }
+  
+  auto Compiler::visitBoolLiteral(FridayParser::BoolLiteralContext *ctx) -> std::any {
+    return visitChildren(ctx);
+  }
+  
+  auto Compiler::visitFloatLiteral(FridayParser::FloatLiteralContext *ctx) -> std::any {
+    return visitChildren(ctx);
+  }
+  
+  auto Compiler::visitIntLiteral(FridayParser::IntLiteralContext *ctx) -> std::any {
+    return visitChildren(ctx);
+  }
+  
+
 
   auto Compiler::visitGrouping(FridayParser::GroupingContext *ctx) -> std::any {
     return visitChildren(ctx);

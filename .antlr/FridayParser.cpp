@@ -1,9 +1,7 @@
 
-// Generated from FridayParser.g4 by ANTLR 4.13.2
+// Generated from c:/Dev/C++/fridayc-antlr-llvm/FridayParser.g4 by ANTLR 4.13.1
 
 
-#include "FridayParserListener.h"
-#include "FridayParserVisitor.h"
 
 #include "FridayParser.h"
 
@@ -41,7 +39,7 @@ struct FridayParserStaticData final {
 #if ANTLR4_USE_THREAD_LOCAL_CACHE
 static thread_local
 #endif
-std::unique_ptr<FridayParserStaticData> fridayparserParserStaticData = nullptr;
+FridayParserStaticData *fridayparserParserStaticData = nullptr;
 
 void fridayparserParserInitialize() {
 #if ANTLR4_USE_THREAD_LOCAL_CACHE
@@ -136,7 +134,7 @@ void fridayparserParserInitialize() {
   for (size_t i = 0; i < count; i++) { 
     staticData->decisionToDFA.emplace_back(staticData->atn->getDecisionState(i), i);
   }
-  fridayparserParserStaticData = std::move(staticData);
+  fridayparserParserStaticData = staticData.release();
 }
 
 }
@@ -196,25 +194,6 @@ size_t FridayParser::ProgramContext::getRuleIndex() const {
   return FridayParser::RuleProgram;
 }
 
-void FridayParser::ProgramContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterProgram(this);
-}
-
-void FridayParser::ProgramContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitProgram(this);
-}
-
-
-std::any FridayParser::ProgramContext::accept(tree::ParseTreeVisitor *visitor) {
-  if (auto parserVisitor = dynamic_cast<FridayParserVisitor*>(visitor))
-    return parserVisitor->visitProgram(this);
-  else
-    return visitor->visitChildren(this);
-}
 
 FridayParser::ProgramContext* FridayParser::program() {
   ProgramContext *_localctx = _tracker.createInstance<ProgramContext>(_ctx, getState());
@@ -268,25 +247,6 @@ size_t FridayParser::TopLevelStatementContext::getRuleIndex() const {
   return FridayParser::RuleTopLevelStatement;
 }
 
-void FridayParser::TopLevelStatementContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterTopLevelStatement(this);
-}
-
-void FridayParser::TopLevelStatementContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitTopLevelStatement(this);
-}
-
-
-std::any FridayParser::TopLevelStatementContext::accept(tree::ParseTreeVisitor *visitor) {
-  if (auto parserVisitor = dynamic_cast<FridayParserVisitor*>(visitor))
-    return parserVisitor->visitTopLevelStatement(this);
-  else
-    return visitor->visitChildren(this);
-}
 
 FridayParser::TopLevelStatementContext* FridayParser::topLevelStatement() {
   TopLevelStatementContext *_localctx = _tracker.createInstance<TopLevelStatementContext>(_ctx, getState());
@@ -337,25 +297,6 @@ size_t FridayParser::ReturnStatementContext::getRuleIndex() const {
   return FridayParser::RuleReturnStatement;
 }
 
-void FridayParser::ReturnStatementContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterReturnStatement(this);
-}
-
-void FridayParser::ReturnStatementContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitReturnStatement(this);
-}
-
-
-std::any FridayParser::ReturnStatementContext::accept(tree::ParseTreeVisitor *visitor) {
-  if (auto parserVisitor = dynamic_cast<FridayParserVisitor*>(visitor))
-    return parserVisitor->visitReturnStatement(this);
-  else
-    return visitor->visitChildren(this);
-}
 
 FridayParser::ReturnStatementContext* FridayParser::returnStatement() {
   ReturnStatementContext *_localctx = _tracker.createInstance<ReturnStatementContext>(_ctx, getState());
@@ -419,25 +360,6 @@ size_t FridayParser::PrintStatementContext::getRuleIndex() const {
   return FridayParser::RulePrintStatement;
 }
 
-void FridayParser::PrintStatementContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterPrintStatement(this);
-}
-
-void FridayParser::PrintStatementContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitPrintStatement(this);
-}
-
-
-std::any FridayParser::PrintStatementContext::accept(tree::ParseTreeVisitor *visitor) {
-  if (auto parserVisitor = dynamic_cast<FridayParserVisitor*>(visitor))
-    return parserVisitor->visitPrintStatement(this);
-  else
-    return visitor->visitChildren(this);
-}
 
 FridayParser::PrintStatementContext* FridayParser::printStatement() {
   PrintStatementContext *_localctx = _tracker.createInstance<PrintStatementContext>(_ctx, getState());
@@ -492,25 +414,6 @@ size_t FridayParser::StatementContext::getRuleIndex() const {
   return FridayParser::RuleStatement;
 }
 
-void FridayParser::StatementContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterStatement(this);
-}
-
-void FridayParser::StatementContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitStatement(this);
-}
-
-
-std::any FridayParser::StatementContext::accept(tree::ParseTreeVisitor *visitor) {
-  if (auto parserVisitor = dynamic_cast<FridayParserVisitor*>(visitor))
-    return parserVisitor->visitStatement(this);
-  else
-    return visitor->visitChildren(this);
-}
 
 FridayParser::StatementContext* FridayParser::statement() {
   StatementContext *_localctx = _tracker.createInstance<StatementContext>(_ctx, getState());
@@ -585,25 +488,6 @@ size_t FridayParser::InlineBlockContext::getRuleIndex() const {
   return FridayParser::RuleInlineBlock;
 }
 
-void FridayParser::InlineBlockContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterInlineBlock(this);
-}
-
-void FridayParser::InlineBlockContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitInlineBlock(this);
-}
-
-
-std::any FridayParser::InlineBlockContext::accept(tree::ParseTreeVisitor *visitor) {
-  if (auto parserVisitor = dynamic_cast<FridayParserVisitor*>(visitor))
-    return parserVisitor->visitInlineBlock(this);
-  else
-    return visitor->visitChildren(this);
-}
 
 FridayParser::InlineBlockContext* FridayParser::inlineBlock() {
   InlineBlockContext *_localctx = _tracker.createInstance<InlineBlockContext>(_ctx, getState());
@@ -662,25 +546,6 @@ size_t FridayParser::BlockContext::getRuleIndex() const {
   return FridayParser::RuleBlock;
 }
 
-void FridayParser::BlockContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterBlock(this);
-}
-
-void FridayParser::BlockContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitBlock(this);
-}
-
-
-std::any FridayParser::BlockContext::accept(tree::ParseTreeVisitor *visitor) {
-  if (auto parserVisitor = dynamic_cast<FridayParserVisitor*>(visitor))
-    return parserVisitor->visitBlock(this);
-  else
-    return visitor->visitChildren(this);
-}
 
 FridayParser::BlockContext* FridayParser::block() {
   BlockContext *_localctx = _tracker.createInstance<BlockContext>(_ctx, getState());
@@ -790,25 +655,6 @@ size_t FridayParser::FunctionStatementContext::getRuleIndex() const {
   return FridayParser::RuleFunctionStatement;
 }
 
-void FridayParser::FunctionStatementContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterFunctionStatement(this);
-}
-
-void FridayParser::FunctionStatementContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitFunctionStatement(this);
-}
-
-
-std::any FridayParser::FunctionStatementContext::accept(tree::ParseTreeVisitor *visitor) {
-  if (auto parserVisitor = dynamic_cast<FridayParserVisitor*>(visitor))
-    return parserVisitor->visitFunctionStatement(this);
-  else
-    return visitor->visitChildren(this);
-}
 
 FridayParser::FunctionStatementContext* FridayParser::functionStatement() {
   FunctionStatementContext *_localctx = _tracker.createInstance<FunctionStatementContext>(_ctx, getState());
@@ -944,23 +790,7 @@ tree::TerminalNode* FridayParser::CallContext::COMMA(size_t i) {
 
 FridayParser::CallContext::CallContext(ExprContext *ctx) { copyFrom(ctx); }
 
-void FridayParser::CallContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterCall(this);
-}
-void FridayParser::CallContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitCall(this);
-}
 
-std::any FridayParser::CallContext::accept(tree::ParseTreeVisitor *visitor) {
-  if (auto parserVisitor = dynamic_cast<FridayParserVisitor*>(visitor))
-    return parserVisitor->visitCall(this);
-  else
-    return visitor->visitChildren(this);
-}
 //----------------- IdentifierContext ------------------------------------------------------------------
 
 tree::TerminalNode* FridayParser::IdentifierContext::IDENTIFIER() {
@@ -969,23 +799,7 @@ tree::TerminalNode* FridayParser::IdentifierContext::IDENTIFIER() {
 
 FridayParser::IdentifierContext::IdentifierContext(ExprContext *ctx) { copyFrom(ctx); }
 
-void FridayParser::IdentifierContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterIdentifier(this);
-}
-void FridayParser::IdentifierContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitIdentifier(this);
-}
 
-std::any FridayParser::IdentifierContext::accept(tree::ParseTreeVisitor *visitor) {
-  if (auto parserVisitor = dynamic_cast<FridayParserVisitor*>(visitor))
-    return parserVisitor->visitIdentifier(this);
-  else
-    return visitor->visitChildren(this);
-}
 //----------------- CharLiteralContext ------------------------------------------------------------------
 
 tree::TerminalNode* FridayParser::CharLiteralContext::CHAR_LIT() {
@@ -994,23 +808,7 @@ tree::TerminalNode* FridayParser::CharLiteralContext::CHAR_LIT() {
 
 FridayParser::CharLiteralContext::CharLiteralContext(ExprContext *ctx) { copyFrom(ctx); }
 
-void FridayParser::CharLiteralContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterCharLiteral(this);
-}
-void FridayParser::CharLiteralContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitCharLiteral(this);
-}
 
-std::any FridayParser::CharLiteralContext::accept(tree::ParseTreeVisitor *visitor) {
-  if (auto parserVisitor = dynamic_cast<FridayParserVisitor*>(visitor))
-    return parserVisitor->visitCharLiteral(this);
-  else
-    return visitor->visitChildren(this);
-}
 //----------------- StringLiteralContext ------------------------------------------------------------------
 
 tree::TerminalNode* FridayParser::StringLiteralContext::STRING_LIT() {
@@ -1019,23 +817,7 @@ tree::TerminalNode* FridayParser::StringLiteralContext::STRING_LIT() {
 
 FridayParser::StringLiteralContext::StringLiteralContext(ExprContext *ctx) { copyFrom(ctx); }
 
-void FridayParser::StringLiteralContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterStringLiteral(this);
-}
-void FridayParser::StringLiteralContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitStringLiteral(this);
-}
 
-std::any FridayParser::StringLiteralContext::accept(tree::ParseTreeVisitor *visitor) {
-  if (auto parserVisitor = dynamic_cast<FridayParserVisitor*>(visitor))
-    return parserVisitor->visitStringLiteral(this);
-  else
-    return visitor->visitChildren(this);
-}
 //----------------- BoolLiteralContext ------------------------------------------------------------------
 
 tree::TerminalNode* FridayParser::BoolLiteralContext::BOOL_LIT() {
@@ -1044,23 +826,7 @@ tree::TerminalNode* FridayParser::BoolLiteralContext::BOOL_LIT() {
 
 FridayParser::BoolLiteralContext::BoolLiteralContext(ExprContext *ctx) { copyFrom(ctx); }
 
-void FridayParser::BoolLiteralContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterBoolLiteral(this);
-}
-void FridayParser::BoolLiteralContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitBoolLiteral(this);
-}
 
-std::any FridayParser::BoolLiteralContext::accept(tree::ParseTreeVisitor *visitor) {
-  if (auto parserVisitor = dynamic_cast<FridayParserVisitor*>(visitor))
-    return parserVisitor->visitBoolLiteral(this);
-  else
-    return visitor->visitChildren(this);
-}
 //----------------- FloatLiteralContext ------------------------------------------------------------------
 
 tree::TerminalNode* FridayParser::FloatLiteralContext::FLOAT_LIT() {
@@ -1069,23 +835,7 @@ tree::TerminalNode* FridayParser::FloatLiteralContext::FLOAT_LIT() {
 
 FridayParser::FloatLiteralContext::FloatLiteralContext(ExprContext *ctx) { copyFrom(ctx); }
 
-void FridayParser::FloatLiteralContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterFloatLiteral(this);
-}
-void FridayParser::FloatLiteralContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitFloatLiteral(this);
-}
 
-std::any FridayParser::FloatLiteralContext::accept(tree::ParseTreeVisitor *visitor) {
-  if (auto parserVisitor = dynamic_cast<FridayParserVisitor*>(visitor))
-    return parserVisitor->visitFloatLiteral(this);
-  else
-    return visitor->visitChildren(this);
-}
 //----------------- IntLiteralContext ------------------------------------------------------------------
 
 tree::TerminalNode* FridayParser::IntLiteralContext::INT_LIT() {
@@ -1094,23 +844,7 @@ tree::TerminalNode* FridayParser::IntLiteralContext::INT_LIT() {
 
 FridayParser::IntLiteralContext::IntLiteralContext(ExprContext *ctx) { copyFrom(ctx); }
 
-void FridayParser::IntLiteralContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterIntLiteral(this);
-}
-void FridayParser::IntLiteralContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitIntLiteral(this);
-}
 
-std::any FridayParser::IntLiteralContext::accept(tree::ParseTreeVisitor *visitor) {
-  if (auto parserVisitor = dynamic_cast<FridayParserVisitor*>(visitor))
-    return parserVisitor->visitIntLiteral(this);
-  else
-    return visitor->visitChildren(this);
-}
 //----------------- GroupingContext ------------------------------------------------------------------
 
 tree::TerminalNode* FridayParser::GroupingContext::LEFT_PAREN() {
@@ -1127,23 +861,7 @@ tree::TerminalNode* FridayParser::GroupingContext::RIGHT_PAREN() {
 
 FridayParser::GroupingContext::GroupingContext(ExprContext *ctx) { copyFrom(ctx); }
 
-void FridayParser::GroupingContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterGrouping(this);
-}
-void FridayParser::GroupingContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitGrouping(this);
-}
 
-std::any FridayParser::GroupingContext::accept(tree::ParseTreeVisitor *visitor) {
-  if (auto parserVisitor = dynamic_cast<FridayParserVisitor*>(visitor))
-    return parserVisitor->visitGrouping(this);
-  else
-    return visitor->visitChildren(this);
-}
 //----------------- SubscriptContext ------------------------------------------------------------------
 
 tree::TerminalNode* FridayParser::SubscriptContext::LEFT_SQUARE() {
@@ -1164,23 +882,7 @@ FridayParser::ExprContext* FridayParser::SubscriptContext::expr(size_t i) {
 
 FridayParser::SubscriptContext::SubscriptContext(ExprContext *ctx) { copyFrom(ctx); }
 
-void FridayParser::SubscriptContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterSubscript(this);
-}
-void FridayParser::SubscriptContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitSubscript(this);
-}
 
-std::any FridayParser::SubscriptContext::accept(tree::ParseTreeVisitor *visitor) {
-  if (auto parserVisitor = dynamic_cast<FridayParserVisitor*>(visitor))
-    return parserVisitor->visitSubscript(this);
-  else
-    return visitor->visitChildren(this);
-}
 //----------------- BinaryContext ------------------------------------------------------------------
 
 std::vector<FridayParser::ExprContext *> FridayParser::BinaryContext::expr() {
@@ -1213,23 +915,7 @@ tree::TerminalNode* FridayParser::BinaryContext::MINUS() {
 
 FridayParser::BinaryContext::BinaryContext(ExprContext *ctx) { copyFrom(ctx); }
 
-void FridayParser::BinaryContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterBinary(this);
-}
-void FridayParser::BinaryContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitBinary(this);
-}
 
-std::any FridayParser::BinaryContext::accept(tree::ParseTreeVisitor *visitor) {
-  if (auto parserVisitor = dynamic_cast<FridayParserVisitor*>(visitor))
-    return parserVisitor->visitBinary(this);
-  else
-    return visitor->visitChildren(this);
-}
 //----------------- NullLiteralContext ------------------------------------------------------------------
 
 tree::TerminalNode* FridayParser::NullLiteralContext::NULL_LIT() {
@@ -1238,23 +924,7 @@ tree::TerminalNode* FridayParser::NullLiteralContext::NULL_LIT() {
 
 FridayParser::NullLiteralContext::NullLiteralContext(ExprContext *ctx) { copyFrom(ctx); }
 
-void FridayParser::NullLiteralContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterNullLiteral(this);
-}
-void FridayParser::NullLiteralContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitNullLiteral(this);
-}
 
-std::any FridayParser::NullLiteralContext::accept(tree::ParseTreeVisitor *visitor) {
-  if (auto parserVisitor = dynamic_cast<FridayParserVisitor*>(visitor))
-    return parserVisitor->visitNullLiteral(this);
-  else
-    return visitor->visitChildren(this);
-}
 //----------------- UnaryContext ------------------------------------------------------------------
 
 FridayParser::ExprContext* FridayParser::UnaryContext::expr() {
@@ -1271,23 +941,7 @@ tree::TerminalNode* FridayParser::UnaryContext::MINUS() {
 
 FridayParser::UnaryContext::UnaryContext(ExprContext *ctx) { copyFrom(ctx); }
 
-void FridayParser::UnaryContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterUnary(this);
-}
-void FridayParser::UnaryContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitUnary(this);
-}
 
-std::any FridayParser::UnaryContext::accept(tree::ParseTreeVisitor *visitor) {
-  if (auto parserVisitor = dynamic_cast<FridayParserVisitor*>(visitor))
-    return parserVisitor->visitUnary(this);
-  else
-    return visitor->visitChildren(this);
-}
 
 FridayParser::ExprContext* FridayParser::expr() {
    return expr(0);
@@ -1564,25 +1218,6 @@ size_t FridayParser::SimpleTypeContext::getRuleIndex() const {
   return FridayParser::RuleSimpleType;
 }
 
-void FridayParser::SimpleTypeContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterSimpleType(this);
-}
-
-void FridayParser::SimpleTypeContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitSimpleType(this);
-}
-
-
-std::any FridayParser::SimpleTypeContext::accept(tree::ParseTreeVisitor *visitor) {
-  if (auto parserVisitor = dynamic_cast<FridayParserVisitor*>(visitor))
-    return parserVisitor->visitSimpleType(this);
-  else
-    return visitor->visitChildren(this);
-}
 
 FridayParser::SimpleTypeContext* FridayParser::simpleType() {
   SimpleTypeContext *_localctx = _tracker.createInstance<SimpleTypeContext>(_ctx, getState());
@@ -1653,25 +1288,6 @@ size_t FridayParser::FunctionTypeContext::getRuleIndex() const {
   return FridayParser::RuleFunctionType;
 }
 
-void FridayParser::FunctionTypeContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterFunctionType(this);
-}
-
-void FridayParser::FunctionTypeContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitFunctionType(this);
-}
-
-
-std::any FridayParser::FunctionTypeContext::accept(tree::ParseTreeVisitor *visitor) {
-  if (auto parserVisitor = dynamic_cast<FridayParserVisitor*>(visitor))
-    return parserVisitor->visitFunctionType(this);
-  else
-    return visitor->visitChildren(this);
-}
 
 FridayParser::FunctionTypeContext* FridayParser::functionType() {
   FunctionTypeContext *_localctx = _tracker.createInstance<FunctionTypeContext>(_ctx, getState());
@@ -1758,25 +1374,6 @@ size_t FridayParser::PointerTypeContext::getRuleIndex() const {
   return FridayParser::RulePointerType;
 }
 
-void FridayParser::PointerTypeContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterPointerType(this);
-}
-
-void FridayParser::PointerTypeContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitPointerType(this);
-}
-
-
-std::any FridayParser::PointerTypeContext::accept(tree::ParseTreeVisitor *visitor) {
-  if (auto parserVisitor = dynamic_cast<FridayParserVisitor*>(visitor))
-    return parserVisitor->visitPointerType(this);
-  else
-    return visitor->visitChildren(this);
-}
 
 FridayParser::PointerTypeContext* FridayParser::pointerType() {
   PointerTypeContext *_localctx = _tracker.createInstance<PointerTypeContext>(_ctx, getState());
@@ -1854,25 +1451,6 @@ size_t FridayParser::TypeContext::getRuleIndex() const {
   return FridayParser::RuleType;
 }
 
-void FridayParser::TypeContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterType(this);
-}
-
-void FridayParser::TypeContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitType(this);
-}
-
-
-std::any FridayParser::TypeContext::accept(tree::ParseTreeVisitor *visitor) {
-  if (auto parserVisitor = dynamic_cast<FridayParserVisitor*>(visitor))
-    return parserVisitor->visitType(this);
-  else
-    return visitor->visitChildren(this);
-}
 
 FridayParser::TypeContext* FridayParser::type() {
   TypeContext *_localctx = _tracker.createInstance<TypeContext>(_ctx, getState());

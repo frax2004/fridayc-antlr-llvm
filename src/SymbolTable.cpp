@@ -17,6 +17,11 @@ namespace friday::inline api::inline typechecker {
     or (this->M_parent != nullptr and this->M_parent->isDefined(name));
   }
 
+  auto SymbolTable::resolveIf(String const& name, std::function<bool (Symbol*)> predicate, Symbol* defaultValue) noexcept -> Symbol* {
+    auto symbol = this->resolve(name, defaultValue);
+    return predicate(symbol) ? symbol : defaultValue;
+  }
+
   auto SymbolTable::resolve(String const& name, Symbol* defaultValue) noexcept -> Symbol* {
     auto it = this->M_symbols.find(name);
     return it != this->M_symbols.end() ?

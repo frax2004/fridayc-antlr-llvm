@@ -1,5 +1,5 @@
 
-// Generated from FridayParser.g4 by ANTLR 4.13.2
+// Generated from c:/Dev/C++/fridayc-antlr-llvm/FridayParser.g4 by ANTLR 4.13.1
 
 #pragma once
 
@@ -43,23 +43,8 @@ public:
   virtual void enterCall(FridayParser::CallContext * /*ctx*/) override { }
   virtual void exitCall(FridayParser::CallContext * /*ctx*/) override { }
 
-  virtual void enterIdentifier(FridayParser::IdentifierContext * /*ctx*/) override { }
-  virtual void exitIdentifier(FridayParser::IdentifierContext * /*ctx*/) override { }
-
-  virtual void enterCharLiteral(FridayParser::CharLiteralContext * /*ctx*/) override { }
-  virtual void exitCharLiteral(FridayParser::CharLiteralContext * /*ctx*/) override { }
-
-  virtual void enterStringLiteral(FridayParser::StringLiteralContext * /*ctx*/) override { }
-  virtual void exitStringLiteral(FridayParser::StringLiteralContext * /*ctx*/) override { }
-
-  virtual void enterBoolLiteral(FridayParser::BoolLiteralContext * /*ctx*/) override { }
-  virtual void exitBoolLiteral(FridayParser::BoolLiteralContext * /*ctx*/) override { }
-
-  virtual void enterFloatLiteral(FridayParser::FloatLiteralContext * /*ctx*/) override { }
-  virtual void exitFloatLiteral(FridayParser::FloatLiteralContext * /*ctx*/) override { }
-
-  virtual void enterIntLiteral(FridayParser::IntLiteralContext * /*ctx*/) override { }
-  virtual void exitIntLiteral(FridayParser::IntLiteralContext * /*ctx*/) override { }
+  virtual void enterPrimary(FridayParser::PrimaryContext * /*ctx*/) override { }
+  virtual void exitPrimary(FridayParser::PrimaryContext * /*ctx*/) override { }
 
   virtual void enterGrouping(FridayParser::GroupingContext * /*ctx*/) override { }
   virtual void exitGrouping(FridayParser::GroupingContext * /*ctx*/) override { }
@@ -69,9 +54,6 @@ public:
 
   virtual void enterBinary(FridayParser::BinaryContext * /*ctx*/) override { }
   virtual void exitBinary(FridayParser::BinaryContext * /*ctx*/) override { }
-
-  virtual void enterNullLiteral(FridayParser::NullLiteralContext * /*ctx*/) override { }
-  virtual void exitNullLiteral(FridayParser::NullLiteralContext * /*ctx*/) override { }
 
   virtual void enterUnary(FridayParser::UnaryContext * /*ctx*/) override { }
   virtual void exitUnary(FridayParser::UnaryContext * /*ctx*/) override { }

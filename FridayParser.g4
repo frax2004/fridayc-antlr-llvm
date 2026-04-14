@@ -49,7 +49,13 @@ functionStatement
 ///////////////////////////////////////////////////
 /// EXPRESSIONS
 expr
-  : (IDENTIFIER | INT_LIT | CHAR_LIT | STRING_LIT | FLOAT_LIT | BOOL_LIT | NULL_LIT) # Primary
+  : IDENTIFIER # Identifier 
+  | INT_LIT # IntLiteral
+  | CHAR_LIT # CharLiteral
+  | STRING_LIT # StringLiteral
+  | FLOAT_LIT # FloatLiteral
+  | BOOL_LIT # BoolLiteral
+  | NULL_LIT # NullLiteral
   | array = expr LEFT_SQUARE index = expr RIGHT_SQUARE # Subscript
   | IDENTIFIER LEFT_PAREN (args += expr (COMMA args += expr)*)? RIGHT_PAREN # Call
   | unaryOperator = (PLUS | MINUS) expr # Unary

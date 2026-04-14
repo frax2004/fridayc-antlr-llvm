@@ -51,7 +51,27 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual std::any visitPrimary(FridayParser::PrimaryContext *ctx) override {
+  virtual std::any visitIdentifier(FridayParser::IdentifierContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitCharLiteral(FridayParser::CharLiteralContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitStringLiteral(FridayParser::StringLiteralContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitBoolLiteral(FridayParser::BoolLiteralContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitFloatLiteral(FridayParser::FloatLiteralContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitIntLiteral(FridayParser::IntLiteralContext *ctx) override {
     return visitChildren(ctx);
   }
 
@@ -64,6 +84,10 @@ public:
   }
 
   virtual std::any visitBinary(FridayParser::BinaryContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitNullLiteral(FridayParser::NullLiteralContext *ctx) override {
     return visitChildren(ctx);
   }
 

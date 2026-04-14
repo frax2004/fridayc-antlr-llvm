@@ -3,18 +3,13 @@
 #include "core/errors/Error.hpp"
 #include "core/errors/OperationNotSupportedError.hpp"
 
-
-
-
-
 using namespace friday;
-
-extern void Main(Vector<StringRef> args);
-
-
 
 
 auto main(i32 argc, const i8** argv) -> i32 {
+
+  extern void Main(Vector<StringRef> args);
+
   try {
     Main(Vector<StringRef>{ argv + 1, argv + argc});
   } catch(const Error<>& error) {

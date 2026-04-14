@@ -4,8 +4,6 @@
 #include "Version.hpp"
 
 
-
-
 namespace friday::inline api::inline cmd {
   auto parse(Vector<StringRef> args) noexcept -> Opt<Config> {
     auto [config, errors] = cmd::Parser::parse(args);

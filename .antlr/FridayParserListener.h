@@ -1,5 +1,5 @@
 
-// Generated from FridayParser.g4 by ANTLR 4.13.2
+// Generated from c:/Dev/C++/fridayc-antlr-llvm/FridayParser.g4 by ANTLR 4.13.1
 
 #pragma once
 
@@ -41,23 +41,8 @@ public:
   virtual void enterCall(FridayParser::CallContext *ctx) = 0;
   virtual void exitCall(FridayParser::CallContext *ctx) = 0;
 
-  virtual void enterIdentifier(FridayParser::IdentifierContext *ctx) = 0;
-  virtual void exitIdentifier(FridayParser::IdentifierContext *ctx) = 0;
-
-  virtual void enterCharLiteral(FridayParser::CharLiteralContext *ctx) = 0;
-  virtual void exitCharLiteral(FridayParser::CharLiteralContext *ctx) = 0;
-
-  virtual void enterStringLiteral(FridayParser::StringLiteralContext *ctx) = 0;
-  virtual void exitStringLiteral(FridayParser::StringLiteralContext *ctx) = 0;
-
-  virtual void enterBoolLiteral(FridayParser::BoolLiteralContext *ctx) = 0;
-  virtual void exitBoolLiteral(FridayParser::BoolLiteralContext *ctx) = 0;
-
-  virtual void enterFloatLiteral(FridayParser::FloatLiteralContext *ctx) = 0;
-  virtual void exitFloatLiteral(FridayParser::FloatLiteralContext *ctx) = 0;
-
-  virtual void enterIntLiteral(FridayParser::IntLiteralContext *ctx) = 0;
-  virtual void exitIntLiteral(FridayParser::IntLiteralContext *ctx) = 0;
+  virtual void enterPrimary(FridayParser::PrimaryContext *ctx) = 0;
+  virtual void exitPrimary(FridayParser::PrimaryContext *ctx) = 0;
 
   virtual void enterGrouping(FridayParser::GroupingContext *ctx) = 0;
   virtual void exitGrouping(FridayParser::GroupingContext *ctx) = 0;
@@ -67,9 +52,6 @@ public:
 
   virtual void enterBinary(FridayParser::BinaryContext *ctx) = 0;
   virtual void exitBinary(FridayParser::BinaryContext *ctx) = 0;
-
-  virtual void enterNullLiteral(FridayParser::NullLiteralContext *ctx) = 0;
-  virtual void exitNullLiteral(FridayParser::NullLiteralContext *ctx) = 0;
 
   virtual void enterUnary(FridayParser::UnaryContext *ctx) = 0;
   virtual void exitUnary(FridayParser::UnaryContext *ctx) = 0;

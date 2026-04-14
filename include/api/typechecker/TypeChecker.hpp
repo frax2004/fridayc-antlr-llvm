@@ -5,9 +5,9 @@
 #include "Function.hpp"
 #include "Struct.hpp"
 #include "SymbolTable.hpp"
+#include "SemanticError.hpp"
 
 #include "api/parser/FridayParserBaseVisitor.h"
-#include "api/parser/SyntaxError.hpp"
 #include "core/util/TranslationUnit.hpp"
 
 namespace friday::inline api::inline typechecker {
@@ -21,7 +21,7 @@ namespace friday::inline api::inline typechecker {
 
     /// @brief Run semantic analysis for this translation unit
     /// @return the errors (if any occurred)
-    auto check() -> Vector<SyntaxError>;
+    auto check() -> Vector<SemanticError>;
 
     /// @brief visit a Program
     /// @param ctx the Program context
@@ -68,11 +68,36 @@ namespace friday::inline api::inline typechecker {
     /// @return a Struct type or Struct::getErrorType() if any error has occurred during semantic checks
     auto visitCall(FridayParser::CallContext *ctx) -> std::any override;
 
-    /// @brief visit a Primary
-    /// @param ctx the Primary context
+    /// @brief visit a IdentifierContext
+    /// @param ctx the IdentifierContext context
     /// @return a Struct type or Struct::getErrorType() if any error has occurred during semantic checks
-    auto visitPrimary(FridayParser::PrimaryContext *ctx) -> std::any override;
+    auto visitIdentifier(FridayParser::IdentifierContext *ctx) -> std::any override;
 
+    /// @brief visit a CharLiteralContext
+    /// @param ctx the CharLiteralContext context
+    /// @return a Struct type or Struct::getErrorType() if any error has occurred during semantic checks
+    auto visitCharLiteral(FridayParser::CharLiteralContext *ctx) -> std::any override;
+
+    /// @brief visit a StringLiteralContext
+    /// @param ctx the StringLiteralContext context
+    /// @return a Struct type or Struct::getErrorType() if any error has occurred during semantic checks
+    auto visitStringLiteral(FridayParser::StringLiteralContext *ctx) -> std::any override;
+
+    /// @brief visit a BoolLiteralContext
+    /// @param ctx the BoolLiteralContext context
+    /// @return a Struct type or Struct::getErrorType() if any error has occurred during semantic checks
+    auto visitBoolLiteral(FridayParser::BoolLiteralContext *ctx) -> std::any override;
+
+    /// @brief visit a FloatLiteralContext
+    /// @param ctx the FloatLiteralContext context
+    /// @return a Struct type or Struct::getErrorType() if any error has occurred during semantic checks
+    auto visitFloatLiteral(FridayParser::FloatLiteralContext *ctx) -> std::any override;
+
+    /// @brief visit a IntLiteralContext
+    /// @param ctx the IntLiteralContext context
+    /// @return a Struct type or Struct::getErrorType() if any error has occurred during semantic checks
+    auto visitIntLiteral(FridayParser::IntLiteralContext *ctx) -> std::any override;
+    
     /// @brief visit a Grouping
     /// @param ctx the Grouping context
     /// @return a Struct type or Struct::getErrorType() if any error has occurred during semantic checks
@@ -118,30 +143,14 @@ namespace friday::inline api::inline typechecker {
     /// @param token the token where the error occurred
     /// @param message the error message
     auto errorAt(ant::Token* token, String message) -> void;
-  
-    /// @brief Checks if two types are equal
-    /// @param expected the expected type
-    /// @param actual the actual type
-    /// @return true if the types are equal (by address)
-    static auto checkType(Struct* expected, std::any actual) -> bool;
-
-    /// @brief Converts an object into an instance of Struct
-    /// @param info the object
-    /// @return the Struct or Struct::getErrorType() if the object is not a Struct instance
-    /// @throws instance of `OperationNotSupportedError` if the object is not a Struct instance
-    static auto toType(std::any info) -> Struct*;
 
     private:
-    Vector<SyntaxError> M_errors { };
+    /// @brief the errors
+    Vector<SemanticError> M_errors { };
+    /// @brief the translation unit
     TranslationUnit* M_unit { nullptr };
-    SymbolTable M_globalScope { nullptr };
+    /// @brief the current scope (used as a stack of scopes)
     SymbolTable* M_currentScope { nullptr };
-    Struct* M_voidType { nullptr };
-    Struct* M_intType { nullptr };
-    Struct* M_floatType { nullptr };
-    Struct* M_stringType { nullptr };
-    Struct* M_byteType { nullptr };
-    Struct* M_boolType { nullptr };
   };
 }
 
