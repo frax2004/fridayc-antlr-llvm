@@ -8,20 +8,20 @@ namespace friday::inline api::inline typechecker {
 
   struct Variable;
   struct Function;
-  
+
   /// @brief Represents a type in the type system
   struct Struct : public Symbol {
     private:
     /// @brief the struct name
-    String name;
+    String M_name;
     /// @brief the struct internal type
-    llvm::Type* type;
+    llvm::Type* M_type;
     /// @brief the struct fields
-    Map<String, Variable> fields;
+    Map<String, Variable> M_fields;
     /// @brief the struct methods
-    Map<String, Function> methods;
+    Map<String, Function> M_methods;
     /// @brief the struct visibility modifier
-    VisibilityModifier visibility;
+    VisibilityModifier M_visibility;
 
     public:
     /// @brief Constructs a struct

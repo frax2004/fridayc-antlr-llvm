@@ -9,13 +9,13 @@ namespace friday::inline api::inline typechecker {
   struct Function : public Symbol {
     private:
     /// @brief the function name
-    String name;
+    String M_name;
     /// @brief the function type
-    llvm::Type* type;
+    llvm::Type* M_type;
     /// @brief the function parameters
-    Map<String, Variable> parameters;
+    Map<String, Variable> M_parameters;
     /// @brief the function visibility
-    VisibilityModifier visibility;
+    VisibilityModifier M_visibility;
 
     public:
     /// @brief Constructs a function

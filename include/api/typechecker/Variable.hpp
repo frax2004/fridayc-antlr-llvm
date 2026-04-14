@@ -10,11 +10,11 @@ namespace friday::inline api::inline typechecker {
   struct Variable : public Symbol {
     private:
     /// @brief the name of the variable
-    String name;
+    String M_name;
     /// @brief the type of the variable
-    Struct* type;
+    Struct* M_type;
     /// @brief the visibility of the variable
-    VisibilityModifier visiblity;
+    VisibilityModifier M_visiblity;
     
     public:
     /// @brief Gets the name of the variable
