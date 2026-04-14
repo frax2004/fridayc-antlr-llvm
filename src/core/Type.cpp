@@ -1,5 +1,4 @@
 #include "core/Common.hpp"
-
 namespace friday::inline core {
 
 

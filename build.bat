@@ -4,5 +4,5 @@ java -jar antlr.jar -o generated -Dlanguage=Cpp -visitor -listener FridayParser.
 
 cd generated
 move *.h ../include/api/parser/
-move * ../src/
+move * ../src/api/parser
 cd ..
