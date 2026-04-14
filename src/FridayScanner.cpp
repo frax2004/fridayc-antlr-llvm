@@ -1,0 +1,213 @@
+
+// Generated from FridayScanner.g4 by ANTLR 4.13.2
+
+
+#include "FridayScanner.h"
+
+
+using namespace antlr4;
+
+
+
+using namespace antlr4;
+
+namespace {
+
+struct FridayScannerStaticData final {
+  FridayScannerStaticData(std::vector<std::string> ruleNames,
+                          std::vector<std::string> channelNames,
+                          std::vector<std::string> modeNames,
+                          std::vector<std::string> literalNames,
+                          std::vector<std::string> symbolicNames)
+      : ruleNames(std::move(ruleNames)), channelNames(std::move(channelNames)),
+        modeNames(std::move(modeNames)), literalNames(std::move(literalNames)),
+        symbolicNames(std::move(symbolicNames)),
+        vocabulary(this->literalNames, this->symbolicNames) {}
+
+  FridayScannerStaticData(const FridayScannerStaticData&) = delete;
+  FridayScannerStaticData(FridayScannerStaticData&&) = delete;
+  FridayScannerStaticData& operator=(const FridayScannerStaticData&) = delete;
+  FridayScannerStaticData& operator=(FridayScannerStaticData&&) = delete;
+
+  std::vector<antlr4::dfa::DFA> decisionToDFA;
+  antlr4::atn::PredictionContextCache sharedContextCache;
+  const std::vector<std::string> ruleNames;
+  const std::vector<std::string> channelNames;
+  const std::vector<std::string> modeNames;
+  const std::vector<std::string> literalNames;
+  const std::vector<std::string> symbolicNames;
+  const antlr4::dfa::Vocabulary vocabulary;
+  antlr4::atn::SerializedATNView serializedATN;
+  std::unique_ptr<antlr4::atn::ATN> atn;
+};
+
+::antlr4::internal::OnceFlag fridayscannerLexerOnceFlag;
+#if ANTLR4_USE_THREAD_LOCAL_CACHE
+static thread_local
+#endif
+std::unique_ptr<FridayScannerStaticData> fridayscannerLexerStaticData = nullptr;
+
+void fridayscannerLexerInitialize() {
+#if ANTLR4_USE_THREAD_LOCAL_CACHE
+  if (fridayscannerLexerStaticData != nullptr) {
+    return;
+  }
+#else
+  assert(fridayscannerLexerStaticData == nullptr);
+#endif
+  auto staticData = std::make_unique<FridayScannerStaticData>(
+    std::vector<std::string>{
+      "STRUCT", "RETURN", "PRINT", "FN", "BOOL_LIT", "NULL_LIT", "LEFT_PAREN", 
+      "LEFT_SQUARE", "LEFT_CURLY", "RIGHT_PAREN", "RIGHT_SQUARE", "RIGHT_CURLY", 
+      "SEMI", "COL", "COMMA", "STAR", "SLASH", "MINUS", "PLUS", "MODULO", 
+      "ARROW", "FAT_ARROW", "IDENTIFIER", "COMMENT", "SPACE", "INT_LIT", 
+      "FLOAT_LIT", "STRING_LIT", "CHAR_LIT"
+    },
+    std::vector<std::string>{
+      "DEFAULT_TOKEN_CHANNEL", "HIDDEN"
+    },
+    std::vector<std::string>{
+      "DEFAULT_MODE"
+    },
+    std::vector<std::string>{
+      "", "'struct'", "'return'", "'print'", "'fn'", "", "'null'", "'('", 
+      "'['", "'{'", "')'", "']'", "'}'", "';'", "':'", "','", "'*'", "'/'", 
+      "'-'", "'+'", "'%'", "'->'", "'=>'"
+    },
+    std::vector<std::string>{
+      "", "STRUCT", "RETURN", "PRINT", "FN", "BOOL_LIT", "NULL_LIT", "LEFT_PAREN", 
+      "LEFT_SQUARE", "LEFT_CURLY", "RIGHT_PAREN", "RIGHT_SQUARE", "RIGHT_CURLY", 
+      "SEMI", "COL", "COMMA", "STAR", "SLASH", "MINUS", "PLUS", "MODULO", 
+      "ARROW", "FAT_ARROW", "IDENTIFIER", "COMMENT", "SPACE", "INT_LIT", 
+      "FLOAT_LIT", "STRING_LIT", "CHAR_LIT"
+    }
+  );
+  static const int32_t serializedATNSegment[] = {
+  	4,0,29,196,6,-1,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,
+  	6,2,7,7,7,2,8,7,8,2,9,7,9,2,10,7,10,2,11,7,11,2,12,7,12,2,13,7,13,2,14,
+  	7,14,2,15,7,15,2,16,7,16,2,17,7,17,2,18,7,18,2,19,7,19,2,20,7,20,2,21,
+  	7,21,2,22,7,22,2,23,7,23,2,24,7,24,2,25,7,25,2,26,7,26,2,27,7,27,2,28,
+  	7,28,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,2,
+  	1,2,1,2,1,2,1,2,1,3,1,3,1,3,1,4,1,4,1,4,1,4,1,4,1,4,1,4,1,4,1,4,3,4,92,
+  	8,4,1,5,1,5,1,5,1,5,1,5,1,6,1,6,1,7,1,7,1,8,1,8,1,9,1,9,1,10,1,10,1,11,
+  	1,11,1,12,1,12,1,13,1,13,1,14,1,14,1,15,1,15,1,16,1,16,1,17,1,17,1,18,
+  	1,18,1,19,1,19,1,20,1,20,1,20,1,21,1,21,1,21,1,22,1,22,5,22,135,8,22,
+  	10,22,12,22,138,9,22,1,23,1,23,1,23,1,23,1,23,1,23,1,23,1,24,1,24,1,24,
+  	1,24,1,25,3,25,152,8,25,1,25,1,25,1,25,5,25,157,8,25,10,25,12,25,160,
+  	9,25,3,25,162,8,25,1,26,3,26,165,8,26,1,26,1,26,1,26,5,26,170,8,26,10,
+  	26,12,26,173,9,26,3,26,175,8,26,1,26,1,26,5,26,179,8,26,10,26,12,26,182,
+  	9,26,1,27,1,27,5,27,186,8,27,10,27,12,27,189,9,27,1,27,1,27,1,28,1,28,
+  	1,28,1,28,1,187,0,29,1,1,3,2,5,3,7,4,9,5,11,6,13,7,15,8,17,9,19,10,21,
+  	11,23,12,25,13,27,14,29,15,31,16,33,17,35,18,37,19,39,20,41,21,43,22,
+  	45,23,47,24,49,25,51,26,53,27,55,28,57,29,1,0,7,3,0,65,90,95,95,97,122,
+  	4,0,48,57,65,90,95,95,97,122,2,0,10,10,13,13,3,0,9,10,13,13,32,32,2,0,
+  	43,43,45,45,1,0,49,57,1,0,48,57,205,0,1,1,0,0,0,0,3,1,0,0,0,0,5,1,0,0,
+  	0,0,7,1,0,0,0,0,9,1,0,0,0,0,11,1,0,0,0,0,13,1,0,0,0,0,15,1,0,0,0,0,17,
+  	1,0,0,0,0,19,1,0,0,0,0,21,1,0,0,0,0,23,1,0,0,0,0,25,1,0,0,0,0,27,1,0,
+  	0,0,0,29,1,0,0,0,0,31,1,0,0,0,0,33,1,0,0,0,0,35,1,0,0,0,0,37,1,0,0,0,
+  	0,39,1,0,0,0,0,41,1,0,0,0,0,43,1,0,0,0,0,45,1,0,0,0,0,47,1,0,0,0,0,49,
+  	1,0,0,0,0,51,1,0,0,0,0,53,1,0,0,0,0,55,1,0,0,0,0,57,1,0,0,0,1,59,1,0,
+  	0,0,3,66,1,0,0,0,5,73,1,0,0,0,7,79,1,0,0,0,9,91,1,0,0,0,11,93,1,0,0,0,
+  	13,98,1,0,0,0,15,100,1,0,0,0,17,102,1,0,0,0,19,104,1,0,0,0,21,106,1,0,
+  	0,0,23,108,1,0,0,0,25,110,1,0,0,0,27,112,1,0,0,0,29,114,1,0,0,0,31,116,
+  	1,0,0,0,33,118,1,0,0,0,35,120,1,0,0,0,37,122,1,0,0,0,39,124,1,0,0,0,41,
+  	126,1,0,0,0,43,129,1,0,0,0,45,132,1,0,0,0,47,139,1,0,0,0,49,146,1,0,0,
+  	0,51,151,1,0,0,0,53,164,1,0,0,0,55,183,1,0,0,0,57,192,1,0,0,0,59,60,5,
+  	115,0,0,60,61,5,116,0,0,61,62,5,114,0,0,62,63,5,117,0,0,63,64,5,99,0,
+  	0,64,65,5,116,0,0,65,2,1,0,0,0,66,67,5,114,0,0,67,68,5,101,0,0,68,69,
+  	5,116,0,0,69,70,5,117,0,0,70,71,5,114,0,0,71,72,5,110,0,0,72,4,1,0,0,
+  	0,73,74,5,112,0,0,74,75,5,114,0,0,75,76,5,105,0,0,76,77,5,110,0,0,77,
+  	78,5,116,0,0,78,6,1,0,0,0,79,80,5,102,0,0,80,81,5,110,0,0,81,8,1,0,0,
+  	0,82,83,5,116,0,0,83,84,5,114,0,0,84,85,5,117,0,0,85,92,5,101,0,0,86,
+  	87,5,102,0,0,87,88,5,97,0,0,88,89,5,108,0,0,89,90,5,115,0,0,90,92,5,101,
+  	0,0,91,82,1,0,0,0,91,86,1,0,0,0,92,10,1,0,0,0,93,94,5,110,0,0,94,95,5,
+  	117,0,0,95,96,5,108,0,0,96,97,5,108,0,0,97,12,1,0,0,0,98,99,5,40,0,0,
+  	99,14,1,0,0,0,100,101,5,91,0,0,101,16,1,0,0,0,102,103,5,123,0,0,103,18,
+  	1,0,0,0,104,105,5,41,0,0,105,20,1,0,0,0,106,107,5,93,0,0,107,22,1,0,0,
+  	0,108,109,5,125,0,0,109,24,1,0,0,0,110,111,5,59,0,0,111,26,1,0,0,0,112,
+  	113,5,58,0,0,113,28,1,0,0,0,114,115,5,44,0,0,115,30,1,0,0,0,116,117,5,
+  	42,0,0,117,32,1,0,0,0,118,119,5,47,0,0,119,34,1,0,0,0,120,121,5,45,0,
+  	0,121,36,1,0,0,0,122,123,5,43,0,0,123,38,1,0,0,0,124,125,5,37,0,0,125,
+  	40,1,0,0,0,126,127,5,45,0,0,127,128,5,62,0,0,128,42,1,0,0,0,129,130,5,
+  	61,0,0,130,131,5,62,0,0,131,44,1,0,0,0,132,136,7,0,0,0,133,135,7,1,0,
+  	0,134,133,1,0,0,0,135,138,1,0,0,0,136,134,1,0,0,0,136,137,1,0,0,0,137,
+  	46,1,0,0,0,138,136,1,0,0,0,139,140,5,47,0,0,140,141,5,47,0,0,141,142,
+  	1,0,0,0,142,143,8,2,0,0,143,144,1,0,0,0,144,145,6,23,0,0,145,48,1,0,0,
+  	0,146,147,7,3,0,0,147,148,1,0,0,0,148,149,6,24,0,0,149,50,1,0,0,0,150,
+  	152,7,4,0,0,151,150,1,0,0,0,151,152,1,0,0,0,152,161,1,0,0,0,153,162,5,
+  	48,0,0,154,158,7,5,0,0,155,157,7,6,0,0,156,155,1,0,0,0,157,160,1,0,0,
+  	0,158,156,1,0,0,0,158,159,1,0,0,0,159,162,1,0,0,0,160,158,1,0,0,0,161,
+  	153,1,0,0,0,161,154,1,0,0,0,162,52,1,0,0,0,163,165,7,4,0,0,164,163,1,
+  	0,0,0,164,165,1,0,0,0,165,174,1,0,0,0,166,175,5,48,0,0,167,171,7,5,0,
+  	0,168,170,7,6,0,0,169,168,1,0,0,0,170,173,1,0,0,0,171,169,1,0,0,0,171,
+  	172,1,0,0,0,172,175,1,0,0,0,173,171,1,0,0,0,174,166,1,0,0,0,174,167,1,
+  	0,0,0,175,176,1,0,0,0,176,180,5,46,0,0,177,179,7,6,0,0,178,177,1,0,0,
+  	0,179,182,1,0,0,0,180,178,1,0,0,0,180,181,1,0,0,0,181,54,1,0,0,0,182,
+  	180,1,0,0,0,183,187,5,34,0,0,184,186,9,0,0,0,185,184,1,0,0,0,186,189,
+  	1,0,0,0,187,188,1,0,0,0,187,185,1,0,0,0,188,190,1,0,0,0,189,187,1,0,0,
+  	0,190,191,5,34,0,0,191,56,1,0,0,0,192,193,5,39,0,0,193,194,9,0,0,0,194,
+  	195,5,39,0,0,195,58,1,0,0,0,11,0,91,136,151,158,161,164,171,174,180,187,
+  	1,6,0,0
+  };
+  staticData->serializedATN = antlr4::atn::SerializedATNView(serializedATNSegment, sizeof(serializedATNSegment) / sizeof(serializedATNSegment[0]));
+
+  antlr4::atn::ATNDeserializer deserializer;
+  staticData->atn = deserializer.deserialize(staticData->serializedATN);
+
+  const size_t count = staticData->atn->getNumberOfDecisions();
+  staticData->decisionToDFA.reserve(count);
+  for (size_t i = 0; i < count; i++) { 
+    staticData->decisionToDFA.emplace_back(staticData->atn->getDecisionState(i), i);
+  }
+  fridayscannerLexerStaticData = std::move(staticData);
+}
+
+}
+
+FridayScanner::FridayScanner(CharStream *input) : Lexer(input) {
+  FridayScanner::initialize();
+  _interpreter = new atn::LexerATNSimulator(this, *fridayscannerLexerStaticData->atn, fridayscannerLexerStaticData->decisionToDFA, fridayscannerLexerStaticData->sharedContextCache);
+}
+
+FridayScanner::~FridayScanner() {
+  delete _interpreter;
+}
+
+std::string FridayScanner::getGrammarFileName() const {
+  return "FridayScanner.g4";
+}
+
+const std::vector<std::string>& FridayScanner::getRuleNames() const {
+  return fridayscannerLexerStaticData->ruleNames;
+}
+
+const std::vector<std::string>& FridayScanner::getChannelNames() const {
+  return fridayscannerLexerStaticData->channelNames;
+}
+
+const std::vector<std::string>& FridayScanner::getModeNames() const {
+  return fridayscannerLexerStaticData->modeNames;
+}
+
+const dfa::Vocabulary& FridayScanner::getVocabulary() const {
+  return fridayscannerLexerStaticData->vocabulary;
+}
+
+antlr4::atn::SerializedATNView FridayScanner::getSerializedATN() const {
+  return fridayscannerLexerStaticData->serializedATN;
+}
+
+const atn::ATN& FridayScanner::getATN() const {
+  return *fridayscannerLexerStaticData->atn;
+}
+
+
+
+
+void FridayScanner::initialize() {
+#if ANTLR4_USE_THREAD_LOCAL_CACHE
+  fridayscannerLexerInitialize();
+#else
+  ::antlr4::internal::call_once(fridayscannerLexerOnceFlag, fridayscannerLexerInitialize);
+#endif
+}

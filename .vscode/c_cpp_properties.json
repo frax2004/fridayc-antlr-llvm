@@ -1,0 +1,27 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "C:/Dev/msys2/mingw64/include"
+            ],
+            "compileCommands": [
+                "build/compile_commands.json"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "compilerPath": "C:/Dev/msys2/mingw64/bin/g++.exe",
+            "cppStandard": "c++26",
+            "cStandard": "c23",
+            "forcedInclude": [
+                "C:\\Dev\\msys2\\mingw64\\include\\c++\\15.2.0\\x86_64-w64-mingw32\\bits\\stdc++.h",
+                "C:\\Dev\\msys2\\mingw64\\include\\antlr4-runtime\\antlr4-runtime.h"
+            ]
+        }
+    ],
+    "version": 4
+}
