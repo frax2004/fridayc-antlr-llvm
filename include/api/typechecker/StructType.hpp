@@ -35,6 +35,5 @@ namespace friday::inline api::inline typechecker {
     /// @return the parameter
     /// @throws `std::out_of_range` error if index is out of bounds
     auto getFieldType(u64 index) const -> Type*;
-
   }; // struct StructType
 } // namespace friday::api::typechecker

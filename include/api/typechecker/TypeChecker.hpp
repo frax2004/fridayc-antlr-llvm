@@ -148,6 +148,13 @@ namespace friday::inline api::inline typechecker {
     /// @param message the error message
     auto errorAt(ant::Token* token, String message) -> void;
 
+    /// @brief Push a scope into the stack of scopes using the call stack
+    /// @param scope the new current scope
+    auto beginScope(SymbolTable& scope) noexcept -> void;
+
+    /// @brief Pop the current scope out of the stack of scopes in the call stack
+    auto endScope() noexcept -> void;
+
     private:
     /// @brief the errors
     Vector<SemanticError> M_errors { };

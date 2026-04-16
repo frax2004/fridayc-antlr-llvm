@@ -32,98 +32,134 @@ namespace friday::inline api::inline typechecker {
     );
   }
 
+  auto TypeChecker::beginScope(SymbolTable& scope) noexcept -> void {
+    this->M_currentScope = &scope;
+  }
 
+  auto TypeChecker::endScope() noexcept -> void {
+    this->M_currentScope = this->M_currentScope->getParent();
+  }
 
   auto TypeChecker::visitProgram(FridayParser::ProgramContext *ctx) -> std::any {
     Console::debug("ProgramContext: {}"_f.format(ctx->getText()));
+    
+    SymbolTable globalScope = SymbolTable::builtins(*this->M_unit->getModule());
+    
+    this->beginScope(globalScope);
+    std::any result = this->visitChildren(ctx);
+    this->endScope();
+
+    return std::move(result);
   }
 
   auto TypeChecker::visitTopLevelStatement(FridayParser::TopLevelStatementContext *ctx) -> std::any {
     Console::debug("TopLevelStatementContext: {}"_f.format(ctx->getText()));
+    return this->visitChildren(ctx);
   }
 
   auto TypeChecker::visitReturnStatement(FridayParser::ReturnStatementContext *ctx) -> std::any {
     Console::debug("ReturnStatementContext: {}"_f.format(ctx->getText()));
+    return this->visitChildren(ctx);
   }
 
   auto TypeChecker::visitPrintStatement(FridayParser::PrintStatementContext *ctx) -> std::any {
     Console::debug("PrintStatementContext: {}"_f.format(ctx->getText()));
+    return this->visitChildren(ctx);
   }
 
   auto TypeChecker::visitStatement(FridayParser::StatementContext *ctx) -> std::any {
     Console::debug("StatementContext: {}"_f.format(ctx->getText()));
+    return this->visitChildren(ctx);
   }
 
   auto TypeChecker::visitBlock(FridayParser::BlockContext *ctx) -> std::any {
     Console::debug("BlockContext: {}"_f.format(ctx->getText()));
+    return this->visitChildren(ctx);
   }
 
   auto TypeChecker::visitInlineBlock(FridayParser::InlineBlockContext *ctx) -> std::any {
     Console::debug("InlineBlockContext: {}"_f.format(ctx->getText()));
+    return this->visitChildren(ctx);
   }
 
   auto TypeChecker::visitFunctionStatement(FridayParser::FunctionStatementContext *ctx) -> std::any {
     Console::debug("FunctionStatementContext: {}"_f.format(ctx->getText()));
+    return this->visitChildren(ctx);
   }
 
   auto TypeChecker::visitCall(FridayParser::CallContext *ctx) -> std::any {
     Console::debug("CallContext: {}"_f.format(ctx->getText()));
+    return this->visitChildren(ctx);
   }
 
   auto TypeChecker::visitIdentifier(FridayParser::IdentifierContext *ctx) -> std::any {
     Console::debug("IdentifierContext: {}"_f.format(ctx->getText()));
+    return this->visitChildren(ctx);
   }
 
   auto TypeChecker::visitCharLiteral(FridayParser::CharLiteralContext *ctx) -> std::any {
     Console::debug("CharLiteralContext: {}"_f.format(ctx->getText()));
+    return this->visitChildren(ctx);
   }
 
   auto TypeChecker::visitStringLiteral(FridayParser::StringLiteralContext *ctx) -> std::any {
     Console::debug("StringLiteralContext: {}"_f.format(ctx->getText()));
+    return this->visitChildren(ctx);
   }
 
   auto TypeChecker::visitBoolLiteral(FridayParser::BoolLiteralContext *ctx) -> std::any {
     Console::debug("BoolLiteralContext: {}"_f.format(ctx->getText()));
+    return this->visitChildren(ctx);
   }
 
   auto TypeChecker::visitFloatLiteral(FridayParser::FloatLiteralContext *ctx) -> std::any {
     Console::debug("FloatLiteralContext: {}"_f.format(ctx->getText()));
+    return this->visitChildren(ctx);
   }
 
   auto TypeChecker::visitIntLiteral(FridayParser::IntLiteralContext *ctx) -> std::any {
     Console::debug("IntLiteralContext: {}"_f.format(ctx->getText()));
+    return this->visitChildren(ctx);
   }
 
   auto TypeChecker::visitGrouping(FridayParser::GroupingContext *ctx) -> std::any {
     Console::debug("GroupingContext: {}"_f.format(ctx->getText()));
+    return this->visitChildren(ctx);
   }
 
   auto TypeChecker::visitSubscript(FridayParser::SubscriptContext *ctx) -> std::any {
     Console::debug("SubscriptContext: {}"_f.format(ctx->getText()));
+    return this->visitChildren(ctx);
   }
 
   auto TypeChecker::visitBinary(FridayParser::BinaryContext *ctx) -> std::any {
     Console::debug("BinaryContext: {}"_f.format(ctx->getText()));
+    return this->visitChildren(ctx);
   }
 
   auto TypeChecker::visitUnary(FridayParser::UnaryContext *ctx) -> std::any {
     Console::debug("UnaryContext: {}"_f.format(ctx->getText()));
+    return this->visitChildren(ctx);
   }
 
   auto TypeChecker::visitSimpleType(FridayParser::SimpleTypeContext *ctx) -> std::any {
     Console::debug("SimpleTypeContext: {}"_f.format(ctx->getText()));
+    return this->visitChildren(ctx);
   }
 
   auto TypeChecker::visitFunctionType(FridayParser::FunctionTypeContext *ctx) -> std::any {
     Console::debug("FunctionTypeContext: {}"_f.format(ctx->getText()));
+    return this->visitChildren(ctx);
   }
 
   auto TypeChecker::visitPointerType(FridayParser::PointerTypeContext *ctx) -> std::any {
     Console::debug("PointerTypeContext: {}"_f.format(ctx->getText()));
+    return this->visitChildren(ctx);
   }
 
   auto TypeChecker::visitType(FridayParser::TypeContext *ctx) -> std::any {
     Console::debug("TypeContext: {}"_f.format(ctx->getText()));
+    return this->visitChildren(ctx);
   }
 
 }

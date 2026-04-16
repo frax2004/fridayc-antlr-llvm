@@ -28,6 +28,11 @@ namespace friday::inline api::inline typechecker {
   auto PointerType::get(Type* elementType, u64 dimensions) noexcept -> Type* {
     static Map<String, PointerType> S_pointerTypes = {};
 
+    if(auto pointer = elementType->as<PointerType>()) {
+      elementType = pointer->getPointedType();
+      dimensions += pointer->getDimensions();
+    }
+  
     PointerType pointerType { elementType, dimensions };
     return &S_pointerTypes.try_emplace(pointerType.getName(), pointerType).first->second;
   }

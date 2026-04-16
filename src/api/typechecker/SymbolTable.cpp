@@ -1,4 +1,5 @@
 #include "api/typechecker/SymbolTable.hpp"
+#include "api/typechecker/Struct.hpp"
 
 namespace friday::inline api::inline typechecker {
 
@@ -71,6 +72,12 @@ namespace friday::inline api::inline typechecker {
   auto SymbolTable::builtins(llvm::Module& mod) noexcept -> SymbolTable {
     SymbolTable scope { nullptr };
     llvm::LLVMContext& ctx = mod.getContext();
+
+    scope.define("float", Struct::getFloatType(ctx));
+    scope.define("int", Struct::getIntType(ctx));
+    scope.define("byte", Struct::getByteType(ctx));
+    scope.define("bool", Struct::getBoolType(ctx));
+    scope.define("void", Struct::getVoidType(ctx));
 
     return std::move(scope);
   }
