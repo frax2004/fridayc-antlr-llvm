@@ -20,6 +20,8 @@ namespace friday::inline api::inline typechecker {
     PUBLIC = 1,
   };
 
+  struct Type;
+
   /// @brief Represents an abstract symbol in the symbol table
   struct Symbol {
 
@@ -37,7 +39,11 @@ namespace friday::inline api::inline typechecker {
 
     /// @brief Get the internal llvm type
     /// @return pointer to the type
-    virtual auto getLLVMType() const noexcept -> llvm::Type* = 0;
+    virtual auto getLLVMType(llvm::LLVMContext& ctx) const noexcept -> llvm::Type* = 0;
+
+    /// @brief Get the type of the symbol
+    /// @return the type
+    virtual auto getType() const noexcept -> Type* = 0;
 
     /// @brief Get the visibility modifier for this symbol
     /// @return the visibility modifier

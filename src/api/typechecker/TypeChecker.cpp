@@ -10,7 +10,7 @@ namespace friday::inline api::inline typechecker {
     llvm::LLVMContext& ctx = unit.getModule()->getContext();
     llvm::Module& mod = *unit.getModule();
   }
-  
+
   auto TypeChecker::check() -> Vector<SemanticError> {
     auto result = this->visit(this->M_unit->getParseTree());
     /// TODO: do something with 'result'

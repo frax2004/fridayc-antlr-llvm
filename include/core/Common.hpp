@@ -62,6 +62,12 @@ namespace friday::inline core {
   template<class K, class V>
   using UnorderedMap = std::unordered_map<K, V>;
 
+  template<class K, class Comp = std::less<K>>
+  using Set = std::set<K, Comp>;
+
+  template<class K>
+  using UnorderedSet = std::unordered_set<K>;
+
   template<class T>
   using Box = std::unique_ptr<T>;
 
@@ -95,19 +101,8 @@ namespace friday::inline core {
     return FormatString{s};
   }
 
-  struct Type final {
 
-    Type(const std::type_info& type = typeid(void)) noexcept;
-    auto operator=(Type const& other) noexcept -> Type& = default;
-
-    auto name() const noexcept -> String;
-    auto unwrap() const noexcept -> const std::type_info&;
-
-    auto operator==(Type const& other) const noexcept -> bool = default;
-    auto operator!=(Type const& other) const noexcept -> bool = default;
-    auto operator<=>(Type const& other) const noexcept -> std::strong_ordering;
-
-    private:
-    const std::type_info* M_typeInfo;
-  };
+  namespace rtti {
+    auto nameOf(std::type_info const& info) noexcept -> String;    
+  }
 } // namespace friday

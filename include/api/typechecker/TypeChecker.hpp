@@ -1,6 +1,10 @@
 #pragma once
 
 #include "Symbol.hpp"
+#include "Type.hpp"
+#include "PointerType.hpp"
+#include "FunctionType.hpp"
+#include "StructType.hpp"
 #include "Variable.hpp"
 #include "Function.hpp"
 #include "Struct.hpp"
