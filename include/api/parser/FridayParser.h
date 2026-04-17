@@ -24,7 +24,7 @@ public:
     RuleProgram = 0, RuleTopLevelStatement = 1, RuleReturnStatement = 2, 
     RulePrintStatement = 3, RuleStatement = 4, RuleInlineBlock = 5, RuleBlock = 6, 
     RuleFunctionStatement = 7, RuleExpr = 8, RuleSimpleType = 9, RuleFunctionType = 10, 
-    RulePointerType = 11, RuleType = 12
+    RulePointerType = 11, RulePointedType = 12, RuleType = 13
   };
 
   explicit FridayParser(antlr4::TokenStream *input);
@@ -56,6 +56,7 @@ public:
   class SimpleTypeContext;
   class FunctionTypeContext;
   class PointerTypeContext;
+  class PointedTypeContext;
   class TypeContext; 
 
   class  ProgramContext : public antlr4::ParserRuleContext {
@@ -227,9 +228,9 @@ public:
   public:
     CallContext(ExprContext *ctx);
 
+    FridayParser::ExprContext *func = nullptr;
     FridayParser::ExprContext *exprContext = nullptr;
     std::vector<ExprContext *> args;
-    antlr4::tree::TerminalNode *IDENTIFIER();
     antlr4::tree::TerminalNode *LEFT_PAREN();
     antlr4::tree::TerminalNode *RIGHT_PAREN();
     std::vector<ExprContext *> expr();
@@ -403,6 +404,7 @@ public:
   public:
     FridayParser::TypeContext *typeContext = nullptr;
     std::vector<TypeContext *> paramsTypes;
+    FridayParser::TypeContext *returnType = nullptr;
     FunctionTypeContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *FN();
@@ -427,8 +429,7 @@ public:
   public:
     PointerTypeContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    SimpleTypeContext *simpleType();
-    FunctionTypeContext *functionType();
+    PointedTypeContext *pointedType();
     std::vector<antlr4::tree::TerminalNode *> STAR();
     antlr4::tree::TerminalNode* STAR(size_t i);
 
@@ -440,6 +441,22 @@ public:
   };
 
   PointerTypeContext* pointerType();
+
+  class  PointedTypeContext : public antlr4::ParserRuleContext {
+  public:
+    PointedTypeContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    SimpleTypeContext *simpleType();
+    FunctionTypeContext *functionType();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  PointedTypeContext* pointedType();
 
   class  TypeContext : public antlr4::ParserRuleContext {
   public:

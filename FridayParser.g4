@@ -45,7 +45,6 @@ functionStatement
 ///////////////////////////////////////////////////
 
 
-
 ///////////////////////////////////////////////////
 /// EXPRESSIONS
 expr
@@ -57,7 +56,7 @@ expr
   | BOOL_LIT # BoolLiteral
   | NULL_LIT # NullLiteral
   | array = expr LEFT_SQUARE index = expr RIGHT_SQUARE # Subscript
-  | IDENTIFIER LEFT_PAREN (args += expr (COMMA args += expr)*)? RIGHT_PAREN # Call
+  | func = expr LEFT_PAREN (args += expr (COMMA args += expr)*)? RIGHT_PAREN # Call
   | unaryOperator = (PLUS | MINUS) expr # Unary
   | left = expr binaryOperator = (STAR | SLASH | MODULO) right = expr # Binary
   | left = expr binaryOperator = (PLUS | MINUS) right = expr # Binary
@@ -69,11 +68,16 @@ simpleType
   ;
 
 functionType
-  : FN LEFT_PAREN (paramsTypes += type (COMMA paramsTypes += type)*)? RIGHT_PAREN ARROW type
+  : FN LEFT_PAREN (paramsTypes += type (COMMA paramsTypes += type)*)? RIGHT_PAREN ARROW returnType = type
   ;
 
 pointerType
-  : (STAR)* (simpleType | functionType)
+  : STAR+ pointedType
+  ;
+
+pointedType
+  : simpleType 
+  | functionType
   ;
 
 type

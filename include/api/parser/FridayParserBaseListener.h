@@ -85,6 +85,9 @@ public:
   virtual void enterPointerType(FridayParser::PointerTypeContext * /*ctx*/) override { }
   virtual void exitPointerType(FridayParser::PointerTypeContext * /*ctx*/) override { }
 
+  virtual void enterPointedType(FridayParser::PointedTypeContext * /*ctx*/) override { }
+  virtual void exitPointedType(FridayParser::PointedTypeContext * /*ctx*/) override { }
+
   virtual void enterType(FridayParser::TypeContext * /*ctx*/) override { }
   virtual void exitType(FridayParser::TypeContext * /*ctx*/) override { }
 

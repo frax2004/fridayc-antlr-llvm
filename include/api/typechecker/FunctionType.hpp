@@ -11,6 +11,8 @@ namespace friday::inline api::inline typechecker {
     Type* M_returnType;
     /// @brief The function parameters
     Vector<Type*> M_parameters;
+    /// @brief The function type name
+    String M_name;
 
     private:
     /// @brief Construct a function type
@@ -30,15 +32,19 @@ namespace friday::inline api::inline typechecker {
     /// @return the internal llvm type
     auto getLLVMType(llvm::LLVMContext& ctx) const noexcept -> llvm::Type* override;
 
-    /// @brief Get the type
-    /// @return the type
-    auto getType() const noexcept -> Type* override;
-
     /// @brief Gets a function parameter
     /// @param index the index of the parameter
     /// @return the parameter
     /// @throws `std::out_of_range` error if index is out of bounds
     auto getParameterType(u64 index) const -> Type*;
+
+    /// @brief Get the number of parameters
+    /// @return the parameters count
+    auto getParametersCount() const noexcept -> u64;
+
+    /// @brief Gets the function type name
+    /// @return the type name
+    auto getName() const noexcept -> String const& override;
 
     /// @brief Get the function return type
     /// @return the return type

@@ -4,7 +4,7 @@ using namespace friday;
 
 auto Main(Vector<StringRef> args) -> void {
 
-  Console::setDebugEnabled(true);
+  Console::setDebugEnabled(false);
 
   Opt<Config> config = cmd::parse(std::move(args));
   if(not config.has_value()) return;

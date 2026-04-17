@@ -25,15 +25,11 @@ namespace friday::inline api::inline typechecker {
 
     /// @brief Gets the name of the variable
     /// @return the name of the variable
-    auto getName() const noexcept -> String const&;
+    auto getName() const noexcept -> String const& override;
 
     /// @brief Gets the type of the variable
     /// @return the type of the variable
     auto getType() const noexcept -> Type* override;
-
-    /// @brief Gets the internal llvm type of the variable
-    /// @return the llvm type
-    auto getLLVMType(llvm::LLVMContext& ctx) const noexcept -> llvm::Type* override;
 
     /// @brief Gets the visibility modifier of the variable
     /// @return the visibility modifier

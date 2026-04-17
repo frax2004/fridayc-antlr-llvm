@@ -16,10 +16,6 @@ namespace friday::inline api::inline typechecker {
     return this->M_type;
   }
 
-  auto Variable::getLLVMType(llvm::LLVMContext& ctx) const noexcept -> llvm::Type* {
-    return this->M_type->getLLVMType(ctx);
-  }
-
   auto Variable::getVisibility() const noexcept -> VisibilityModifier {
     return this->M_visibility;
   }

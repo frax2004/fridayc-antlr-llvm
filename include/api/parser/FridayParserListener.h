@@ -83,6 +83,9 @@ public:
   virtual void enterPointerType(FridayParser::PointerTypeContext *ctx) = 0;
   virtual void exitPointerType(FridayParser::PointerTypeContext *ctx) = 0;
 
+  virtual void enterPointedType(FridayParser::PointedTypeContext *ctx) = 0;
+  virtual void exitPointedType(FridayParser::PointedTypeContext *ctx) = 0;
+
   virtual void enterType(FridayParser::TypeContext *ctx) = 0;
   virtual void exitType(FridayParser::TypeContext *ctx) = 0;
 

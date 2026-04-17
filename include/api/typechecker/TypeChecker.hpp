@@ -2,9 +2,8 @@
 
 #include "Symbol.hpp"
 #include "Type.hpp"
-#include "PointerType.hpp"
+#include "Pointer.hpp"
 #include "FunctionType.hpp"
-#include "StructType.hpp"
 #include "Variable.hpp"
 #include "Function.hpp"
 #include "Struct.hpp"
@@ -136,6 +135,11 @@ namespace friday::inline api::inline typechecker {
     /// @param ctx the PointerType context 
     /// @return a Struct type or Struct::getErrorType() if any error has occurred during semantic checks
     auto visitPointerType(FridayParser::PointerTypeContext *ctx) -> std::any override;
+
+    /// @brief visit a PointedType
+    /// @param ctx the PointedType context 
+    /// @return a Struct type or Struct::getErrorType() if any error has occurred during semantic checks
+    auto visitPointedType(FridayParser::PointedTypeContext *ctx) -> std::any override;
     
     /// @brief visit a Type
     /// @param ctx the Type context

@@ -1,4 +1,5 @@
 #include "api/typechecker/Struct.hpp"
+#include "core/errors/OperationNotSupportedError.hpp"
 
 namespace friday::inline api::inline typechecker {
 
@@ -8,11 +9,6 @@ namespace friday::inline api::inline typechecker {
     {}
 
     auto getLLVMType(llvm::LLVMContext& ctx) const noexcept -> llvm::Type* override {
-      return nullptr;
-    }
-
-    auto getType() const noexcept -> Type* override {
-      // TODO return the "type of types"
       return nullptr;
     }
   };
@@ -35,16 +31,14 @@ namespace friday::inline api::inline typechecker {
 
   Struct::Struct(String name, Map<String, Variable> fields, Map<String, Function> methods, VisibilityModifier visibility) noexcept
     : Symbol { }
+    , M_name { std::move(name) }
     , M_fields { std::move(fields) }
     , M_methods { std::move(methods) }
     , M_visibility { visibility }
-  {
-    this->M_signature = (StructType*)StructType::get(
-      this->M_fields
-      | std::views::values
-      | std::views::transform(Variable::getType)
-      | std::ranges::to<std::vector>()
-    );
+  {}
+
+  auto Struct::getName() const noexcept -> String const& {
+    return this->M_name;
   }
 
   auto Struct::getVisibility() const noexcept -> VisibilityModifier {
@@ -66,34 +60,47 @@ namespace friday::inline api::inline typechecker {
   }
 
   auto Struct::getType() const noexcept -> Type* {
-    return this->M_signature;
+    // TODO handle this in a better way
+    throw OperationNotSupportedError{"Cannot get the type of a struct"};
+    return nullptr;
   }
 
   auto Struct::getLLVMType(llvm::LLVMContext& ctx) const noexcept -> llvm::Type* {
-    return this->getType()->getLLVMType(ctx);
+    auto toLLVMType = [&ctx](Type* type) -> llvm::Type* {
+      return type->getLLVMType(ctx);
+    };
+
+    return llvm::StructType::get(
+      ctx,
+      this->M_fields
+      | std::views::values
+      | std::views::transform(Variable::getType)
+      | std::views::transform(toLLVMType)
+      | std::ranges::to<std::vector>()
+    );
   }
 
-  auto Struct::getIntType(llvm::LLVMContext& ctx) -> Struct* {
+  auto Struct::getIntType(llvm::LLVMContext& ctx) -> Type* {
     return new Primitive { "int", llvm::Type::getInt64Ty(ctx) };
   }
 
-  auto Struct::getFloatType(llvm::LLVMContext& ctx) -> Struct* {
+  auto Struct::getFloatType(llvm::LLVMContext& ctx) -> Type* {
     return new Primitive { "float", llvm::Type::getDoubleTy(ctx) };
   }
 
-  auto Struct::getByteType(llvm::LLVMContext& ctx) -> Struct* {
+  auto Struct::getByteType(llvm::LLVMContext& ctx) -> Type* {
     return new Primitive { "byte", llvm::Type::getInt8Ty(ctx) };
   }
 
-  auto Struct::getBoolType(llvm::LLVMContext& ctx) -> Struct* {
+  auto Struct::getBoolType(llvm::LLVMContext& ctx) -> Type* {
     return new Primitive { "bool", llvm::Type::getInt1Ty(ctx) };
   }
 
-  auto Struct::getVoidType(llvm::LLVMContext& ctx) -> Struct* {
+  auto Struct::getVoidType(llvm::LLVMContext& ctx) -> Type* {
     return new Primitive { "void", llvm::Type::getVoidTy(ctx) };
   }
 
-  auto Struct::getErrorType() -> Struct* {
+  auto Struct::getErrorType() -> Type* {
     static ErrorType S_errorTyppe {};
     return &S_errorTyppe;
   }

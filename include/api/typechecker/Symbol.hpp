@@ -33,13 +33,13 @@ namespace friday::inline api::inline typechecker {
 
     /// @brief Attempts to cast `this` instance into subtype `T`
     /// @tparam T a symbol subtype
-    /// @return `this` instance cast as `T`
+    /// @return `this` instance cast as `T` or nullptr othewise
     template<std::derived_from<Symbol> T>
     auto as() noexcept -> T*;
 
-    /// @brief Get the internal llvm type
-    /// @return pointer to the type
-    virtual auto getLLVMType(llvm::LLVMContext& ctx) const noexcept -> llvm::Type* = 0;
+    /// @brief Get the name of the symbol
+    /// @return the name of the symbol
+    virtual auto getName() const noexcept -> String const& = 0;
 
     /// @brief Get the type of the symbol
     /// @return the type

@@ -107,6 +107,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitPointedType(FridayParser::PointedTypeContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitType(FridayParser::TypeContext *ctx) override {
     return visitChildren(ctx);
   }

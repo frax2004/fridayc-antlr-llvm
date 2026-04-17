@@ -2,7 +2,8 @@
 
 namespace friday::inline api::inline typechecker {
   FunctionType::FunctionType(Type* returnType, Vector<Type*> paramsTypes) noexcept
-    : Type{ 
+    : Type { } 
+    , M_name { 
         std::format(
           "{}({})", 
           returnType->getName(), 
@@ -13,9 +14,17 @@ namespace friday::inline api::inline typechecker {
         )
       }
     , M_returnType { returnType }
-    , M_parameters { std::move(paramsTypes) }
+    , M_parameters { paramsTypes }
   {}
+
+  auto FunctionType::getName() const noexcept -> String const& {
+    return this->M_name;
+  }
   
+  auto FunctionType::getParametersCount() const noexcept -> u64 {
+    return this->M_parameters.size();
+  }
+
   auto FunctionType::getLLVMType(llvm::LLVMContext& ctx) const noexcept -> llvm::Type* {
     auto toLLVMType = [&ctx](Type* T) -> llvm::Type* {
       return T->getLLVMType(ctx);
@@ -27,12 +36,6 @@ namespace friday::inline api::inline typechecker {
 
     return llvm::FunctionType::get(this->M_returnType->getLLVMType(ctx), paramsTypes, false);
   }
-
-  auto FunctionType::getType() const noexcept -> Type* {
-    // TODO return the "type of types"
-    return nullptr;
-  }
-
 
   auto FunctionType::get(Type* returnType, Vector<Type*> paramsTypes) noexcept -> Type* {
     static Map<String, FunctionType> S_functionTypes = {};

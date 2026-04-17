@@ -3,19 +3,18 @@
 #include "Type.hpp"
 #include "Variable.hpp"
 #include "Function.hpp"
-#include "StructType.hpp"
 
 namespace friday::inline api::inline typechecker {
   
   /// @brief Represents a type in the type system
-  struct Struct : public Symbol {
+  struct Struct : public Symbol, public Type {
     private:
+    /// @brief The struct name
+    String M_name;
     /// @brief the struct fields
     Map<String, Variable> M_fields;
     /// @brief the struct methods
     Map<String, Function> M_methods;
-    /// @brief The struct signature
-    StructType* M_signature;
     /// @brief The struct visibility modifier
     VisibilityModifier M_visibility;
 
@@ -57,6 +56,10 @@ namespace friday::inline api::inline typechecker {
     /// @return the type
     auto getType() const noexcept -> Type* override;
 
+    /// @brief Get the name of the struct
+    /// @return the name of the struct
+    auto getName() const noexcept -> String const& override;
+
     /// @brief Gets the internal llvm type of the struct
     /// @return the llvm type
     virtual auto getLLVMType(llvm::LLVMContext& ctx) const noexcept -> llvm::Type* override;
@@ -64,31 +67,31 @@ namespace friday::inline api::inline typechecker {
     /// @brief Gets the standard primitive int type
     /// @param ctx the llvm context
     /// @return the int type
-    static auto getIntType(llvm::LLVMContext& ctx) -> Struct*;
+    static auto getIntType(llvm::LLVMContext& ctx) -> Type*;
     
     /// @brief Gets the standard primitive float type
     /// @param ctx the llvm context
     /// @return the float type
-    static auto getFloatType(llvm::LLVMContext& ctx) -> Struct*;
+    static auto getFloatType(llvm::LLVMContext& ctx) -> Type*;
     
     /// @brief Gets the standard primitive byte type
     /// @param ctx the llvm context
     /// @return the byte type
-    static auto getByteType(llvm::LLVMContext& ctx) -> Struct*;
+    static auto getByteType(llvm::LLVMContext& ctx) -> Type*;
     
     /// @brief Gets the standard primitive bool type
     /// @param ctx the llvm context
     /// @return the bool type
-    static auto getBoolType(llvm::LLVMContext& ctx) -> Struct*;
+    static auto getBoolType(llvm::LLVMContext& ctx) -> Type*;
     
     /// @brief Gets the standard primitive void type
     /// @param ctx the llvm context
     /// @return the void type
-    static auto getVoidType(llvm::LLVMContext& ctx) -> Struct*;
+    static auto getVoidType(llvm::LLVMContext& ctx) -> Type*;
     
     /// @brief Get the default error type
     /// @return the error type instance
-    static auto getErrorType() -> Struct*;
+    static auto getErrorType() -> Type*;
 }; // struct Struct
 } // namespace friday::api::typechecker
 

@@ -139,6 +139,10 @@ namespace friday::inline api::inline compiler {
     return visitChildren(ctx);
   }
 
+  auto Compiler::visitPointedType(FridayParser::PointedTypeContext *ctx) -> std::any {
+    return visitChildren(ctx);
+  }
+
   auto Compiler::visitType(FridayParser::TypeContext *ctx) -> std::any {
     return visitChildren(ctx);
   }

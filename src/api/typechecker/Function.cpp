@@ -50,8 +50,4 @@ namespace friday::inline api::inline typechecker {
     return this->M_signature;
   }
 
-  auto Function::getLLVMType(llvm::LLVMContext& ctx) const noexcept -> llvm::Type* {
-    return this->getType()->getLLVMType(ctx);
-  }
-
 }

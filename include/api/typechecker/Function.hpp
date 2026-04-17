@@ -62,11 +62,7 @@ namespace friday::inline api::inline typechecker {
 
     /// @brief Get the name of the function
     /// @return the name of the function
-    auto getName() const noexcept -> String const&;
-
-    /// @brief Gets the internal llvm type for this function
-    /// @return the llvm type
-    auto getLLVMType(llvm::LLVMContext& ctx) const noexcept -> llvm::Type* override;
+    auto getName() const noexcept -> String const& override;
   }; // struct Function
 } // namespace friday::api::typechecker
 

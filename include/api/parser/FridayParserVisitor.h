@@ -65,6 +65,8 @@ public:
 
     virtual std::any visitPointerType(FridayParser::PointerTypeContext *context) = 0;
 
+    virtual std::any visitPointedType(FridayParser::PointedTypeContext *context) = 0;
+
     virtual std::any visitType(FridayParser::TypeContext *context) = 0;
 
 
