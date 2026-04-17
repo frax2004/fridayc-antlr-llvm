@@ -1,5 +1,6 @@
 #include "api/typechecker/SymbolTable.hpp"
 #include "api/typechecker/Struct.hpp"
+#include "core/IO/Console.hpp"
 
 namespace friday::inline api::inline typechecker {
 
@@ -8,8 +9,7 @@ namespace friday::inline api::inline typechecker {
   {}
 
   auto SymbolTable::define(String name, Symbol* value) noexcept -> bool {
-    if(this->isDefined(name)) return false;
-    return this->M_symbols.emplace(std::move(name), value).second;
+    return this->M_symbols.try_emplace(std::move(name), value).second;
   }
 
   auto SymbolTable::isDefined(String const& name) noexcept -> bool {
@@ -78,6 +78,7 @@ namespace friday::inline api::inline typechecker {
     scope.define("byte", Struct::getByteType(ctx));
     scope.define("bool", Struct::getBoolType(ctx));
     scope.define("void", Struct::getVoidType(ctx));
+
 
     return std::move(scope);
   }

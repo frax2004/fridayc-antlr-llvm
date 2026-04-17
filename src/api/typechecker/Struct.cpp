@@ -2,6 +2,22 @@
 
 namespace friday::inline api::inline typechecker {
 
+  struct ErrorType : public Struct {
+    ErrorType() noexcept
+      : Struct { "<error-type>" }
+    {}
+
+    auto getLLVMType(llvm::LLVMContext& ctx) const noexcept -> llvm::Type* override {
+      return nullptr;
+    }
+
+    auto getType() const noexcept -> Type* override {
+      // TODO return the "type of types"
+      return nullptr;
+    }
+  };
+
+
   struct Primitive : public Struct {
 
     Primitive(String name, llvm::Type* T)
@@ -45,6 +61,10 @@ namespace friday::inline api::inline typechecker {
     return it != this->M_methods.end() ? &it->second : defaultValue;
   }
 
+  auto Struct::addMethod(Function method) noexcept -> bool {
+    return this->M_methods.try_emplace(method.getName(), method).second;
+  }
+
   auto Struct::getType() const noexcept -> Type* {
     return this->M_signature;
   }
@@ -54,28 +74,27 @@ namespace friday::inline api::inline typechecker {
   }
 
   auto Struct::getIntType(llvm::LLVMContext& ctx) -> Struct* {
-    static Primitive S_intType { "int", llvm::Type::getInt64Ty(ctx) };
-    return &S_intType;
+    return new Primitive { "int", llvm::Type::getInt64Ty(ctx) };
   }
 
   auto Struct::getFloatType(llvm::LLVMContext& ctx) -> Struct* {
-    static Primitive S_floatType { "float", llvm::Type::getDoubleTy(ctx) };
-    return &S_floatType;
+    return new Primitive { "float", llvm::Type::getDoubleTy(ctx) };
   }
 
   auto Struct::getByteType(llvm::LLVMContext& ctx) -> Struct* {
-    static Primitive S_byteType { "byte", llvm::Type::getInt8Ty(ctx) };
-    return &S_byteType;
+    return new Primitive { "byte", llvm::Type::getInt8Ty(ctx) };
   }
 
   auto Struct::getBoolType(llvm::LLVMContext& ctx) -> Struct* {
-    static Primitive S_boolType { "bool", llvm::Type::getInt1Ty(ctx) };
-    return &S_boolType;
+    return new Primitive { "bool", llvm::Type::getInt1Ty(ctx) };
   }
 
   auto Struct::getVoidType(llvm::LLVMContext& ctx) -> Struct* {
-    static Primitive S_voidType { "void", llvm::Type::getVoidTy(ctx) };
-    return &S_voidType;
+    return new Primitive { "void", llvm::Type::getVoidTy(ctx) };
   }
 
+  auto Struct::getErrorType() -> Struct* {
+    static ErrorType S_errorTyppe {};
+    return &S_errorTyppe;
+  }
 }

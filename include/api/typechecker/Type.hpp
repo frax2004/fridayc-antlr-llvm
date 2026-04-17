@@ -31,9 +31,5 @@ namespace friday::inline api::inline typechecker {
     /// @return the visibility modifier
     auto getVisibility() const noexcept -> VisibilityModifier override;
 
-    /// @brief Get the default error type
-    /// @return the error type instance
-    static auto getErrorType() -> Type*;
-
   }; // struct Type
 } // namespace friday::api::typechecker

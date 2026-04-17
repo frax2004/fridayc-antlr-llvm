@@ -42,7 +42,7 @@ namespace friday::inline api::inline typechecker {
 
   auto TypeChecker::visitProgram(FridayParser::ProgramContext *ctx) -> std::any {
     Console::debug("ProgramContext: {}"_f.format(ctx->getText()));
-    
+
     SymbolTable globalScope = SymbolTable::builtins(*this->M_unit->getModule());
     
     this->beginScope(globalScope);
@@ -144,7 +144,31 @@ namespace friday::inline api::inline typechecker {
 
   auto TypeChecker::visitSimpleType(FridayParser::SimpleTypeContext *ctx) -> std::any {
     Console::debug("SimpleTypeContext: {}"_f.format(ctx->getText()));
-    return this->visitChildren(ctx);
+
+    auto id = ctx->IDENTIFIER()->getSymbol();
+    
+    Struct* T = this->M_currentScope->resolveIf(
+      id->getText(), 
+      &Symbol::is<Struct>,
+      Struct::getErrorType()
+    )->as<Struct>();
+
+    if(T == Struct::getErrorType()) {
+      auto toSuggestion = [](String const& message) {
+        return std::format(" Did you mean '{}'?", message);
+      };
+
+      String suggestion = this->M_currentScope->mostSimilar(id->getText(), 3, &Symbol::is<Struct>)
+      .transform(toSuggestion)
+      .value_or("");
+      
+      this->errorAt(id, "There is no type named '{}' in the current scope.{}"_f.format(
+        id->getText(),
+        suggestion
+      ));
+    }
+
+    return T;
   }
 
   auto TypeChecker::visitFunctionType(FridayParser::FunctionTypeContext *ctx) -> std::any {
@@ -154,6 +178,7 @@ namespace friday::inline api::inline typechecker {
 
   auto TypeChecker::visitPointerType(FridayParser::PointerTypeContext *ctx) -> std::any {
     Console::debug("PointerTypeContext: {}"_f.format(ctx->getText()));
+
     return this->visitChildren(ctx);
   }
 

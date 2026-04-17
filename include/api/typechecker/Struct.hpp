@@ -32,6 +32,11 @@ namespace friday::inline api::inline typechecker {
       VisibilityModifier visibility = VisibilityModifier::PUBLIC
     ) noexcept;
 
+    /// @brief Adds a method the struct
+    /// @param method the method
+    /// @return `true` if the method was added. The method is added if there was no method with the same name defined before
+    auto addMethod(Function method) noexcept -> bool; 
+
     /// @brief Gets the field of the struct with the given name 
     /// @param name the name of the field
     /// @param defaultValue a fallback value
@@ -80,6 +85,10 @@ namespace friday::inline api::inline typechecker {
     /// @param ctx the llvm context
     /// @return the void type
     static auto getVoidType(llvm::LLVMContext& ctx) -> Struct*;
+    
+    /// @brief Get the default error type
+    /// @return the error type instance
+    static auto getErrorType() -> Struct*;
 }; // struct Struct
 } // namespace friday::api::typechecker
 
