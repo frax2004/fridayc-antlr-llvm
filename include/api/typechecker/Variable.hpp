@@ -21,7 +21,7 @@ namespace friday::inline api::inline typechecker {
     /// @param name the name
     /// @param type the type
     /// @param visibility the visibility modifier
-    Variable(String name, Type* type, VisibilityModifier visibility) noexcept;
+    Variable(String name, Type* type, VisibilityModifier visibility = VisibilityModifier::PUBLIC) noexcept;
 
     /// @brief Gets the name of the variable
     /// @return the name of the variable

@@ -51,6 +51,11 @@ namespace friday::inline api::inline typechecker {
     /// @return a Struct type or Struct::getErrorType() if any error has occurred during semantic checks
     auto visitStatement(FridayParser::StatementContext *ctx) -> std::any override;
 
+    /// @brief visit a FunctionBlock
+    /// @param ctx the FunctionBlock context
+    /// @return a Struct type or Struct::getErrorType() if any error has occurred during semantic checks
+    auto visitFunctionBlock(FridayParser::FunctionBlockContext *ctx) -> std::any override;
+
     /// @brief visit a Block
     /// @param ctx the Block context
     /// @return a Struct type or Struct::getErrorType() if any error has occurred during semantic checks
@@ -164,6 +169,8 @@ namespace friday::inline api::inline typechecker {
     Vector<SemanticError> M_errors { };
     /// @brief the translation unit
     TranslationUnit* M_unit { nullptr };
+    /// @brief The current function return type
+    Type* M_currentFunctionReturnType { nullptr };
     /// @brief the current scope (used as a stack of scopes)
     SymbolTable* M_currentScope { nullptr };
   };

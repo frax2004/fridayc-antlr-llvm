@@ -12,9 +12,12 @@ namespace friday::inline api::inline typechecker {
     return this->M_symbols.try_emplace(std::move(name), value).second;
   }
 
+  auto SymbolTable::isDefinedLocal(String const& name) noexcept -> bool {
+    return this->M_symbols.contains(name);
+  }
+
   auto SymbolTable::isDefined(String const& name) noexcept -> bool {
-    auto it = this->M_symbols.find(name);
-    return it != this->M_symbols.end()
+    return this->M_symbols.contains(name)
     or (this->M_parent != nullptr and this->M_parent->isDefined(name));
   }
 

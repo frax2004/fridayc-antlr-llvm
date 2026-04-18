@@ -35,6 +35,9 @@ public:
   virtual void enterBlock(FridayParser::BlockContext *ctx) = 0;
   virtual void exitBlock(FridayParser::BlockContext *ctx) = 0;
 
+  virtual void enterFunctionBlock(FridayParser::FunctionBlockContext *ctx) = 0;
+  virtual void exitFunctionBlock(FridayParser::FunctionBlockContext *ctx) = 0;
+
   virtual void enterFunctionStatement(FridayParser::FunctionStatementContext *ctx) = 0;
   virtual void exitFunctionStatement(FridayParser::FunctionStatementContext *ctx) = 0;
 

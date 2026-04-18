@@ -43,6 +43,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitFunctionBlock(FridayParser::FunctionBlockContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitFunctionStatement(FridayParser::FunctionStatementContext *ctx) override {
     return visitChildren(ctx);
   }

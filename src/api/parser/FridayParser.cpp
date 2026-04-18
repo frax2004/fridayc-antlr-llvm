@@ -54,8 +54,9 @@ void fridayparserParserInitialize() {
   auto staticData = std::make_unique<FridayParserStaticData>(
     std::vector<std::string>{
       "program", "topLevelStatement", "returnStatement", "printStatement", 
-      "statement", "inlineBlock", "block", "functionStatement", "expr", 
-      "simpleType", "functionType", "pointerType", "pointedType", "type"
+      "statement", "inlineBlock", "block", "functionBlock", "functionStatement", 
+      "expr", "simpleType", "functionType", "pointerType", "pointedType", 
+      "type"
     },
     std::vector<std::string>{
       "", "", "", "'struct'", "'return'", "'print'", "'fn'", "", "'null'", 
@@ -71,60 +72,62 @@ void fridayparserParserInitialize() {
     }
   );
   static const int32_t serializedATNSegment[] = {
-  	4,1,29,170,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,2,
-  	7,7,7,2,8,7,8,2,9,7,9,2,10,7,10,2,11,7,11,2,12,7,12,2,13,7,13,1,0,5,0,
-  	30,8,0,10,0,12,0,33,9,0,1,0,1,0,1,1,1,1,1,2,1,2,3,2,41,8,2,1,2,1,2,1,
-  	3,1,3,1,3,1,3,1,4,1,4,1,4,3,4,52,8,4,1,5,1,5,1,5,1,5,1,6,1,6,5,6,60,8,
-  	6,10,6,12,6,63,9,6,1,6,1,6,1,7,1,7,1,7,1,7,1,7,1,7,1,7,1,7,1,7,1,7,5,
-  	7,77,8,7,10,7,12,7,80,9,7,3,7,82,8,7,1,7,1,7,1,7,1,7,1,7,3,7,89,8,7,1,
-  	8,1,8,1,8,1,8,1,8,1,8,1,8,1,8,1,8,1,8,1,8,1,8,1,8,1,8,3,8,105,8,8,1,8,
-  	1,8,1,8,1,8,1,8,1,8,1,8,1,8,1,8,1,8,1,8,1,8,1,8,1,8,1,8,1,8,5,8,123,8,
-  	8,10,8,12,8,126,9,8,3,8,128,8,8,1,8,5,8,131,8,8,10,8,12,8,134,9,8,1,9,
-  	1,9,1,10,1,10,1,10,1,10,1,10,5,10,143,8,10,10,10,12,10,146,9,10,3,10,
-  	148,8,10,1,10,1,10,1,10,1,10,1,11,4,11,155,8,11,11,11,12,11,156,1,11,
-  	1,11,1,12,1,12,3,12,163,8,12,1,13,1,13,1,13,3,13,168,8,13,1,13,0,1,16,
-  	14,0,2,4,6,8,10,12,14,16,18,20,22,24,26,0,2,1,0,20,21,2,0,18,19,22,22,
-  	183,0,31,1,0,0,0,2,36,1,0,0,0,4,38,1,0,0,0,6,44,1,0,0,0,8,51,1,0,0,0,
-  	10,53,1,0,0,0,12,57,1,0,0,0,14,66,1,0,0,0,16,104,1,0,0,0,18,135,1,0,0,
-  	0,20,137,1,0,0,0,22,154,1,0,0,0,24,162,1,0,0,0,26,167,1,0,0,0,28,30,3,
-  	2,1,0,29,28,1,0,0,0,30,33,1,0,0,0,31,29,1,0,0,0,31,32,1,0,0,0,32,34,1,
-  	0,0,0,33,31,1,0,0,0,34,35,5,0,0,1,35,1,1,0,0,0,36,37,3,14,7,0,37,3,1,
-  	0,0,0,38,40,5,4,0,0,39,41,3,16,8,0,40,39,1,0,0,0,40,41,1,0,0,0,41,42,
-  	1,0,0,0,42,43,5,15,0,0,43,5,1,0,0,0,44,45,5,5,0,0,45,46,3,16,8,0,46,47,
-  	5,15,0,0,47,7,1,0,0,0,48,52,3,12,6,0,49,52,3,6,3,0,50,52,3,4,2,0,51,48,
-  	1,0,0,0,51,49,1,0,0,0,51,50,1,0,0,0,52,9,1,0,0,0,53,54,5,24,0,0,54,55,
-  	3,16,8,0,55,56,5,15,0,0,56,11,1,0,0,0,57,61,5,11,0,0,58,60,3,8,4,0,59,
-  	58,1,0,0,0,60,63,1,0,0,0,61,59,1,0,0,0,61,62,1,0,0,0,62,64,1,0,0,0,63,
-  	61,1,0,0,0,64,65,5,14,0,0,65,13,1,0,0,0,66,67,5,6,0,0,67,68,5,25,0,0,
-  	68,81,5,9,0,0,69,70,5,25,0,0,70,71,5,16,0,0,71,78,3,26,13,0,72,73,5,17,
-  	0,0,73,74,5,25,0,0,74,75,5,16,0,0,75,77,3,26,13,0,76,72,1,0,0,0,77,80,
-  	1,0,0,0,78,76,1,0,0,0,78,79,1,0,0,0,79,82,1,0,0,0,80,78,1,0,0,0,81,69,
-  	1,0,0,0,81,82,1,0,0,0,82,83,1,0,0,0,83,84,5,12,0,0,84,85,5,23,0,0,85,
-  	88,3,26,13,0,86,89,3,12,6,0,87,89,3,10,5,0,88,86,1,0,0,0,88,87,1,0,0,
-  	0,89,15,1,0,0,0,90,91,6,8,-1,0,91,105,5,25,0,0,92,105,5,26,0,0,93,105,
-  	5,29,0,0,94,105,5,28,0,0,95,105,5,27,0,0,96,105,5,7,0,0,97,105,5,8,0,
-  	0,98,99,7,0,0,0,99,105,3,16,8,4,100,101,5,9,0,0,101,102,3,16,8,0,102,
-  	103,5,12,0,0,103,105,1,0,0,0,104,90,1,0,0,0,104,92,1,0,0,0,104,93,1,0,
-  	0,0,104,94,1,0,0,0,104,95,1,0,0,0,104,96,1,0,0,0,104,97,1,0,0,0,104,98,
-  	1,0,0,0,104,100,1,0,0,0,105,132,1,0,0,0,106,107,10,3,0,0,107,108,7,1,
-  	0,0,108,131,3,16,8,4,109,110,10,2,0,0,110,111,7,0,0,0,111,131,3,16,8,
-  	3,112,113,10,6,0,0,113,114,5,10,0,0,114,115,3,16,8,0,115,116,5,13,0,0,
-  	116,131,1,0,0,0,117,118,10,5,0,0,118,127,5,9,0,0,119,124,3,16,8,0,120,
-  	121,5,17,0,0,121,123,3,16,8,0,122,120,1,0,0,0,123,126,1,0,0,0,124,122,
-  	1,0,0,0,124,125,1,0,0,0,125,128,1,0,0,0,126,124,1,0,0,0,127,119,1,0,0,
-  	0,127,128,1,0,0,0,128,129,1,0,0,0,129,131,5,12,0,0,130,106,1,0,0,0,130,
-  	109,1,0,0,0,130,112,1,0,0,0,130,117,1,0,0,0,131,134,1,0,0,0,132,130,1,
-  	0,0,0,132,133,1,0,0,0,133,17,1,0,0,0,134,132,1,0,0,0,135,136,5,25,0,0,
-  	136,19,1,0,0,0,137,138,5,6,0,0,138,147,5,9,0,0,139,144,3,26,13,0,140,
-  	141,5,17,0,0,141,143,3,26,13,0,142,140,1,0,0,0,143,146,1,0,0,0,144,142,
-  	1,0,0,0,144,145,1,0,0,0,145,148,1,0,0,0,146,144,1,0,0,0,147,139,1,0,0,
-  	0,147,148,1,0,0,0,148,149,1,0,0,0,149,150,5,12,0,0,150,151,5,23,0,0,151,
-  	152,3,26,13,0,152,21,1,0,0,0,153,155,5,18,0,0,154,153,1,0,0,0,155,156,
-  	1,0,0,0,156,154,1,0,0,0,156,157,1,0,0,0,157,158,1,0,0,0,158,159,3,24,
-  	12,0,159,23,1,0,0,0,160,163,3,18,9,0,161,163,3,20,10,0,162,160,1,0,0,
-  	0,162,161,1,0,0,0,163,25,1,0,0,0,164,168,3,18,9,0,165,168,3,22,11,0,166,
-  	168,3,20,10,0,167,164,1,0,0,0,167,165,1,0,0,0,167,166,1,0,0,0,168,27,
-  	1,0,0,0,17,31,40,51,61,78,81,88,104,124,127,130,132,144,147,156,162,167
+  	4,1,29,174,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,2,
+  	7,7,7,2,8,7,8,2,9,7,9,2,10,7,10,2,11,7,11,2,12,7,12,2,13,7,13,2,14,7,
+  	14,1,0,5,0,32,8,0,10,0,12,0,35,9,0,1,0,1,0,1,1,1,1,1,2,1,2,3,2,43,8,2,
+  	1,2,1,2,1,3,1,3,1,3,1,3,1,4,1,4,1,4,3,4,54,8,4,1,5,1,5,1,5,1,5,1,6,1,
+  	6,5,6,62,8,6,10,6,12,6,65,9,6,1,6,1,6,1,7,1,7,3,7,71,8,7,1,8,1,8,1,8,
+  	1,8,1,8,1,8,1,8,1,8,1,8,1,8,5,8,83,8,8,10,8,12,8,86,9,8,3,8,88,8,8,1,
+  	8,1,8,1,8,1,8,1,8,1,9,1,9,1,9,1,9,1,9,1,9,1,9,1,9,1,9,1,9,1,9,1,9,1,9,
+  	1,9,3,9,109,8,9,1,9,1,9,1,9,1,9,1,9,1,9,1,9,1,9,1,9,1,9,1,9,1,9,1,9,1,
+  	9,1,9,1,9,5,9,127,8,9,10,9,12,9,130,9,9,3,9,132,8,9,1,9,5,9,135,8,9,10,
+  	9,12,9,138,9,9,1,10,1,10,1,11,1,11,1,11,1,11,1,11,5,11,147,8,11,10,11,
+  	12,11,150,9,11,3,11,152,8,11,1,11,1,11,1,11,1,11,1,12,4,12,159,8,12,11,
+  	12,12,12,160,1,12,1,12,1,13,1,13,3,13,167,8,13,1,14,1,14,1,14,3,14,172,
+  	8,14,1,14,0,1,18,15,0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,0,2,1,0,20,
+  	21,2,0,18,19,22,22,186,0,33,1,0,0,0,2,38,1,0,0,0,4,40,1,0,0,0,6,46,1,
+  	0,0,0,8,53,1,0,0,0,10,55,1,0,0,0,12,59,1,0,0,0,14,70,1,0,0,0,16,72,1,
+  	0,0,0,18,108,1,0,0,0,20,139,1,0,0,0,22,141,1,0,0,0,24,158,1,0,0,0,26,
+  	166,1,0,0,0,28,171,1,0,0,0,30,32,3,2,1,0,31,30,1,0,0,0,32,35,1,0,0,0,
+  	33,31,1,0,0,0,33,34,1,0,0,0,34,36,1,0,0,0,35,33,1,0,0,0,36,37,5,0,0,1,
+  	37,1,1,0,0,0,38,39,3,16,8,0,39,3,1,0,0,0,40,42,5,4,0,0,41,43,3,18,9,0,
+  	42,41,1,0,0,0,42,43,1,0,0,0,43,44,1,0,0,0,44,45,5,15,0,0,45,5,1,0,0,0,
+  	46,47,5,5,0,0,47,48,3,18,9,0,48,49,5,15,0,0,49,7,1,0,0,0,50,54,3,12,6,
+  	0,51,54,3,6,3,0,52,54,3,4,2,0,53,50,1,0,0,0,53,51,1,0,0,0,53,52,1,0,0,
+  	0,54,9,1,0,0,0,55,56,5,24,0,0,56,57,3,18,9,0,57,58,5,15,0,0,58,11,1,0,
+  	0,0,59,63,5,11,0,0,60,62,3,8,4,0,61,60,1,0,0,0,62,65,1,0,0,0,63,61,1,
+  	0,0,0,63,64,1,0,0,0,64,66,1,0,0,0,65,63,1,0,0,0,66,67,5,14,0,0,67,13,
+  	1,0,0,0,68,71,3,12,6,0,69,71,3,10,5,0,70,68,1,0,0,0,70,69,1,0,0,0,71,
+  	15,1,0,0,0,72,73,5,6,0,0,73,74,5,25,0,0,74,87,5,9,0,0,75,76,5,25,0,0,
+  	76,77,5,16,0,0,77,84,3,28,14,0,78,79,5,17,0,0,79,80,5,25,0,0,80,81,5,
+  	16,0,0,81,83,3,28,14,0,82,78,1,0,0,0,83,86,1,0,0,0,84,82,1,0,0,0,84,85,
+  	1,0,0,0,85,88,1,0,0,0,86,84,1,0,0,0,87,75,1,0,0,0,87,88,1,0,0,0,88,89,
+  	1,0,0,0,89,90,5,12,0,0,90,91,5,23,0,0,91,92,3,28,14,0,92,93,3,14,7,0,
+  	93,17,1,0,0,0,94,95,6,9,-1,0,95,109,5,25,0,0,96,109,5,26,0,0,97,109,5,
+  	29,0,0,98,109,5,28,0,0,99,109,5,27,0,0,100,109,5,7,0,0,101,109,5,8,0,
+  	0,102,103,7,0,0,0,103,109,3,18,9,4,104,105,5,9,0,0,105,106,3,18,9,0,106,
+  	107,5,12,0,0,107,109,1,0,0,0,108,94,1,0,0,0,108,96,1,0,0,0,108,97,1,0,
+  	0,0,108,98,1,0,0,0,108,99,1,0,0,0,108,100,1,0,0,0,108,101,1,0,0,0,108,
+  	102,1,0,0,0,108,104,1,0,0,0,109,136,1,0,0,0,110,111,10,3,0,0,111,112,
+  	7,1,0,0,112,135,3,18,9,4,113,114,10,2,0,0,114,115,7,0,0,0,115,135,3,18,
+  	9,3,116,117,10,6,0,0,117,118,5,10,0,0,118,119,3,18,9,0,119,120,5,13,0,
+  	0,120,135,1,0,0,0,121,122,10,5,0,0,122,131,5,9,0,0,123,128,3,18,9,0,124,
+  	125,5,17,0,0,125,127,3,18,9,0,126,124,1,0,0,0,127,130,1,0,0,0,128,126,
+  	1,0,0,0,128,129,1,0,0,0,129,132,1,0,0,0,130,128,1,0,0,0,131,123,1,0,0,
+  	0,131,132,1,0,0,0,132,133,1,0,0,0,133,135,5,12,0,0,134,110,1,0,0,0,134,
+  	113,1,0,0,0,134,116,1,0,0,0,134,121,1,0,0,0,135,138,1,0,0,0,136,134,1,
+  	0,0,0,136,137,1,0,0,0,137,19,1,0,0,0,138,136,1,0,0,0,139,140,5,25,0,0,
+  	140,21,1,0,0,0,141,142,5,6,0,0,142,151,5,9,0,0,143,148,3,28,14,0,144,
+  	145,5,17,0,0,145,147,3,28,14,0,146,144,1,0,0,0,147,150,1,0,0,0,148,146,
+  	1,0,0,0,148,149,1,0,0,0,149,152,1,0,0,0,150,148,1,0,0,0,151,143,1,0,0,
+  	0,151,152,1,0,0,0,152,153,1,0,0,0,153,154,5,12,0,0,154,155,5,23,0,0,155,
+  	156,3,28,14,0,156,23,1,0,0,0,157,159,5,18,0,0,158,157,1,0,0,0,159,160,
+  	1,0,0,0,160,158,1,0,0,0,160,161,1,0,0,0,161,162,1,0,0,0,162,163,3,26,
+  	13,0,163,25,1,0,0,0,164,167,3,20,10,0,165,167,3,22,11,0,166,164,1,0,0,
+  	0,166,165,1,0,0,0,167,27,1,0,0,0,168,172,3,20,10,0,169,172,3,24,12,0,
+  	170,172,3,22,11,0,171,168,1,0,0,0,171,169,1,0,0,0,171,170,1,0,0,0,172,
+  	29,1,0,0,0,17,33,42,53,63,70,84,87,108,128,131,134,136,148,151,160,166,
+  	171
   };
   staticData->serializedATN = antlr4::atn::SerializedATNView(serializedATNSegment, sizeof(serializedATNSegment) / sizeof(serializedATNSegment[0]));
 
@@ -230,17 +233,17 @@ FridayParser::ProgramContext* FridayParser::program() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(31);
+    setState(33);
     _errHandler->sync(this);
     _la = _input->LA(1);
     while (_la == FridayParser::FN) {
-      setState(28);
+      setState(30);
       topLevelStatement();
-      setState(33);
+      setState(35);
       _errHandler->sync(this);
       _la = _input->LA(1);
     }
-    setState(34);
+    setState(36);
     match(FridayParser::EOF);
    
   }
@@ -301,7 +304,7 @@ FridayParser::TopLevelStatementContext* FridayParser::topLevelStatement() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(36);
+    setState(38);
     functionStatement();
    
   }
@@ -371,19 +374,19 @@ FridayParser::ReturnStatementContext* FridayParser::returnStatement() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(38);
+    setState(40);
     match(FridayParser::RETURN);
 
-    setState(40);
+    setState(42);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if ((((_la & ~ 0x3fULL) == 0) &&
       ((1ULL << _la) & 1043334016) != 0)) {
-      setState(39);
+      setState(41);
       expr(0);
     }
-    setState(42);
+    setState(44);
     match(FridayParser::SEMI);
    
   }
@@ -452,11 +455,11 @@ FridayParser::PrintStatementContext* FridayParser::printStatement() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(44);
-    match(FridayParser::PRINT);
-    setState(45);
-    expr(0);
     setState(46);
+    match(FridayParser::PRINT);
+    setState(47);
+    expr(0);
+    setState(48);
     match(FridayParser::SEMI);
    
   }
@@ -524,26 +527,26 @@ FridayParser::StatementContext* FridayParser::statement() {
     exitRule();
   });
   try {
-    setState(51);
+    setState(53);
     _errHandler->sync(this);
     switch (_input->LA(1)) {
       case FridayParser::LEFT_CURLY: {
         enterOuterAlt(_localctx, 1);
-        setState(48);
+        setState(50);
         block();
         break;
       }
 
       case FridayParser::PRINT: {
         enterOuterAlt(_localctx, 2);
-        setState(49);
+        setState(51);
         printStatement();
         break;
       }
 
       case FridayParser::RETURN: {
         enterOuterAlt(_localctx, 3);
-        setState(50);
+        setState(52);
         returnStatement();
         break;
       }
@@ -618,11 +621,11 @@ FridayParser::InlineBlockContext* FridayParser::inlineBlock() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(53);
-    match(FridayParser::FAT_ARROW);
-    setState(54);
-    expr(0);
     setState(55);
+    match(FridayParser::FAT_ARROW);
+    setState(56);
+    expr(0);
+    setState(57);
     match(FridayParser::SEMI);
    
   }
@@ -696,22 +699,104 @@ FridayParser::BlockContext* FridayParser::block() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(57);
+    setState(59);
     match(FridayParser::LEFT_CURLY);
 
-    setState(61);
+    setState(63);
     _errHandler->sync(this);
     _la = _input->LA(1);
     while ((((_la & ~ 0x3fULL) == 0) &&
       ((1ULL << _la) & 2096) != 0)) {
-      setState(58);
+      setState(60);
       statement();
-      setState(63);
+      setState(65);
       _errHandler->sync(this);
       _la = _input->LA(1);
     }
-    setState(64);
+    setState(66);
     match(FridayParser::RIGHT_CURLY);
+   
+  }
+  catch (RecognitionException &e) {
+    _errHandler->reportError(this, e);
+    _localctx->exception = std::current_exception();
+    _errHandler->recover(this, _localctx->exception);
+  }
+
+  return _localctx;
+}
+
+//----------------- FunctionBlockContext ------------------------------------------------------------------
+
+FridayParser::FunctionBlockContext::FunctionBlockContext(ParserRuleContext *parent, size_t invokingState)
+  : ParserRuleContext(parent, invokingState) {
+}
+
+FridayParser::BlockContext* FridayParser::FunctionBlockContext::block() {
+  return getRuleContext<FridayParser::BlockContext>(0);
+}
+
+FridayParser::InlineBlockContext* FridayParser::FunctionBlockContext::inlineBlock() {
+  return getRuleContext<FridayParser::InlineBlockContext>(0);
+}
+
+
+size_t FridayParser::FunctionBlockContext::getRuleIndex() const {
+  return FridayParser::RuleFunctionBlock;
+}
+
+void FridayParser::FunctionBlockContext::enterRule(tree::ParseTreeListener *listener) {
+  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
+  if (parserListener != nullptr)
+    parserListener->enterFunctionBlock(this);
+}
+
+void FridayParser::FunctionBlockContext::exitRule(tree::ParseTreeListener *listener) {
+  auto parserListener = dynamic_cast<FridayParserListener *>(listener);
+  if (parserListener != nullptr)
+    parserListener->exitFunctionBlock(this);
+}
+
+
+std::any FridayParser::FunctionBlockContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<FridayParserVisitor*>(visitor))
+    return parserVisitor->visitFunctionBlock(this);
+  else
+    return visitor->visitChildren(this);
+}
+
+FridayParser::FunctionBlockContext* FridayParser::functionBlock() {
+  FunctionBlockContext *_localctx = _tracker.createInstance<FunctionBlockContext>(_ctx, getState());
+  enterRule(_localctx, 14, FridayParser::RuleFunctionBlock);
+
+#if __cplusplus > 201703L
+  auto onExit = finally([=, this] {
+#else
+  auto onExit = finally([=] {
+#endif
+    exitRule();
+  });
+  try {
+    setState(70);
+    _errHandler->sync(this);
+    switch (_input->LA(1)) {
+      case FridayParser::LEFT_CURLY: {
+        enterOuterAlt(_localctx, 1);
+        setState(68);
+        block();
+        break;
+      }
+
+      case FridayParser::FAT_ARROW: {
+        enterOuterAlt(_localctx, 2);
+        setState(69);
+        inlineBlock();
+        break;
+      }
+
+    default:
+      throw NoViableAltException(this);
+    }
    
   }
   catch (RecognitionException &e) {
@@ -745,6 +830,10 @@ tree::TerminalNode* FridayParser::FunctionStatementContext::ARROW() {
   return getToken(FridayParser::ARROW, 0);
 }
 
+FridayParser::FunctionBlockContext* FridayParser::FunctionStatementContext::functionBlock() {
+  return getRuleContext<FridayParser::FunctionBlockContext>(0);
+}
+
 std::vector<tree::TerminalNode *> FridayParser::FunctionStatementContext::IDENTIFIER() {
   return getTokens(FridayParser::IDENTIFIER);
 }
@@ -759,14 +848,6 @@ std::vector<FridayParser::TypeContext *> FridayParser::FunctionStatementContext:
 
 FridayParser::TypeContext* FridayParser::FunctionStatementContext::type(size_t i) {
   return getRuleContext<FridayParser::TypeContext>(i);
-}
-
-FridayParser::BlockContext* FridayParser::FunctionStatementContext::block() {
-  return getRuleContext<FridayParser::BlockContext>(0);
-}
-
-FridayParser::InlineBlockContext* FridayParser::FunctionStatementContext::inlineBlock() {
-  return getRuleContext<FridayParser::InlineBlockContext>(0);
 }
 
 std::vector<tree::TerminalNode *> FridayParser::FunctionStatementContext::COL() {
@@ -812,7 +893,7 @@ std::any FridayParser::FunctionStatementContext::accept(tree::ParseTreeVisitor *
 
 FridayParser::FunctionStatementContext* FridayParser::functionStatement() {
   FunctionStatementContext *_localctx = _tracker.createInstance<FunctionStatementContext>(_ctx, getState());
-  enterRule(_localctx, 14, FridayParser::RuleFunctionStatement);
+  enterRule(_localctx, 16, FridayParser::RuleFunctionStatement);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -824,68 +905,52 @@ FridayParser::FunctionStatementContext* FridayParser::functionStatement() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(66);
+    setState(72);
     match(FridayParser::FN);
-    setState(67);
+    setState(73);
     antlrcpp::downCast<FunctionStatementContext *>(_localctx)->name = match(FridayParser::IDENTIFIER);
-    setState(68);
+    setState(74);
     match(FridayParser::LEFT_PAREN);
-    setState(81);
+    setState(87);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (_la == FridayParser::IDENTIFIER) {
-      setState(69);
+      setState(75);
       antlrcpp::downCast<FunctionStatementContext *>(_localctx)->identifierToken = match(FridayParser::IDENTIFIER);
       antlrcpp::downCast<FunctionStatementContext *>(_localctx)->paramsNames.push_back(antlrcpp::downCast<FunctionStatementContext *>(_localctx)->identifierToken);
-      setState(70);
+      setState(76);
       match(FridayParser::COL);
-      setState(71);
+      setState(77);
       antlrcpp::downCast<FunctionStatementContext *>(_localctx)->typeContext = type();
       antlrcpp::downCast<FunctionStatementContext *>(_localctx)->paramsTypes.push_back(antlrcpp::downCast<FunctionStatementContext *>(_localctx)->typeContext);
-      setState(78);
+      setState(84);
       _errHandler->sync(this);
       _la = _input->LA(1);
       while (_la == FridayParser::COMMA) {
-        setState(72);
+        setState(78);
         match(FridayParser::COMMA);
-        setState(73);
+        setState(79);
         antlrcpp::downCast<FunctionStatementContext *>(_localctx)->identifierToken = match(FridayParser::IDENTIFIER);
         antlrcpp::downCast<FunctionStatementContext *>(_localctx)->paramsNames.push_back(antlrcpp::downCast<FunctionStatementContext *>(_localctx)->identifierToken);
-        setState(74);
+        setState(80);
         match(FridayParser::COL);
-        setState(75);
+        setState(81);
         antlrcpp::downCast<FunctionStatementContext *>(_localctx)->typeContext = type();
         antlrcpp::downCast<FunctionStatementContext *>(_localctx)->paramsTypes.push_back(antlrcpp::downCast<FunctionStatementContext *>(_localctx)->typeContext);
-        setState(80);
+        setState(86);
         _errHandler->sync(this);
         _la = _input->LA(1);
       }
     }
-    setState(83);
+    setState(89);
     match(FridayParser::RIGHT_PAREN);
-    setState(84);
+    setState(90);
     match(FridayParser::ARROW);
-    setState(85);
+    setState(91);
     antlrcpp::downCast<FunctionStatementContext *>(_localctx)->returnType = type();
-    setState(88);
-    _errHandler->sync(this);
-    switch (_input->LA(1)) {
-      case FridayParser::LEFT_CURLY: {
-        setState(86);
-        block();
-        break;
-      }
-
-      case FridayParser::FAT_ARROW: {
-        setState(87);
-        inlineBlock();
-        break;
-      }
-
-    default:
-      throw NoViableAltException(this);
-    }
+    setState(92);
+    functionBlock();
    
   }
   catch (RecognitionException &e) {
@@ -1295,8 +1360,8 @@ FridayParser::ExprContext* FridayParser::expr(int precedence) {
   FridayParser::ExprContext *_localctx = _tracker.createInstance<ExprContext>(_ctx, parentState);
   FridayParser::ExprContext *previousContext = _localctx;
   (void)previousContext; // Silence compiler, in case the context is not used by generated code.
-  size_t startState = 16;
-  enterRecursionRule(_localctx, 16, FridayParser::RuleExpr, precedence);
+  size_t startState = 18;
+  enterRecursionRule(_localctx, 18, FridayParser::RuleExpr, precedence);
 
     size_t _la = 0;
 
@@ -1310,7 +1375,7 @@ FridayParser::ExprContext* FridayParser::expr(int precedence) {
   try {
     size_t alt;
     enterOuterAlt(_localctx, 1);
-    setState(104);
+    setState(108);
     _errHandler->sync(this);
     switch (_input->LA(1)) {
       case FridayParser::IDENTIFIER: {
@@ -1318,7 +1383,7 @@ FridayParser::ExprContext* FridayParser::expr(int precedence) {
         _ctx = _localctx;
         previousContext = _localctx;
 
-        setState(91);
+        setState(95);
         match(FridayParser::IDENTIFIER);
         break;
       }
@@ -1327,7 +1392,7 @@ FridayParser::ExprContext* FridayParser::expr(int precedence) {
         _localctx = _tracker.createInstance<IntLiteralContext>(_localctx);
         _ctx = _localctx;
         previousContext = _localctx;
-        setState(92);
+        setState(96);
         match(FridayParser::INT_LIT);
         break;
       }
@@ -1336,7 +1401,7 @@ FridayParser::ExprContext* FridayParser::expr(int precedence) {
         _localctx = _tracker.createInstance<CharLiteralContext>(_localctx);
         _ctx = _localctx;
         previousContext = _localctx;
-        setState(93);
+        setState(97);
         match(FridayParser::CHAR_LIT);
         break;
       }
@@ -1345,7 +1410,7 @@ FridayParser::ExprContext* FridayParser::expr(int precedence) {
         _localctx = _tracker.createInstance<StringLiteralContext>(_localctx);
         _ctx = _localctx;
         previousContext = _localctx;
-        setState(94);
+        setState(98);
         match(FridayParser::STRING_LIT);
         break;
       }
@@ -1354,7 +1419,7 @@ FridayParser::ExprContext* FridayParser::expr(int precedence) {
         _localctx = _tracker.createInstance<FloatLiteralContext>(_localctx);
         _ctx = _localctx;
         previousContext = _localctx;
-        setState(95);
+        setState(99);
         match(FridayParser::FLOAT_LIT);
         break;
       }
@@ -1363,7 +1428,7 @@ FridayParser::ExprContext* FridayParser::expr(int precedence) {
         _localctx = _tracker.createInstance<BoolLiteralContext>(_localctx);
         _ctx = _localctx;
         previousContext = _localctx;
-        setState(96);
+        setState(100);
         match(FridayParser::BOOL_LIT);
         break;
       }
@@ -1372,7 +1437,7 @@ FridayParser::ExprContext* FridayParser::expr(int precedence) {
         _localctx = _tracker.createInstance<NullLiteralContext>(_localctx);
         _ctx = _localctx;
         previousContext = _localctx;
-        setState(97);
+        setState(101);
         match(FridayParser::NULL_LIT);
         break;
       }
@@ -1382,7 +1447,7 @@ FridayParser::ExprContext* FridayParser::expr(int precedence) {
         _localctx = _tracker.createInstance<UnaryContext>(_localctx);
         _ctx = _localctx;
         previousContext = _localctx;
-        setState(98);
+        setState(102);
         antlrcpp::downCast<UnaryContext *>(_localctx)->unaryOperator = _input->LT(1);
         _la = _input->LA(1);
         if (!(_la == FridayParser::MINUS
@@ -1394,7 +1459,7 @@ FridayParser::ExprContext* FridayParser::expr(int precedence) {
           _errHandler->reportMatch(this);
           consume();
         }
-        setState(99);
+        setState(103);
         expr(4);
         break;
       }
@@ -1403,11 +1468,11 @@ FridayParser::ExprContext* FridayParser::expr(int precedence) {
         _localctx = _tracker.createInstance<GroupingContext>(_localctx);
         _ctx = _localctx;
         previousContext = _localctx;
-        setState(100);
+        setState(104);
         match(FridayParser::LEFT_PAREN);
-        setState(101);
+        setState(105);
         expr(0);
-        setState(102);
+        setState(106);
         match(FridayParser::RIGHT_PAREN);
         break;
       }
@@ -1416,7 +1481,7 @@ FridayParser::ExprContext* FridayParser::expr(int precedence) {
       throw NoViableAltException(this);
     }
     _ctx->stop = _input->LT(-1);
-    setState(132);
+    setState(136);
     _errHandler->sync(this);
     alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 11, _ctx);
     while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER) {
@@ -1424,7 +1489,7 @@ FridayParser::ExprContext* FridayParser::expr(int precedence) {
         if (!_parseListeners.empty())
           triggerExitRuleEvent();
         previousContext = _localctx;
-        setState(130);
+        setState(134);
         _errHandler->sync(this);
         switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 10, _ctx)) {
         case 1: {
@@ -1432,10 +1497,10 @@ FridayParser::ExprContext* FridayParser::expr(int precedence) {
           _localctx = newContext;
           newContext->left = previousContext;
           pushNewRecursionContext(newContext, startState, RuleExpr);
-          setState(106);
+          setState(110);
 
           if (!(precpred(_ctx, 3))) throw FailedPredicateException(this, "precpred(_ctx, 3)");
-          setState(107);
+          setState(111);
           antlrcpp::downCast<BinaryContext *>(_localctx)->binaryOperator = _input->LT(1);
           _la = _input->LA(1);
           if (!((((_la & ~ 0x3fULL) == 0) &&
@@ -1446,7 +1511,7 @@ FridayParser::ExprContext* FridayParser::expr(int precedence) {
             _errHandler->reportMatch(this);
             consume();
           }
-          setState(108);
+          setState(112);
           antlrcpp::downCast<BinaryContext *>(_localctx)->right = expr(4);
           break;
         }
@@ -1456,10 +1521,10 @@ FridayParser::ExprContext* FridayParser::expr(int precedence) {
           _localctx = newContext;
           newContext->left = previousContext;
           pushNewRecursionContext(newContext, startState, RuleExpr);
-          setState(109);
+          setState(113);
 
           if (!(precpred(_ctx, 2))) throw FailedPredicateException(this, "precpred(_ctx, 2)");
-          setState(110);
+          setState(114);
           antlrcpp::downCast<BinaryContext *>(_localctx)->binaryOperator = _input->LT(1);
           _la = _input->LA(1);
           if (!(_la == FridayParser::MINUS
@@ -1471,7 +1536,7 @@ FridayParser::ExprContext* FridayParser::expr(int precedence) {
             _errHandler->reportMatch(this);
             consume();
           }
-          setState(111);
+          setState(115);
           antlrcpp::downCast<BinaryContext *>(_localctx)->right = expr(3);
           break;
         }
@@ -1481,14 +1546,14 @@ FridayParser::ExprContext* FridayParser::expr(int precedence) {
           _localctx = newContext;
           newContext->array = previousContext;
           pushNewRecursionContext(newContext, startState, RuleExpr);
-          setState(112);
+          setState(116);
 
           if (!(precpred(_ctx, 6))) throw FailedPredicateException(this, "precpred(_ctx, 6)");
-          setState(113);
+          setState(117);
           match(FridayParser::LEFT_SQUARE);
-          setState(114);
+          setState(118);
           antlrcpp::downCast<SubscriptContext *>(_localctx)->index = expr(0);
-          setState(115);
+          setState(119);
           match(FridayParser::RIGHT_SQUARE);
           break;
         }
@@ -1498,35 +1563,35 @@ FridayParser::ExprContext* FridayParser::expr(int precedence) {
           _localctx = newContext;
           newContext->func = previousContext;
           pushNewRecursionContext(newContext, startState, RuleExpr);
-          setState(117);
+          setState(121);
 
           if (!(precpred(_ctx, 5))) throw FailedPredicateException(this, "precpred(_ctx, 5)");
-          setState(118);
+          setState(122);
           match(FridayParser::LEFT_PAREN);
-          setState(127);
+          setState(131);
           _errHandler->sync(this);
 
           _la = _input->LA(1);
           if ((((_la & ~ 0x3fULL) == 0) &&
             ((1ULL << _la) & 1043334016) != 0)) {
-            setState(119);
+            setState(123);
             antlrcpp::downCast<CallContext *>(_localctx)->exprContext = expr(0);
             antlrcpp::downCast<CallContext *>(_localctx)->args.push_back(antlrcpp::downCast<CallContext *>(_localctx)->exprContext);
-            setState(124);
+            setState(128);
             _errHandler->sync(this);
             _la = _input->LA(1);
             while (_la == FridayParser::COMMA) {
-              setState(120);
+              setState(124);
               match(FridayParser::COMMA);
-              setState(121);
+              setState(125);
               antlrcpp::downCast<CallContext *>(_localctx)->exprContext = expr(0);
               antlrcpp::downCast<CallContext *>(_localctx)->args.push_back(antlrcpp::downCast<CallContext *>(_localctx)->exprContext);
-              setState(126);
+              setState(130);
               _errHandler->sync(this);
               _la = _input->LA(1);
             }
           }
-          setState(129);
+          setState(133);
           match(FridayParser::RIGHT_PAREN);
           break;
         }
@@ -1535,7 +1600,7 @@ FridayParser::ExprContext* FridayParser::expr(int precedence) {
           break;
         } 
       }
-      setState(134);
+      setState(138);
       _errHandler->sync(this);
       alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 11, _ctx);
     }
@@ -1585,7 +1650,7 @@ std::any FridayParser::SimpleTypeContext::accept(tree::ParseTreeVisitor *visitor
 
 FridayParser::SimpleTypeContext* FridayParser::simpleType() {
   SimpleTypeContext *_localctx = _tracker.createInstance<SimpleTypeContext>(_ctx, getState());
-  enterRule(_localctx, 18, FridayParser::RuleSimpleType);
+  enterRule(_localctx, 20, FridayParser::RuleSimpleType);
 
 #if __cplusplus > 201703L
   auto onExit = finally([=, this] {
@@ -1596,7 +1661,7 @@ FridayParser::SimpleTypeContext* FridayParser::simpleType() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(135);
+    setState(139);
     match(FridayParser::IDENTIFIER);
    
   }
@@ -1674,7 +1739,7 @@ std::any FridayParser::FunctionTypeContext::accept(tree::ParseTreeVisitor *visit
 
 FridayParser::FunctionTypeContext* FridayParser::functionType() {
   FunctionTypeContext *_localctx = _tracker.createInstance<FunctionTypeContext>(_ctx, getState());
-  enterRule(_localctx, 20, FridayParser::RuleFunctionType);
+  enterRule(_localctx, 22, FridayParser::RuleFunctionType);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -1686,38 +1751,38 @@ FridayParser::FunctionTypeContext* FridayParser::functionType() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(137);
+    setState(141);
     match(FridayParser::FN);
-    setState(138);
+    setState(142);
     match(FridayParser::LEFT_PAREN);
-    setState(147);
+    setState(151);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if ((((_la & ~ 0x3fULL) == 0) &&
       ((1ULL << _la) & 33816640) != 0)) {
-      setState(139);
+      setState(143);
       antlrcpp::downCast<FunctionTypeContext *>(_localctx)->typeContext = type();
       antlrcpp::downCast<FunctionTypeContext *>(_localctx)->paramsTypes.push_back(antlrcpp::downCast<FunctionTypeContext *>(_localctx)->typeContext);
-      setState(144);
+      setState(148);
       _errHandler->sync(this);
       _la = _input->LA(1);
       while (_la == FridayParser::COMMA) {
-        setState(140);
+        setState(144);
         match(FridayParser::COMMA);
-        setState(141);
+        setState(145);
         antlrcpp::downCast<FunctionTypeContext *>(_localctx)->typeContext = type();
         antlrcpp::downCast<FunctionTypeContext *>(_localctx)->paramsTypes.push_back(antlrcpp::downCast<FunctionTypeContext *>(_localctx)->typeContext);
-        setState(146);
+        setState(150);
         _errHandler->sync(this);
         _la = _input->LA(1);
       }
     }
-    setState(149);
+    setState(153);
     match(FridayParser::RIGHT_PAREN);
-    setState(150);
+    setState(154);
     match(FridayParser::ARROW);
-    setState(151);
+    setState(155);
     antlrcpp::downCast<FunctionTypeContext *>(_localctx)->returnType = type();
    
   }
@@ -1775,7 +1840,7 @@ std::any FridayParser::PointerTypeContext::accept(tree::ParseTreeVisitor *visito
 
 FridayParser::PointerTypeContext* FridayParser::pointerType() {
   PointerTypeContext *_localctx = _tracker.createInstance<PointerTypeContext>(_ctx, getState());
-  enterRule(_localctx, 22, FridayParser::RulePointerType);
+  enterRule(_localctx, 24, FridayParser::RulePointerType);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -1787,17 +1852,17 @@ FridayParser::PointerTypeContext* FridayParser::pointerType() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(154); 
+    setState(158); 
     _errHandler->sync(this);
     _la = _input->LA(1);
     do {
-      setState(153);
+      setState(157);
       match(FridayParser::STAR);
-      setState(156); 
+      setState(160); 
       _errHandler->sync(this);
       _la = _input->LA(1);
     } while (_la == FridayParser::STAR);
-    setState(158);
+    setState(162);
     pointedType();
    
   }
@@ -1851,7 +1916,7 @@ std::any FridayParser::PointedTypeContext::accept(tree::ParseTreeVisitor *visito
 
 FridayParser::PointedTypeContext* FridayParser::pointedType() {
   PointedTypeContext *_localctx = _tracker.createInstance<PointedTypeContext>(_ctx, getState());
-  enterRule(_localctx, 24, FridayParser::RulePointedType);
+  enterRule(_localctx, 26, FridayParser::RulePointedType);
 
 #if __cplusplus > 201703L
   auto onExit = finally([=, this] {
@@ -1861,19 +1926,19 @@ FridayParser::PointedTypeContext* FridayParser::pointedType() {
     exitRule();
   });
   try {
-    setState(162);
+    setState(166);
     _errHandler->sync(this);
     switch (_input->LA(1)) {
       case FridayParser::IDENTIFIER: {
         enterOuterAlt(_localctx, 1);
-        setState(160);
+        setState(164);
         simpleType();
         break;
       }
 
       case FridayParser::FN: {
         enterOuterAlt(_localctx, 2);
-        setState(161);
+        setState(165);
         functionType();
         break;
       }
@@ -1937,7 +2002,7 @@ std::any FridayParser::TypeContext::accept(tree::ParseTreeVisitor *visitor) {
 
 FridayParser::TypeContext* FridayParser::type() {
   TypeContext *_localctx = _tracker.createInstance<TypeContext>(_ctx, getState());
-  enterRule(_localctx, 26, FridayParser::RuleType);
+  enterRule(_localctx, 28, FridayParser::RuleType);
 
 #if __cplusplus > 201703L
   auto onExit = finally([=, this] {
@@ -1947,26 +2012,26 @@ FridayParser::TypeContext* FridayParser::type() {
     exitRule();
   });
   try {
-    setState(167);
+    setState(171);
     _errHandler->sync(this);
     switch (_input->LA(1)) {
       case FridayParser::IDENTIFIER: {
         enterOuterAlt(_localctx, 1);
-        setState(164);
+        setState(168);
         simpleType();
         break;
       }
 
       case FridayParser::STAR: {
         enterOuterAlt(_localctx, 2);
-        setState(165);
+        setState(169);
         pointerType();
         break;
       }
 
       case FridayParser::FN: {
         enterOuterAlt(_localctx, 3);
-        setState(166);
+        setState(170);
         functionType();
         break;
       }
@@ -1987,7 +2052,7 @@ FridayParser::TypeContext* FridayParser::type() {
 
 bool FridayParser::sempred(RuleContext *context, size_t ruleIndex, size_t predicateIndex) {
   switch (ruleIndex) {
-    case 8: return exprSempred(antlrcpp::downCast<ExprContext *>(context), predicateIndex);
+    case 9: return exprSempred(antlrcpp::downCast<ExprContext *>(context), predicateIndex);
 
   default:
     break;

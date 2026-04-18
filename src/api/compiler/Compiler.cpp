@@ -73,6 +73,10 @@ namespace friday::inline api::inline compiler {
     return visitChildren(ctx);
   }
 
+  auto Compiler::visitFunctionBlock(FridayParser::FunctionBlockContext *ctx) -> std::any {
+    return visitChildren(ctx);
+  }
+
   auto Compiler::visitBlock(FridayParser::BlockContext *ctx) -> std::any {
     return visitChildren(ctx);
   }

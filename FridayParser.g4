@@ -36,11 +36,16 @@ inlineBlock
 block
   : LEFT_CURLY (statement*) RIGHT_CURLY
   ;
-  
+
+functionBlock
+  : block
+  | inlineBlock
+  ;
+
 functionStatement
   : FN name = IDENTIFIER LEFT_PAREN (
     paramsNames += IDENTIFIER COL paramsTypes += type (COMMA paramsNames += IDENTIFIER COL paramsTypes += type)* 
-  )? RIGHT_PAREN ARROW returnType = type (block | inlineBlock)
+  )? RIGHT_PAREN ARROW returnType = type functionBlock
   ;
 ///////////////////////////////////////////////////
 

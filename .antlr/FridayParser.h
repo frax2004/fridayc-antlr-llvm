@@ -23,8 +23,8 @@ public:
   enum {
     RuleProgram = 0, RuleTopLevelStatement = 1, RuleReturnStatement = 2, 
     RulePrintStatement = 3, RuleStatement = 4, RuleInlineBlock = 5, RuleBlock = 6, 
-    RuleFunctionStatement = 7, RuleExpr = 8, RuleSimpleType = 9, RuleFunctionType = 10, 
-    RulePointerType = 11, RulePointedType = 12, RuleType = 13
+    RuleFunctionBlock = 7, RuleFunctionStatement = 8, RuleExpr = 9, RuleSimpleType = 10, 
+    RuleFunctionType = 11, RulePointerType = 12, RulePointedType = 13, RuleType = 14
   };
 
   explicit FridayParser(antlr4::TokenStream *input);
@@ -51,6 +51,7 @@ public:
   class StatementContext;
   class InlineBlockContext;
   class BlockContext;
+  class FunctionBlockContext;
   class FunctionStatementContext;
   class ExprContext;
   class SimpleTypeContext;
@@ -149,6 +150,18 @@ public:
 
   BlockContext* block();
 
+  class  FunctionBlockContext : public antlr4::ParserRuleContext {
+  public:
+    FunctionBlockContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    BlockContext *block();
+    InlineBlockContext *inlineBlock();
+
+   
+  };
+
+  FunctionBlockContext* functionBlock();
+
   class  FunctionStatementContext : public antlr4::ParserRuleContext {
   public:
     antlr4::Token *name = nullptr;
@@ -163,12 +176,11 @@ public:
     antlr4::tree::TerminalNode *LEFT_PAREN();
     antlr4::tree::TerminalNode *RIGHT_PAREN();
     antlr4::tree::TerminalNode *ARROW();
+    FunctionBlockContext *functionBlock();
     std::vector<antlr4::tree::TerminalNode *> IDENTIFIER();
     antlr4::tree::TerminalNode* IDENTIFIER(size_t i);
     std::vector<TypeContext *> type();
     TypeContext* type(size_t i);
-    BlockContext *block();
-    InlineBlockContext *inlineBlock();
     std::vector<antlr4::tree::TerminalNode *> COL();
     antlr4::tree::TerminalNode* COL(size_t i);
     std::vector<antlr4::tree::TerminalNode *> COMMA();

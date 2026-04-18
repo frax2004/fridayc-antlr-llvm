@@ -24,6 +24,11 @@ namespace friday::inline api::inline typechecker {
 
     /// @brief Checks if a symbol is defined
     /// @param name the name of the symbol
+    /// @return `true` if and only if the symbol was defined (does not check in parent symbol tables)
+    auto isDefinedLocal(String const& name) noexcept -> bool;
+
+    /// @brief Checks if a symbol is defined
+    /// @param name the name of the symbol
     /// @return `true` if and only if the symbol was defined
     auto isDefined(String const& name) noexcept -> bool;
 

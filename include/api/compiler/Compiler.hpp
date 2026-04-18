@@ -14,6 +14,7 @@ namespace friday::inline api::inline compiler {
     auto visitReturnStatement(FridayParser::ReturnStatementContext *ctx) -> std::any override;
     auto visitPrintStatement(FridayParser::PrintStatementContext *ctx) -> std::any override;
     auto visitStatement(FridayParser::StatementContext *ctx) -> std::any override;
+    auto visitFunctionBlock(FridayParser::FunctionBlockContext *ctx) -> std::any override;
     auto visitBlock(FridayParser::BlockContext *ctx) -> std::any override;
     auto visitFunctionStatement(FridayParser::FunctionStatementContext *ctx) -> std::any override;
     auto visitCall(FridayParser::CallContext *ctx) -> std::any override;

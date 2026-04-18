@@ -33,6 +33,8 @@ public:
 
     virtual std::any visitBlock(FridayParser::BlockContext *context) = 0;
 
+    virtual std::any visitFunctionBlock(FridayParser::FunctionBlockContext *context) = 0;
+
     virtual std::any visitFunctionStatement(FridayParser::FunctionStatementContext *context) = 0;
 
     virtual std::any visitCall(FridayParser::CallContext *context) = 0;

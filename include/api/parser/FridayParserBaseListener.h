@@ -37,6 +37,9 @@ public:
   virtual void enterBlock(FridayParser::BlockContext * /*ctx*/) override { }
   virtual void exitBlock(FridayParser::BlockContext * /*ctx*/) override { }
 
+  virtual void enterFunctionBlock(FridayParser::FunctionBlockContext * /*ctx*/) override { }
+  virtual void exitFunctionBlock(FridayParser::FunctionBlockContext * /*ctx*/) override { }
+
   virtual void enterFunctionStatement(FridayParser::FunctionStatementContext * /*ctx*/) override { }
   virtual void exitFunctionStatement(FridayParser::FunctionStatementContext * /*ctx*/) override { }
 
