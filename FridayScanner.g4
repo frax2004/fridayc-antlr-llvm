@@ -1,5 +1,8 @@
 lexer grammar FridayScanner;
 
+COMMENT: '//'(~[\r\n])* -> skip;
+SPACE: [ \t\r\n] -> skip;
+
 STRUCT: 'struct';
 RETURN: 'return';
 PRINT: 'print';
@@ -28,11 +31,8 @@ FAT_ARROW: '=>';
 IDENTIFIER: [a-zA-Z_][a-zA-Z0-9_]*;
 
 
-COMMENT: '//'~[\r\n] -> skip;
-SPACE: [ \t\r\n] -> skip;
-
-INT_LIT: [\-+]? ('0' | [1-9][0-9]*);
-FLOAT_LIT: [\-+]? ('0' | [1-9][0-9]*)'.'([0-9]*);
+INT_LIT: ('0' | [1-9][0-9]*);
+FLOAT_LIT: ('0' | [1-9][0-9]*)'.'([0-9]*);
 STRING_LIT: '"'(.*?)'"';
 CHAR_LIT: '\''.'\'';
 

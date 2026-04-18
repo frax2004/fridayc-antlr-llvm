@@ -223,21 +223,95 @@ namespace friday::inline api::inline typechecker {
     Type* arrayType = std::any_cast<Type*>(this->visit(ctx->array));
     Type* indexType = std::any_cast<Type*>(this->visit(ctx->index));
 
-    if(auto asPointerType = arrayType->as<Pointer>(); asPointerType == nullptr or asPointerType->getPointedType() == (Type*)(Struct*)this->M_currentScope->resolve("void") and asPointerType->getDimensions() == 1) {
+    Type* asPointerType = arrayType->as<Pointer>();
+    Type* voidPointer = Pointer::get(this->M_currentScope->resolve("void")->as<Struct>(), 1);
 
+    bool ok = true;
+    if(
+      asPointerType == nullptr
+      or asPointerType == Struct::getErrorType()
+      or asPointerType == voidPointer
+    ) {
+      ok = false;
+      this->errorAt(
+        ctx->array->getStart(),
+        "Array expression '{}' of type '{}' is not a valid array or pointer that can be dereferenced."_f.format(
+          ctx->array->getText(),
+          arrayType->getName()
+        )
+      );
     }
 
-    return this->visitChildren(ctx);
+    // TODO: handle type coercions
+    if(indexType != this->M_currentScope->resolve("int")->as<Struct>()) {
+      ok = false;
+      this->errorAt(
+        ctx->index->getStart(),
+        "Array subcript index expression '{}' of type '{}' is not convertible to int."_f.format(
+          ctx->index->getText(),
+          indexType->getName()
+        )
+      );
+    }
+
+    return (Type*)(ok ? arrayType->as<Pointer>()->getPointedType() : (Type*)Struct::getErrorType());
   }
 
   auto TypeChecker::visitBinary(FridayParser::BinaryContext *ctx) -> std::any {
     Console::debug("BinaryContext: {}"_f.format(ctx->getText()));
-    return this->visitChildren(ctx);
+
+    Type* lhsType = std::any_cast<Type*>(this->visit(ctx->left));
+    Type* rhsType = std::any_cast<Type*>(this->visit(ctx->right));
+    u64 oper = ctx->binaryOperator->getType();
+
+    String binaryOperatorName = Type::getBinaryOperatorName(oper, lhsType, rhsType);
+    String suggestion = "";
+
+    // TODO handle pointer and function types (?)
+    if(lhsType->is<Struct>() and rhsType->is<Struct>()) {
+      if(lhsType == rhsType) {
+        if(const Function* binaryOperator = lhsType->as<Struct>()->getMethod(binaryOperatorName)) {
+          return (Type*)binaryOperator->getType()->as<const FunctionType>()->getReturnType();
+        }
+      } else suggestion = " Implicit casts are not permitted so, if this is a cast problem, try adding an explicit cast.";
+    }
+
+    this->errorAt(
+      ctx->binaryOperator,
+      "No matching function for call to '{}' with operands of types '{}' and '{}'.{}"_f.format(
+        binaryOperatorName,
+        lhsType->getName(),
+        rhsType->getName(),
+        suggestion
+      )
+    );
+
+    return (Type*)Struct::getErrorType();
   }
 
   auto TypeChecker::visitUnary(FridayParser::UnaryContext *ctx) -> std::any {
     Console::debug("UnaryContext: {}"_f.format(ctx->getText()));
-    return this->visitChildren(ctx);
+
+    Type* type = std::any_cast<Type*>(this->visit(ctx->expr()));
+    u64 oper = ctx->unaryOperator->getType();
+    String unaryOperatorName = Type::getUnaryOperatorName(oper, type);
+
+    // TODO handle pointer and function types (?)
+    if(Struct* asStruct = type->as<Struct>()) {
+      if(const Function* unaryOperator = asStruct->getMethod(unaryOperatorName)) {
+        return (Type*)unaryOperator->getType()->as<const FunctionType>()->getReturnType();
+      }
+    }
+
+    this->errorAt(
+      ctx->unaryOperator,
+      "No matching function for call to '{}' with operand of type '{}'"_f.format(
+        unaryOperatorName,
+        type->getName()
+      )
+    );
+    
+    return (Type*)Struct::getErrorType();
   }
 
   auto TypeChecker::visitSimpleType(FridayParser::SimpleTypeContext *ctx) -> std::any {
