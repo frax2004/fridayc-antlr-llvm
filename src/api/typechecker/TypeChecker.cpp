@@ -100,7 +100,8 @@ namespace friday::inline api::inline typechecker {
     if(tempFuncType == Struct::getErrorType() or not tempFuncType->is<FunctionType>()) {
       this->errorAt(
         ctx->getStart(),
-        "The underlined expression '{}' is not a function and cannot be called."_f.format(
+        "The underlined expression '{}' of type '{}' is not a function and cannot be called."_f.format(
+          tempFuncType->getName(),
           ctx->func->getText()
         )
       );
@@ -131,7 +132,7 @@ namespace friday::inline api::inline typechecker {
     for(u64 i = 0; i < std::min(argsTypes.size(), funcType->getParametersCount()); i++) {
       Type* T = argsTypes[i];
       
-      // TODO handle type coercions
+      // TODO: handle type coercions
       if(T != funcType->getParameterType(i)) {
         ok = false;
         this->errorAt(
@@ -218,6 +219,14 @@ namespace friday::inline api::inline typechecker {
 
   auto TypeChecker::visitSubscript(FridayParser::SubscriptContext *ctx) -> std::any {
     Console::debug("SubscriptContext: {}"_f.format(ctx->getText()));
+
+    Type* arrayType = std::any_cast<Type*>(this->visit(ctx->array));
+    Type* indexType = std::any_cast<Type*>(this->visit(ctx->index));
+
+    if(auto asPointerType = arrayType->as<Pointer>(); asPointerType == nullptr or asPointerType->getPointedType() == (Type*)(Struct*)this->M_currentScope->resolve("void") and asPointerType->getDimensions() == 1) {
+
+    }
+
     return this->visitChildren(ctx);
   }
 
