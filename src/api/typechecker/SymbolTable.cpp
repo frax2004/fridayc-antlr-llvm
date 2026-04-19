@@ -76,11 +76,20 @@ namespace friday::inline api::inline typechecker {
     SymbolTable scope { nullptr };
     llvm::LLVMContext& ctx = mod.getContext();
 
-    scope.define("float", (Struct*)Struct::getFloatType(ctx));
-    scope.define("int", (Struct*)Struct::getIntType(ctx));
-    scope.define("byte", (Struct*)Struct::getByteType(ctx));
-    scope.define("bool", (Struct*)Struct::getBoolType(ctx));
-    scope.define("void", (Struct*)Struct::getVoidType(ctx));
+    Struct* Float = (Struct*)Struct::getFloatType(ctx);
+    scope.define("float", Float);
+
+    Struct* Int = (Struct*)Struct::getIntType(ctx);
+    scope.define("int", Int);
+
+    Struct* Byte = (Struct*)Struct::getByteType(ctx);
+    scope.define("byte", Byte);
+
+    Struct* Bool = (Struct*)Struct::getBoolType(ctx);
+    scope.define("bool", Bool);
+
+    Struct* Void = (Struct*)Struct::getVoidType(ctx);
+    scope.define("void", Void);
 
 
     return std::move(scope);

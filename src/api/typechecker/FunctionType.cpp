@@ -17,6 +17,10 @@ namespace friday::inline api::inline typechecker {
     , M_parameters { paramsTypes }
   {}
 
+  auto FunctionType::getParametersTypes() const noexcept -> Vector<Type*> const& {
+    return this->M_parameters;
+  }
+
   auto FunctionType::getName() const noexcept -> String const& {
     return this->M_name;
   }

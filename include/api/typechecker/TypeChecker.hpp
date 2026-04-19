@@ -31,11 +31,6 @@ namespace friday::inline api::inline typechecker {
     /// @return a Struct type or Struct::getErrorType() if any error has occurred during semantic checks
     auto visitProgram(FridayParser::ProgramContext *ctx) -> std::any override;
 
-    /// @brief visit a TopLevelStatement
-    /// @param ctx the TopLevelStatement context
-    /// @return a Struct type or Struct::getErrorType() if any error has occurred during semantic checks
-    auto visitTopLevelStatement(FridayParser::TopLevelStatementContext *ctx) -> std::any override;
-
     /// @brief visit a ReturnStatement
     /// @param ctx the ReturnStatement context
     /// @return a Struct type or Struct::getErrorType() if any error has occurred during semantic checks
@@ -45,16 +40,6 @@ namespace friday::inline api::inline typechecker {
     /// @param ctx the PrintStatement context
     /// @return a Struct type or Struct::getErrorType() if any error has occurred during semantic checks
     auto visitPrintStatement(FridayParser::PrintStatementContext *ctx) -> std::any override;
-
-    /// @brief visit a Statement
-    /// @param ctx the Statement context
-    /// @return a Struct type or Struct::getErrorType() if any error has occurred during semantic checks
-    auto visitStatement(FridayParser::StatementContext *ctx) -> std::any override;
-
-    /// @brief visit a FunctionBlock
-    /// @param ctx the FunctionBlock context
-    /// @return a Struct type or Struct::getErrorType() if any error has occurred during semantic checks
-    auto visitFunctionBlock(FridayParser::FunctionBlockContext *ctx) -> std::any override;
 
     /// @brief visit a Block
     /// @param ctx the Block context
@@ -140,16 +125,6 @@ namespace friday::inline api::inline typechecker {
     /// @param ctx the PointerType context 
     /// @return a Struct type or Struct::getErrorType() if any error has occurred during semantic checks
     auto visitPointerType(FridayParser::PointerTypeContext *ctx) -> std::any override;
-
-    /// @brief visit a PointedType
-    /// @param ctx the PointedType context 
-    /// @return a Struct type or Struct::getErrorType() if any error has occurred during semantic checks
-    auto visitPointedType(FridayParser::PointedTypeContext *ctx) -> std::any override;
-    
-    /// @brief visit a Type
-    /// @param ctx the Type context
-    /// @return a Struct type or Struct::getErrorType() if any error has occurred during semantic checks 
-    auto visitType(FridayParser::TypeContext *ctx) -> std::any override;
 
     private:
     /// @brief Raises an error

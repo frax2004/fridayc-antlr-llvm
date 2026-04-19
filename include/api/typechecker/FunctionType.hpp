@@ -38,6 +38,10 @@ namespace friday::inline api::inline typechecker {
     /// @throws `std::out_of_range` error if index is out of bounds
     auto getParameterType(u64 index) const -> Type*;
 
+    /// @brief Gets the parameters types
+    /// @return the parameters types
+    auto getParametersTypes() const noexcept -> Vector<Type*> const&;
+
     /// @brief Get the number of parameters
     /// @return the parameters count
     auto getParametersCount() const noexcept -> u64;

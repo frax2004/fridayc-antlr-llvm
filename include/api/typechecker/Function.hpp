@@ -63,6 +63,18 @@ namespace friday::inline api::inline typechecker {
     /// @brief Get the name of the function
     /// @return the name of the function
     auto getName() const noexcept -> String const& override;
+
+    /// @brief Get the mangled function name
+    /// @param name the name of the function
+    /// @param paramsTypes the types of the parameters
+    /// @return the mangled name
+    auto getMangledName() const noexcept -> String;
+
+    /// @brief Get the mangled function name
+    /// @param name the name of the function
+    /// @param paramsTypes the types of the parameters
+    /// @return the mangled name
+    static auto mangle(String const& name, Vector<Type*> const& paramsTypes) noexcept -> String;
   }; // struct Function
 } // namespace friday::api::typechecker
 

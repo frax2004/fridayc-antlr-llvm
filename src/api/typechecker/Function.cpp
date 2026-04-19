@@ -50,4 +50,25 @@ namespace friday::inline api::inline typechecker {
     return this->M_signature;
   }
 
+  auto Function::getMangledName() const noexcept -> String {
+    auto toEncoded = [](String const& name) { return "{}{}"_f.format(name.length(), name); };
+ 
+    return "_Z{}{}{}"_f.format(
+      this->M_name.length(),
+      this->M_name,
+      this->M_signature->getParametersTypes()
+      | std::views::transform(Type::getName)
+      | std::views::transform(toEncoded)
+    );
+  }
+
+  auto Function::mangle(String const& name, Vector<Type*> const& paramsTypes) noexcept -> String {
+    return "_Z{}{}{}"_f.format(
+      name.length(),
+      name,
+      paramsTypes
+      | std::views::transform(Type::getName)
+      | std::views::transform([](String const& name) { return "{}{}"_f.format(name.length(), name); })
+    );
+  }
 }
