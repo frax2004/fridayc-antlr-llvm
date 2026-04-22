@@ -1,6 +1,3 @@
-namespace std.memory;
-
-
 fn add(x: int, y: int) -> int => x + y;
 
 // fn hypot(x: int, y: int) -> int => +"4.5"*x + y*y - 3 + 3;

@@ -17,8 +17,6 @@ namespace friday::inline api::inline typechecker {
     VisibilityModifier M_visibility;
     /// @brief The parameters names
     Vector<String> M_parameters;
-    /// @brief The function native body
-    llvm::Function* M_body;
 
     public:
     /// @brief Constructs a function
@@ -31,14 +29,6 @@ namespace friday::inline api::inline typechecker {
       Vector<std::pair<String, Type*>> parameters,
       VisibilityModifier visibility = VisibilityModifier::PUBLIC
     );
-
-    /// @brief Get the native function body
-    /// @return the function body
-    auto getNativeBody() const noexcept -> const llvm::Function*;
-
-    /// @brief Sets the function llvm body
-    /// @param body the function body
-    auto setNativeBody(llvm::Function* body) noexcept -> void;
 
     /// @brief Get the `nth` parameter name
     /// @param index the index of the parameter

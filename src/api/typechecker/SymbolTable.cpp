@@ -77,6 +77,7 @@ namespace friday::inline api::inline typechecker {
     llvm::LLVMContext& ctx = mod.getContext();
 
     Struct* Float = (Struct*)Struct::getFloatType(ctx);
+
     scope.define("float", Float);
 
     Struct* Int = (Struct*)Struct::getIntType(ctx);

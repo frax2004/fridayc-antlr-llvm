@@ -23,14 +23,6 @@ namespace friday::inline api::inline typechecker {
     return this->M_parameters.at(index);
   }
 
-  auto Function::getNativeBody() const noexcept -> const llvm::Function* {
-    return this->M_body;
-  }
-
-  auto Function::setNativeBody(llvm::Function* body) noexcept -> void {
-    this->M_body = body;
-  }
-
   auto Function::getParameter(u64 index) const -> std::pair<String, Type*> {
     return std::make_pair(
       this->M_parameters.at(index),
