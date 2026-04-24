@@ -22,6 +22,7 @@ The friday programming language is a compiled, staticly-typed, imperative, modul
   - Types and Variables
     - Variables
     - Primitive types
+    - Operators
     - Explicit casts
     - Function types
     - Arrays
@@ -32,9 +33,10 @@ The friday programming language is a compiled, staticly-typed, imperative, modul
     - If statements
     - Loops
     - Functions
+    - Member functions
     - Overloading
-    - Operator overloading
     - Native functions
+    - Operator overloading
 
   - Memory model
     - Memory management
@@ -197,7 +199,37 @@ Here is a table of the available fundamental types and their matching version in
 |`bool`|${1}$-bit $^*$ boolean integer| `_Bool` or `bool` |
 |`void`|${0}$-bit $^*$ empty type| `void` |
 
-$(^*)$ : Bit width are guaranted to be the specified ones (platform independent)
+$(*)$ : Bit width are guaranted to be the specified ones (platform independent)
+
+#### Operators
+Here's a table of each Friday type and the operators supported by each type
+|Operator|Description|Supported by default by|
+|-|-|-|
+|`+`| binary plus | `int`, `float`|
+|`-`| binary minus | `int`, `float`|
+|`*`| multiply | `int`, `float`|
+|`/`| divide | `int`, `float`|
+|`%`| division rest | `int` |
+|`+`| unary plus | `int`, `float`|
+|`<<`| bitwise shift left | `int` |
+|`<`| less than | `int`, `float`, `byte`, `*any`, `[]any` |
+|`<=`| less than or equal to | `int`, `float`, `byte`, `*any`, `[]any` |
+|`==`| equal to | `int`, `float`, `byte`, `*any`, `[]any` |
+|`!=`| not equal to | `int`, `float`, `byte`, `*any`, `[]any` |
+|`>`| greater than | `int`, `float`, `byte`, `*any`, `[]any` |
+|`>=`| greater than or equal to | `int`, `float`, `byte`, `*any`, `[]any` |
+|`>>`| bitwise shift right | `int` |
+|`and`| logical and | `bool` |
+|`or`| logical or | `bool` |
+|`not`| logical not | `bool` |
+|`&`| bitwise and | `bool`, `int` |
+|`\|`| bitwise or | `bool`, `int` |
+|`~`| bitwise not | `bool`, `int` |
+|`.`| member access | `any-struct`, `[]any` |
+|`*`| dereference | `*non-void` |
+|`&`| reference | `any-type` |
+|`as`| explicit cast | `non-void` |
+|`[]`| array element access | `[]non-void`, `*non-void` |
 
 #### Explicit Casts
 Implicit casts are not supported in Friday since they are almost always the cause of unwanted errors or non-intentional numeric overflows.
@@ -278,5 +310,95 @@ let y = new Vec2{
 };
 ```
 Here the `operator new` is **only a syntax indicator** and **does not mean** nothing else (like a memory **heap allocation** in other languages).
+
 Since struct variables are stack allocated, they share the same rules as primitive variables.
+
 Also, since variables must be initialized during initialization (due to the **Resource Acquisition Is Initialization** or **RAII** principle), all fields must be initialized. (see more on memory management)
+
+### Statements
+---
+
+#### If Statements
+If statements in Friday are similar to C if statements for the most syntax but behave in the same way:
+
+```C
+if condition {
+  /* ... */
+} elif condition {
+  /* ... */
+} else {
+  /* ... */
+}
+```
+
+#### Loops
+
+There are two kinds of loops in Friday:
+- `while` loop
+- `for` loop
+
+###### While loop
+While loops in Friday behave the exact same way as in C.
+Here's an example of the **while loop**
+
+```C
+while condition {
+  /* ... */  
+}
+```
+
+###### For loop
+Range based for loops are not yet supported in Friday, so for now only the classic C-style for loop is allowed.
+
+Here's an example of the **for loop**
+```C
+for(let i = 0; i < 10; ++i) {
+  /* ... */  
+}
+```
+
+#### Functions
+Any non-native function in Friday can be defined in two ways:
+
+```C
+// standard way: name, parameter list, return type, function body
+fn add(x: int, y: int) -> int {
+  return x + y;
+}
+// shorthand
+fn subtract(x: int, y: int) -> int => x - y;
+// same as 
+fn subtract(x: int, y: int) -> int {
+  return x - y;
+}
+
+fn main() -> void { // the return type of the main function must be void
+  const f = add;
+  print f(2, 3); // function call using function pointer to function add
+}
+```
+
+When a function has only one instruction and that instruction is a return statement, the function body can be shortened with an an `inline-body` as showed in the example above.
+
+#### Overloading
+Functions in Friday can also be overloaded, which means that two functions with different parameters can have the same name, and that the compile will figure out what is the correct overload of the function (if there is any matching) based on the types of the arguments that are passed in the function call.
+
+A function with its overload must differ in the parameter list in either one of the following features:
+- different **order** of the parameters
+- different **types** of the parameters
+- different **number** of parameters
+
+A function and its overloads can have a different return types, but the return type alone is not sufficient to differ the overloaded functions.
+
+```C
+fn add(x: int, y: int) -> int => x + y; // ok
+fn add(x: float, y: float) -> float => x + y; // ok
+fn add(x: float, y: float) -> int => x + y; // error: cannot overload two functions with the return type alone
+
+fn main() -> void {
+  let y1 = add(3, 3); // ok, calls add(int, int)
+  let y2 = add(2.3, 2.1); // ok calls add(float, float)
+  let y3 = add(3.1, 3); // error: no matching function for call to add(float, int)
+  let y4 = add(y2 as int, 3); // ok, calls add(int, int)
+}
+```
