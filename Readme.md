@@ -191,11 +191,11 @@ Here is a table of the available fundamental types and their matching version in
 
 |Friday Type|Description|C type|
 |-|-|-|
-|`int`|${64}$-bit$^*$ width signed integer| `int64_t` or `long long int` |
-|`float`|${64}$-bit$^*$ width floating point| `double` |
-|`byte`|${8}$-bit$^*$ width signed integer| `int8_t` or `char` |
-|`bool`|${1}$-bit$^*$ boolean integer| `_Bool` or `bool` |
-|`void`|${0}$-bit$^*$ empty type| `void` |
+|`int`|${64}$-bit $^*$ width signed integer| `int64_t` or `long long int` |
+|`float`|${64}$-bit $^*$ width floating point| `double` |
+|`byte`|${8}$-bit $^*$ width signed integer| `int8_t` or `char` |
+|`bool`|${1}$-bit $^*$ boolean integer| `_Bool` or `bool` |
+|`void`|${0}$-bit $^*$ empty type| `void` |
 
 $(^*)$ : Bit width are guaranted to be the specified ones (platform independent)
 
