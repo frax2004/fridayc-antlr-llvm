@@ -285,7 +285,7 @@ Unlike C, arrays cannot decay to pointers and their fields cannot be reassigned,
 Pointers in Friday store either a reference to an object or null.
 Null objects cannot be dereferenced (if that happens, that results in an undefined behavior)
 
-Non-void type pointers can be dereferenced, indexed witht the usual array syntax and pointer arithmethic is supported.
+Non-void type pointers can be dereferenced, indexed with the usual array syntax (`operator[]`) and pointer arithmethic is supported.
 
 ```C
 let object: int = 7;
