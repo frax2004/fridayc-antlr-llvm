@@ -92,11 +92,13 @@ __numb3r_ // valid identifier
 ```
 
 #### Literals
-There are 7 kinds of literals:
+There are 8 kinds of literals:
 - Integer literals
 - Floating-point literals
 - Character literals
   - Must be enclosed by '' and must contain exactly one character
+- String literals
+  - Must be enclosed by "" and can contain 0+ characters
 - Boolean literals
 - Pointer literal
 - Array literals
@@ -184,7 +186,7 @@ All variable must be initialized when declared (due to the **Resource Acquisitio
 ```C
 const pi: float = 3.14159; // constant declared explicitly as float
 let n = 0; // the compiler infers automatically the type int because the expression assigned evaluates to an int
-const word = "An inferred string variable"; // the compiler infers the type *byte (pointer to byte)
+const word = "An inferred string variable"; // the compiler infers the type []byte (array of 27 bytes)
 ```
 
 #### Primitive types
