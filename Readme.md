@@ -112,7 +112,7 @@ __numb3r_ // valid identifier
 ```
 
 #### Literals
-There are 8 kinds of literals:
+There are 7 kinds of literals:
 - Integer literals
 - Floating-point literals
 - Character literals
