@@ -215,15 +215,15 @@ Here is a table of the available fundamental types and their matching version in
 
 |Friday Type|Description|C type|
 |-|-|-|
-|`int`|${64}$-bit* width signed integer| `int64_t` or `long long int` |
-|`float`|${64}$-bit* width floating point| `double` |
-|`byte`|${8}$-bit* width signed integer| `int8_t` or `char` |
-|`bool`|${1}$-bit* boolean integer| `_Bool` or `bool` |
-|`void`|${0}$-bit* empty type| `void` |
-|`*any`|${64}$-bit* pointer| `void` |
-|`[]any`|${64}$-bit* pointer + ${64}$-bit* length| `void` |
+|`int`|64-bit* width signed integer| `int64_t` or `long long int` |
+|`float`|64-bit* width floating point| `double` |
+|`byte`|8-bit* width signed integer| `int8_t` or `char` |
+|`bool`|1-bit* boolean integer| `_Bool` or `bool` |
+|`void`|0-bit* empty type| `void` |
+|`*any`|64-bit* pointer| `void` |
+|`[]any`|64-bit* pointer + 64-bit* length| `void` |
 
-$(*)$ : Bit width are guaranted to be the specified ones (platform independent)
+(*) : Bit width are guaranted to be the specified ones (platform independent)
 
 #### Operators
 Here's a table of each Friday type and the operators supported by each type
@@ -301,7 +301,7 @@ That in Friday corresponds to:
 let numbers: []int = [1, 3, 4, 5]; // array of integers of length 4
 ```
 
-Arrays elements are accessed with the usual `operator[]` with indexes ranging in $0$ , $ ...$ , $ $\<array\>.len$-1$.
+Arrays elements are accessed with the usual `operator[]` with indexes ranging in 0 ,  ... ,  \<array\>.len-1.
 
 Unlike C, arrays cannot decay to pointers and their fields cannot be reassigned, however the .ptr field can be used to initialize an entity of type `*type` where **type** is the element type of the array.
 
@@ -320,7 +320,7 @@ const nullPointer = null; // the type of nullPointer is *void
 ```
 
 #### Structs
-Structs in Friday are aggregate types of at least $1$-bit width (bit width of a struct containing only one boolean field)
+Structs in Friday are aggregate types of at least 1-bit width (bit width of a struct containing only one boolean field)
 
 Note that a struct cannot have a field that has the same type as the declaring struct (**recursive struct problem**)
 
