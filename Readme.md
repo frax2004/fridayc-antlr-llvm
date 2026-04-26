@@ -1,4 +1,24 @@
-# The Friday Programming Language & Compiler
+<div align="center">
+
+  <!-- Logo (Sostituisci il percorso se necessario) -->
+  <img src="logo/friday.png" alt="Friday Logo" width="180">
+
+  <h1>The Friday Programming Language</h1>
+
+  <!-- Badge in una sola riga -->
+  <img src="https://img.shields.io/badge/License-GPL--3.0-blue.svg" alt="License">
+  <img src="https://img.shields.io/badge/LLVM-16+-60c53e.svg?logo=llvm" alt="LLVM">
+  <img src="https://img.shields.io/badge/ANTLR-4-red.svg" alt="ANTLR">
+  <img src="https://img.shields.io/badge/C++-20-00599C.svg?logo=c%2B%2B" alt="C++">
+  <img src="https://img.shields.io/badge/Java-17+-ED8B00.svg?logo=openjdk" alt="Java">
+  <img src="https://img.shields.io/badge/Build-passing-brightgreen.svg" alt="Build Status">
+
+  <p>
+    <i>A compiled, staticly-typed, imperative, modular, C-like language that supports object-oriented and functional language built on top of LLVM and Antlr4</i>
+  </p>
+
+</div>
+
 ---
 
 ##### Introduction
