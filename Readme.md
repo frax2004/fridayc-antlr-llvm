@@ -7,46 +7,46 @@ The friday programming language is a compiled, staticly-typed, imperative, modul
 ## Language Reference
 ---
 #### Index
-- Core language features
-  - Basic knowledge
-    - An "Hello, World!" program
-    - Comments
-    - Identifiers
-    - Literals
-    - Array literals
+- [Core language features](#core-language-features)
+  - [Basic knowledge](#basic-knowledge)
+    - [An "Hello, World!" program](#an-hello-world-program)
+    - [Comments](#comments)
+    - [Identifiers](#identifiers)
+    - [Literals](#literals)
   
-  - Source code management
-    - Namespaces
-    - The using statement
+  - [Source code management](#source-code-management)
+    - [Namespaces](#namespaces)
+    - [The using statement](#the-using-statement)
 
-  - Types and Variables
-    - Variables
-    - Primitive types
-    - Operators
-    - Explicit casts
-    - Function types
-    - Arrays
-    - Pointers
-    - Structs
+  - [Types and Variables](#types-and-variables)
+    - [Variables](#variables)
+    - [Primitive types](#primitive-types)
+    - [Operators](#operators)
+    - [Explicit casts](#explicit-casts)
+    - [Function types](#function-types)
+    - [Arrays](#arrays)
+    - [Pointers](#pointers)
+    - [Structs](#structs)
 
-  - Statements
-    - If statements
-    - Loops
-    - Functions
-    - Member functions
-    - Native functions
-    - Overloading
-    - Operator overloading
+  - [Statements](#statements)
+    - [If statements](#if-statements)
+    - [Loops](#loops)
+    - [Functions](#functions)
+    - [Member functions](#member-functions)
+    - [Native functions](#native-functions)
+    - [Overloading](#overloading)
+    - [Operator overloading](#operator-overloading)
 
-  - Memory model
-    - Memory management
-    - The defer statement
+  - [Memory model](#memory-model)
+    - [Memory management](#memory-management)
+    - [The defer statement](#the-defer-statement)
 
-  - Compile-time utilities
-    - Static reflection
+  - [Compile-time utilities](#compile-time-utilities)
+    - [Static reflection](#static-reflection)
 
-- Friday Standard Library (FSL)
+- [Friday Standard Library (FSL)](#the-friday-standard-library-fsl)
 
+## Core Language Features
 ### Basic Knowledge
 ---
 
@@ -195,11 +195,13 @@ Here is a table of the available fundamental types and their matching version in
 
 |Friday Type|Description|C type|
 |-|-|-|
-|`int`|${64}$-bit $^*$ width signed integer| `int64_t` or `long long int` |
-|`float`|${64}$-bit $^*$ width floating point| `double` |
-|`byte`|${8}$-bit $^*$ width signed integer| `int8_t` or `char` |
-|`bool`|${1}$-bit $^*$ boolean integer| `_Bool` or `bool` |
-|`void`|${0}$-bit $^*$ empty type| `void` |
+|`int`|${64}$-bit* width signed integer| `int64_t` or `long long int` |
+|`float`|${64}$-bit* width floating point| `double` |
+|`byte`|${8}$-bit* width signed integer| `int8_t` or `char` |
+|`bool`|${1}$-bit* boolean integer| `_Bool` or `bool` |
+|`void`|${0}$-bit* empty type| `void` |
+|`*any`|${64}$-bit* pointer| `void` |
+|`[]any`|${64}$-bit* pointer + ${64}$-bit* length| `void` |
 
 $(*)$ : Bit width are guaranted to be the specified ones (platform independent)
 
@@ -539,7 +541,7 @@ Note that if there is more than one defer statement they will be stacked and exe
 ⚠️ This section is incomplete ⚠️ 
 ```
 
-### The Friday Standard Library (FSL)
+## The Friday Standard Library (FSL)
 ---
 
 ```bash
