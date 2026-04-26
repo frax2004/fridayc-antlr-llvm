@@ -14,7 +14,7 @@
   <img src="https://img.shields.io/badge/Build-passing-brightgreen.svg" alt="Build Status">
 
   <p>
-    <i>A compiled, staticly-typed, imperative, modular, C-like language that supports object-oriented and functional language built on top of LLVM and Antlr4</i>
+    <i>A compiled, staticly-typed, imperative, modular, C-like language that supports object-oriented and functional patterns built on top of LLVM and Antlr4</i>
   </p>
 
 </div>
