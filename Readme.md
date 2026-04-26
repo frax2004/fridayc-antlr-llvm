@@ -287,7 +287,7 @@ Arrays are in fact a pair of pointer to the data and its length that must be com
 To show what really arrays are, here's what an int array looks like from a C program perspective:
 
 ```C
-let struct {
+struct {
   int64_t const *ptr;
   const int64_t len;
 } numbers = { 
