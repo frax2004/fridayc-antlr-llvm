@@ -525,7 +525,7 @@ fn main() -> void {
 ```
 
 **Output :**
-```bash
+```cmd
 Very difficult job started
 Very difficult job done
 Freed x;
