@@ -34,8 +34,8 @@ The friday programming language is a compiled, staticly-typed, imperative, modul
     - Loops
     - Functions
     - Member functions
-    - Overloading
     - Native functions
+    - Overloading
     - Operator overloading
 
   - Memory model
@@ -231,6 +231,8 @@ Here's a table of each Friday type and the operators supported by each type
 |`*`| dereference | `*non-void` |
 |`&`| reference | `any-type` |
 |`as`| explicit cast | `non-void` |
+|`sizeof`| byte size operator | `any-object`, `any-type` |
+|`alignof`| byte alignment operator | `any-object`, `any-type` |
 |`[]`| array element access | `[]non-void`, `*non-void` |
 
 #### Explicit Casts
@@ -298,10 +300,14 @@ const nullPointer = null; // the type of nullPointer is *void
 #### Structs
 Structs in Friday are aggregate types of at least $1$-bit width (bit width of a struct containing only one boolean field)
 
+Note that a struct cannot have a field that has the same type as the declaring struct (**recursive struct problem**)
+
 ```C++
 struct Vec2 {
-  x: float;
-  y: float;
+  x: float; // ok
+  y: float; // ok
+  z: Vec2; // Error, recursive struct field
+  w: *Vec2; // ok
 }
 
 // Structs are allocated by default in the stack with the `operator new`
@@ -382,6 +388,37 @@ fn main() -> void { // the return type of the main function must be void
 
 When a function has only one instruction and that instruction is a return statement, the function body can be shortened with an an `inline-body` as showed in the example above.
 
+#### Member Functions
+Structs in the Friday programming language can have associated functions called **member functions** like many other language's class methods, except that member functions have the **explicit this parameter**
+as the first parameter and that they are defined inside structs.
+
+###### The explicit 'this' parameter
+The explicit **this** parameter is the access point to the fields and member functions of the instance that called that member function. Thus the explicit this parameter must be the first parameter of the member function and its type must be a one-dimentional pointer to the declaring struct type.
+
+```C
+struct Rectangle {
+  x: float;
+  y: float;
+
+  fn area(this: *Rectangle) -> float => this.x * this.y;
+
+  fn foo() -> void {
+    // error: a member function must have the explicit this parameter as the first parameter
+  }
+}
+```
+Note that, since struct instances use the dot notation to access fields and pointer to struct should access the referenced instance first, auto dereference is applied to the pointer object if it is a one dimentional pointer (otherwise the dereference syntax is needed).
+
+#### Native Functions
+Functions can also be declared as **native**, which means that its implementation is defined in another object file during the compilation process (even in another language like C/C++ or Rust). This brings an interface between Friday and other compiled languages.
+
+```C
+native fn add(x: int, y: int) -> int; // leave a ; to complete the native function declaration
+```
+
+Note that native functions **cannot be member functions** and that not giving the implementation of any native function results in a link error (possibly **undefined reference to object X**).
+
+
 #### Overloading
 Functions in Friday can also be overloaded, which means that two functions with different parameters can have the same name, and that the compile will figure out what is the correct overload of the function (if there is any matching) based on the types of the arguments that are passed in the function call.
 
@@ -404,3 +441,108 @@ fn main() -> void {
   let y4 = add(y2 as int, 3); // ok, calls add(int, int)
 }
 ```
+
+#### Operator overloading
+Operators in the Friday programming language are also member functions defined whithin their type definition, so they can be overloaded:
+
+```C
+struct Vec2 {
+  x: float;
+  y: float;
+
+  fn operator+(this: *Vec2, other: Vec2) -> Vec2 => new Vec2{
+    x: this.x + other.x,
+    y: this.y + other.y
+  };
+
+  fn describe(this: *Vec2) -> void {
+    print this.x;
+    print this.y;
+  } 
+}
+
+fn main() -> void {
+  let u = new Vec2{
+    x: 1,
+    y: 2
+  };
+  
+  let v = new Vec2{
+    x: 5,
+    y: 8
+  };
+
+  (u + v).describe();
+}
+```
+
+All operators can be overloaded except:
+- `.` (field access operator)
+- `as` (explicit cast operator)
+- `sizeof` (byte size operator)
+- `alignof` (byte align operator)
+
+### Memory Model
+---
+
+#### Memory Management
+Memory management in the Friday programming language is manual like C, but it offers some tools to handle it better.
+The Friday language follows the copy semantics, which means that every object is by default copied.
+
+Note that copy of a pointer is not the copy of the referenced object, but a copy of the address of the referenced object.
+Memory can be **stack** allocated or **heap** allocated. 
+
+###### Heap Memory Allocations
+Memory is allocated and freed with 2 native functions coming from C: **malloc** and **free**
+from the `cstd` library.
+
+```C++
+using cstd;
+
+fn main() -> void {
+  let x: *int = malloc(sizeof int);
+  /* ... */
+  free(x);
+}
+```
+
+### The Defer Statement
+The defer statement is a modern compiler feature that lets execute code automatically on scope exit.
+In the Friday language, here's an example of usage:
+
+```C
+fn main() -> void {
+  let x: *int = malloc(sizeof int);
+  print "Very difficult job started";
+  defer free(x); // deferred statement execution
+  defer {
+    print "Freed x";
+  } // deferred scope excecution
+  print "Very difficult job done";
+}
+```
+
+**Output :**
+```bash
+Very difficult job started
+Very difficult job done
+Freed x;
+```
+
+Note that if there is more than one defer statement they will be stacked and executed from the first to the last at the end of the enclosing scope.
+
+### Compile-Time Utilities
+---
+
+#### Static Reflection
+```bash
+⚠️ This section is incomplete ⚠️ 
+```
+
+### The Friday Standard Library (FSL)
+---
+
+```bash
+⚠️ This section is incomplete ⚠️ 
+```
+
