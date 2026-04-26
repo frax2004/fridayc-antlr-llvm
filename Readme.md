@@ -9,7 +9,7 @@
   <img src="https://img.shields.io/badge/License-GPL--3.0-blue.svg" alt="License">
   <img src="https://img.shields.io/badge/LLVM-16+-60c53e.svg?logo=llvm" alt="LLVM">
   <img src="https://img.shields.io/badge/ANTLR-4-red.svg" alt="ANTLR">
-  <img src="https://img.shields.io/badge/C++-20-00599C.svg?logo=c%2B%2B" alt="C++">
+  <img src="https://img.shields.io/badge/C++-23+-00599C.svg?logo=c%2B%2B" alt="C++">
   <img src="https://img.shields.io/badge/Java-17+-ED8B00.svg?logo=openjdk" alt="Java">
   <img src="https://img.shields.io/badge/Build-passing-brightgreen.svg" alt="Build Status">
 
