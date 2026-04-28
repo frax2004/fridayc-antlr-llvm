@@ -1,15 +1,36 @@
 lexer grammar FridayScanner;
 
-COMMENT: '//'(~[\r\n])* -> skip;
+// Ignored characters
+INLINE_COMMENT: '//'(~[\r\n])* -> skip;
+COMMENT: '/*'([.\n\r])*'*/' -> skip;
 SPACE: [ \t\r\n] -> skip;
 
+// Keywords
 STRUCT: 'struct';
 RETURN: 'return';
 PRINT: 'print';
 FN: 'fn';
+FOR: 'for';
+WHILE: 'while';
+DEFER: 'defer';
+NAMESPACE: 'namespace';
+USING: 'using';
+CONST: 'const';
+LET: 'let';
+NEW: 'new';
+IF: 'if';
+ELIF: 'elif';
+ELSE: 'else';
+
+// Literals
 BOOL_LIT: 'true' | 'false';
 NULL_LIT: 'null';
+INT_LIT: ('0' | [1-9][0-9]*);
+FLOAT_LIT: ([1-9][0-9]*)'.'([0-9]+) | ([1-9][0-9]+)'.'([0-9]*);
+STRING_LIT: '"'(.*?)'"';
+CHAR_LIT: '\''(. | '\\'.)'\'';
 
+// Symbols
 LEFT_PAREN: '(';
 LEFT_SQUARE: '[';
 LEFT_CURLY: '{';
@@ -19,20 +40,20 @@ RIGHT_CURLY: '}';
 SEMI: ';';
 COL: ':';
 COMMA: ',';
-STAR: '*';
-SLASH: '/';
-MINUS: '-';
-PLUS: '+';
-MODULO: '%';
-
 ARROW: '->';
 FAT_ARROW: '=>';
+AND: 'and';
+OR: 'or';
+NOT: 'not';
+AS: 'as';
+SIZEOF: 'sizeof';
+ALIGNOF: 'alignof';
+
+// Operators
+PLUS: '+';
+MINUS: '-';
+STAR: '*';
+SLASH: '/';
+MODULO: '%';
 
 IDENTIFIER: [a-zA-Z_][a-zA-Z0-9_]*;
-
-
-INT_LIT: ('0' | [1-9][0-9]*);
-FLOAT_LIT: ('0' | [1-9][0-9]*)'.'([0-9]*);
-STRING_LIT: '"'(.*?)'"';
-CHAR_LIT: '\''.'\'';
-

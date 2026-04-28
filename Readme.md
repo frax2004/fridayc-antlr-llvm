@@ -229,12 +229,13 @@ Here is a table of the available fundamental types and their matching version in
 Here's a table of each Friday type and the operators supported by each type
 |Operator|Description|Supported by default by|
 |-|-|-|
+|`+`| unary plus | `int`, `float`|
+|`-`| unary minus | `int`, `float`|
 |`+`| binary plus | `int`, `float`|
 |`-`| binary minus | `int`, `float`|
 |`*`| multiply | `int`, `float`|
 |`/`| divide | `int`, `float`|
 |`%`| division rest | `int` |
-|`+`| unary plus | `int`, `float`|
 |`<<`| bitwise shift left | `int` |
 |`<`| less than | `int`, `float`, `byte`, `*any`, `[]any` |
 |`<=`| less than or equal to | `int`, `float`, `byte`, `*any`, `[]any` |
