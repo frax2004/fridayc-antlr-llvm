@@ -24,14 +24,18 @@ public:
     GREATER = 52, LESS_EQ = 53, GREATER_EQ = 54, EQUALS = 55, NOT_EQUALS = 56, 
     ASSIGN = 57, PLUS_ASSIGN = 58, MINUS_ASSIGN = 59, STAR_ASSIGN = 60, 
     SLASH_ASSIGN = 61, MODULO_ASSIGN = 62, LSHIFT_ASSIGN = 63, RSHIFT_ASSIGN = 64, 
-    AMPERSAND_ASSIGN = 65, PIPELINE_ASSIGN = 66, TILDE = 67, DOT = 68, IDENTIFIER = 69
+    AMPERSAND_ASSIGN = 65, PIPELINE_ASSIGN = 66, TILDE = 67, DOT = 68, IDENTIFIER = 69, 
+    NAMESPACE_IDENTIFIER = 70
   };
 
   enum {
-    RuleProgram = 0, RuleTopLevelStatement = 1, RuleReturnStatement = 2, 
-    RulePrintStatement = 3, RuleStatement = 4, RuleInlineBlock = 5, RuleBlock = 6, 
-    RuleFunctionBlock = 7, RuleFunctionStatement = 8, RuleExpr = 9, RuleSimpleType = 10, 
-    RuleFunctionType = 11, RulePointerType = 12, RulePointedType = 13, RuleType = 14
+    RuleProgram = 0, RuleTopLevelStatement = 1, RuleNamespaceStatement = 2, 
+    RuleUsingStatement = 3, RuleStructStatement = 4, RuleFunctionStatement = 5, 
+    RuleRegularStatement = 6, RuleDeferStatement = 7, RulePrintStatement = 8, 
+    RuleDeferrableStatement = 9, RuleDeferrableScope = 10, RuleScope = 11, 
+    RuleScopedStatement = 12, RuleReturnStatement = 13, RuleInlineScope = 14, 
+    RuleFunctionBlock = 15, RuleExpr = 16, RuleSimpleType = 17, RuleFunctionType = 18, 
+    RulePointerType = 19, RulePointedType = 20, RuleType = 21
   };
 
   explicit FridayParser(antlr4::TokenStream *input);
@@ -53,13 +57,20 @@ public:
 
   class ProgramContext;
   class TopLevelStatementContext;
-  class ReturnStatementContext;
-  class PrintStatementContext;
-  class StatementContext;
-  class InlineBlockContext;
-  class BlockContext;
-  class FunctionBlockContext;
+  class NamespaceStatementContext;
+  class UsingStatementContext;
+  class StructStatementContext;
   class FunctionStatementContext;
+  class RegularStatementContext;
+  class DeferStatementContext;
+  class PrintStatementContext;
+  class DeferrableStatementContext;
+  class DeferrableScopeContext;
+  class ScopeContext;
+  class ScopedStatementContext;
+  class ReturnStatementContext;
+  class InlineScopeContext;
+  class FunctionBlockContext;
   class ExprContext;
   class SimpleTypeContext;
   class FunctionTypeContext;
@@ -72,6 +83,7 @@ public:
     ProgramContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *EOF();
+    NamespaceStatementContext *namespaceStatement();
     std::vector<TopLevelStatementContext *> topLevelStatement();
     TopLevelStatementContext* topLevelStatement(size_t i);
 
@@ -84,6 +96,8 @@ public:
   public:
     TopLevelStatementContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
+    UsingStatementContext *usingStatement();
+    StructStatementContext *structStatement();
     FunctionStatementContext *functionStatement();
 
    
@@ -91,83 +105,60 @@ public:
 
   TopLevelStatementContext* topLevelStatement();
 
-  class  ReturnStatementContext : public antlr4::ParserRuleContext {
+  class  NamespaceStatementContext : public antlr4::ParserRuleContext {
   public:
-    ReturnStatementContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    NamespaceStatementContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *RETURN();
-    antlr4::tree::TerminalNode *SEMI();
-    ExprContext *expr();
-
-   
-  };
-
-  ReturnStatementContext* returnStatement();
-
-  class  PrintStatementContext : public antlr4::ParserRuleContext {
-  public:
-    PrintStatementContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *PRINT();
-    ExprContext *expr();
+    antlr4::tree::TerminalNode *NAMESPACE();
+    antlr4::tree::TerminalNode *NAMESPACE_IDENTIFIER();
     antlr4::tree::TerminalNode *SEMI();
 
    
   };
 
-  PrintStatementContext* printStatement();
+  NamespaceStatementContext* namespaceStatement();
 
-  class  StatementContext : public antlr4::ParserRuleContext {
+  class  UsingStatementContext : public antlr4::ParserRuleContext {
   public:
-    StatementContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    UsingStatementContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    BlockContext *block();
-    PrintStatementContext *printStatement();
-    ReturnStatementContext *returnStatement();
-
-   
-  };
-
-  StatementContext* statement();
-
-  class  InlineBlockContext : public antlr4::ParserRuleContext {
-  public:
-    InlineBlockContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *FAT_ARROW();
-    ExprContext *expr();
+    antlr4::tree::TerminalNode *USING();
+    antlr4::tree::TerminalNode *NAMESPACE_IDENTIFIER();
     antlr4::tree::TerminalNode *SEMI();
 
    
   };
 
-  InlineBlockContext* inlineBlock();
+  UsingStatementContext* usingStatement();
 
-  class  BlockContext : public antlr4::ParserRuleContext {
+  class  StructStatementContext : public antlr4::ParserRuleContext {
   public:
-    BlockContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    antlr4::Token *identifierToken = nullptr;
+    std::vector<antlr4::Token *> fieldsNames;
+    FridayParser::TypeContext *typeContext = nullptr;
+    std::vector<TypeContext *> fieldsTypes;
+    FridayParser::FunctionStatementContext *functionStatementContext = nullptr;
+    std::vector<FunctionStatementContext *> methods;
+    StructStatementContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *STRUCT();
+    std::vector<antlr4::tree::TerminalNode *> IDENTIFIER();
+    antlr4::tree::TerminalNode* IDENTIFIER(size_t i);
     antlr4::tree::TerminalNode *LEFT_CURLY();
     antlr4::tree::TerminalNode *RIGHT_CURLY();
-    std::vector<StatementContext *> statement();
-    StatementContext* statement(size_t i);
+    std::vector<FunctionStatementContext *> functionStatement();
+    FunctionStatementContext* functionStatement(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> COL();
+    antlr4::tree::TerminalNode* COL(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> SEMI();
+    antlr4::tree::TerminalNode* SEMI(size_t i);
+    std::vector<TypeContext *> type();
+    TypeContext* type(size_t i);
 
    
   };
 
-  BlockContext* block();
-
-  class  FunctionBlockContext : public antlr4::ParserRuleContext {
-  public:
-    FunctionBlockContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
-    BlockContext *block();
-    InlineBlockContext *inlineBlock();
-
-   
-  };
-
-  FunctionBlockContext* functionBlock();
+  StructStatementContext* structStatement();
 
   class  FunctionStatementContext : public antlr4::ParserRuleContext {
   public:
@@ -197,6 +188,134 @@ public:
   };
 
   FunctionStatementContext* functionStatement();
+
+  class  RegularStatementContext : public antlr4::ParserRuleContext {
+  public:
+    RegularStatementContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    PrintStatementContext *printStatement();
+    DeferStatementContext *deferStatement();
+
+   
+  };
+
+  RegularStatementContext* regularStatement();
+
+  class  DeferStatementContext : public antlr4::ParserRuleContext {
+  public:
+    DeferStatementContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *DEFER();
+    DeferrableStatementContext *deferrableStatement();
+
+   
+  };
+
+  DeferStatementContext* deferStatement();
+
+  class  PrintStatementContext : public antlr4::ParserRuleContext {
+  public:
+    PrintStatementContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *PRINT();
+    ExprContext *expr();
+    antlr4::tree::TerminalNode *SEMI();
+
+   
+  };
+
+  PrintStatementContext* printStatement();
+
+  class  DeferrableStatementContext : public antlr4::ParserRuleContext {
+  public:
+    DeferrableStatementContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    DeferrableScopeContext *deferrableScope();
+    RegularStatementContext *regularStatement();
+
+   
+  };
+
+  DeferrableStatementContext* deferrableStatement();
+
+  class  DeferrableScopeContext : public antlr4::ParserRuleContext {
+  public:
+    DeferrableScopeContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *LEFT_CURLY();
+    antlr4::tree::TerminalNode *RIGHT_CURLY();
+    std::vector<DeferrableStatementContext *> deferrableStatement();
+    DeferrableStatementContext* deferrableStatement(size_t i);
+
+   
+  };
+
+  DeferrableScopeContext* deferrableScope();
+
+  class  ScopeContext : public antlr4::ParserRuleContext {
+  public:
+    ScopeContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *LEFT_CURLY();
+    antlr4::tree::TerminalNode *RIGHT_CURLY();
+    std::vector<ScopedStatementContext *> scopedStatement();
+    ScopedStatementContext* scopedStatement(size_t i);
+
+   
+  };
+
+  ScopeContext* scope();
+
+  class  ScopedStatementContext : public antlr4::ParserRuleContext {
+  public:
+    ScopedStatementContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    ScopeContext *scope();
+    RegularStatementContext *regularStatement();
+    ReturnStatementContext *returnStatement();
+
+   
+  };
+
+  ScopedStatementContext* scopedStatement();
+
+  class  ReturnStatementContext : public antlr4::ParserRuleContext {
+  public:
+    ReturnStatementContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *RETURN();
+    antlr4::tree::TerminalNode *SEMI();
+    ExprContext *expr();
+
+   
+  };
+
+  ReturnStatementContext* returnStatement();
+
+  class  InlineScopeContext : public antlr4::ParserRuleContext {
+  public:
+    InlineScopeContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *FAT_ARROW();
+    ExprContext *expr();
+    antlr4::tree::TerminalNode *SEMI();
+
+   
+  };
+
+  InlineScopeContext* inlineScope();
+
+  class  FunctionBlockContext : public antlr4::ParserRuleContext {
+  public:
+    FunctionBlockContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    ScopeContext *scope();
+    InlineScopeContext *inlineScope();
+
+   
+  };
+
+  FunctionBlockContext* functionBlock();
 
   class  ExprContext : public antlr4::ParserRuleContext {
   public:
