@@ -34,8 +34,8 @@ public:
     RuleRegularStatement = 6, RuleDeferStatement = 7, RulePrintStatement = 8, 
     RuleDeferrableStatement = 9, RuleDeferrableScope = 10, RuleScope = 11, 
     RuleScopedStatement = 12, RuleReturnStatement = 13, RuleInlineScope = 14, 
-    RuleFunctionBlock = 15, RuleExpr = 16, RuleSimpleType = 17, RuleFunctionType = 18, 
-    RulePointerType = 19, RulePointedType = 20, RuleType = 21
+    RuleFunctionScope = 15, RuleExpr = 16, RuleSimpleType = 17, RuleFunctionType = 18, 
+    RulePointerType = 19, RuleArrayType = 20, RuleType = 21
   };
 
   explicit FridayParser(antlr4::TokenStream *input);
@@ -70,12 +70,12 @@ public:
   class ScopedStatementContext;
   class ReturnStatementContext;
   class InlineScopeContext;
-  class FunctionBlockContext;
+  class FunctionScopeContext;
   class ExprContext;
   class SimpleTypeContext;
   class FunctionTypeContext;
   class PointerTypeContext;
-  class PointedTypeContext;
+  class ArrayTypeContext;
   class TypeContext; 
 
   class  ProgramContext : public antlr4::ParserRuleContext {
@@ -174,7 +174,7 @@ public:
     antlr4::tree::TerminalNode *LEFT_PAREN();
     antlr4::tree::TerminalNode *RIGHT_PAREN();
     antlr4::tree::TerminalNode *ARROW();
-    FunctionBlockContext *functionBlock();
+    FunctionScopeContext *functionScope();
     std::vector<antlr4::tree::TerminalNode *> IDENTIFIER();
     antlr4::tree::TerminalNode* IDENTIFIER(size_t i);
     std::vector<TypeContext *> type();
@@ -305,9 +305,9 @@ public:
 
   InlineScopeContext* inlineScope();
 
-  class  FunctionBlockContext : public antlr4::ParserRuleContext {
+  class  FunctionScopeContext : public antlr4::ParserRuleContext {
   public:
-    FunctionBlockContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    FunctionScopeContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     ScopeContext *scope();
     InlineScopeContext *inlineScope();
@@ -315,7 +315,7 @@ public:
    
   };
 
-  FunctionBlockContext* functionBlock();
+  FunctionScopeContext* functionScope();
 
   class  ExprContext : public antlr4::ParserRuleContext {
   public:
@@ -330,87 +330,9 @@ public:
    
   };
 
-  class  CallContext : public ExprContext {
+  class  BinaryExpressionContext : public ExprContext {
   public:
-    CallContext(ExprContext *ctx);
-
-    FridayParser::ExprContext *func = nullptr;
-    FridayParser::ExprContext *exprContext = nullptr;
-    std::vector<ExprContext *> args;
-    antlr4::tree::TerminalNode *LEFT_PAREN();
-    antlr4::tree::TerminalNode *RIGHT_PAREN();
-    std::vector<ExprContext *> expr();
-    ExprContext* expr(size_t i);
-    std::vector<antlr4::tree::TerminalNode *> COMMA();
-    antlr4::tree::TerminalNode* COMMA(size_t i);
-  };
-
-  class  IdentifierContext : public ExprContext {
-  public:
-    IdentifierContext(ExprContext *ctx);
-
-    antlr4::tree::TerminalNode *IDENTIFIER();
-  };
-
-  class  CharLiteralContext : public ExprContext {
-  public:
-    CharLiteralContext(ExprContext *ctx);
-
-    antlr4::tree::TerminalNode *CHAR_LIT();
-  };
-
-  class  StringLiteralContext : public ExprContext {
-  public:
-    StringLiteralContext(ExprContext *ctx);
-
-    antlr4::tree::TerminalNode *STRING_LIT();
-  };
-
-  class  BoolLiteralContext : public ExprContext {
-  public:
-    BoolLiteralContext(ExprContext *ctx);
-
-    antlr4::tree::TerminalNode *BOOL_LIT();
-  };
-
-  class  FloatLiteralContext : public ExprContext {
-  public:
-    FloatLiteralContext(ExprContext *ctx);
-
-    antlr4::tree::TerminalNode *FLOAT_LIT();
-  };
-
-  class  IntLiteralContext : public ExprContext {
-  public:
-    IntLiteralContext(ExprContext *ctx);
-
-    antlr4::tree::TerminalNode *INT_LIT();
-  };
-
-  class  GroupingContext : public ExprContext {
-  public:
-    GroupingContext(ExprContext *ctx);
-
-    antlr4::tree::TerminalNode *LEFT_PAREN();
-    ExprContext *expr();
-    antlr4::tree::TerminalNode *RIGHT_PAREN();
-  };
-
-  class  SubscriptContext : public ExprContext {
-  public:
-    SubscriptContext(ExprContext *ctx);
-
-    FridayParser::ExprContext *array = nullptr;
-    FridayParser::ExprContext *index = nullptr;
-    antlr4::tree::TerminalNode *LEFT_SQUARE();
-    antlr4::tree::TerminalNode *RIGHT_SQUARE();
-    std::vector<ExprContext *> expr();
-    ExprContext* expr(size_t i);
-  };
-
-  class  BinaryContext : public ExprContext {
-  public:
-    BinaryContext(ExprContext *ctx);
+    BinaryExpressionContext(ExprContext *ctx);
 
     FridayParser::ExprContext *left = nullptr;
     antlr4::Token *binaryOperator = nullptr;
@@ -424,21 +346,99 @@ public:
     antlr4::tree::TerminalNode *MINUS();
   };
 
-  class  NullLiteralContext : public ExprContext {
+  class  StringLiteralExpressionContext : public ExprContext {
   public:
-    NullLiteralContext(ExprContext *ctx);
+    StringLiteralExpressionContext(ExprContext *ctx);
 
-    antlr4::tree::TerminalNode *NULL_LIT();
+    antlr4::tree::TerminalNode *STRING_LIT();
   };
 
-  class  UnaryContext : public ExprContext {
+  class  FloatLiteralExpressionContext : public ExprContext {
   public:
-    UnaryContext(ExprContext *ctx);
+    FloatLiteralExpressionContext(ExprContext *ctx);
+
+    antlr4::tree::TerminalNode *FLOAT_LIT();
+  };
+
+  class  GroupingExpressionContext : public ExprContext {
+  public:
+    GroupingExpressionContext(ExprContext *ctx);
+
+    antlr4::tree::TerminalNode *LEFT_PAREN();
+    ExprContext *expr();
+    antlr4::tree::TerminalNode *RIGHT_PAREN();
+  };
+
+  class  SubscriptExpressionContext : public ExprContext {
+  public:
+    SubscriptExpressionContext(ExprContext *ctx);
+
+    FridayParser::ExprContext *array = nullptr;
+    FridayParser::ExprContext *index = nullptr;
+    antlr4::tree::TerminalNode *LEFT_SQUARE();
+    antlr4::tree::TerminalNode *RIGHT_SQUARE();
+    std::vector<ExprContext *> expr();
+    ExprContext* expr(size_t i);
+  };
+
+  class  BoolLiteralExpressionContext : public ExprContext {
+  public:
+    BoolLiteralExpressionContext(ExprContext *ctx);
+
+    antlr4::tree::TerminalNode *BOOL_LIT();
+  };
+
+  class  UnaryExpressionContext : public ExprContext {
+  public:
+    UnaryExpressionContext(ExprContext *ctx);
 
     antlr4::Token *unaryOperator = nullptr;
     ExprContext *expr();
     antlr4::tree::TerminalNode *PLUS();
     antlr4::tree::TerminalNode *MINUS();
+  };
+
+  class  CharLiteralExpressionContext : public ExprContext {
+  public:
+    CharLiteralExpressionContext(ExprContext *ctx);
+
+    antlr4::tree::TerminalNode *CHAR_LIT();
+  };
+
+  class  CallExpressionContext : public ExprContext {
+  public:
+    CallExpressionContext(ExprContext *ctx);
+
+    FridayParser::ExprContext *func = nullptr;
+    FridayParser::ExprContext *exprContext = nullptr;
+    std::vector<ExprContext *> args;
+    antlr4::tree::TerminalNode *LEFT_PAREN();
+    antlr4::tree::TerminalNode *RIGHT_PAREN();
+    std::vector<ExprContext *> expr();
+    ExprContext* expr(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> COMMA();
+    antlr4::tree::TerminalNode* COMMA(size_t i);
+  };
+
+  class  IntLiteralExpressionContext : public ExprContext {
+  public:
+    IntLiteralExpressionContext(ExprContext *ctx);
+
+    antlr4::tree::TerminalNode *INT_LIT();
+  };
+
+  class  NullLiteralExpressionContext : public ExprContext {
+  public:
+    NullLiteralExpressionContext(ExprContext *ctx);
+
+    antlr4::tree::TerminalNode *NULL_LIT();
+  };
+
+  class  IdentifierExpressionContext : public ExprContext {
+  public:
+    IdentifierExpressionContext(ExprContext *ctx);
+
+    antlr4::tree::TerminalNode *IDENTIFIER();
   };
 
   ExprContext* expr();
@@ -479,7 +479,7 @@ public:
   public:
     PointerTypeContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    PointedTypeContext *pointedType();
+    TypeContext *type();
     std::vector<antlr4::tree::TerminalNode *> STAR();
     antlr4::tree::TerminalNode* STAR(size_t i);
 
@@ -488,17 +488,20 @@ public:
 
   PointerTypeContext* pointerType();
 
-  class  PointedTypeContext : public antlr4::ParserRuleContext {
+  class  ArrayTypeContext : public antlr4::ParserRuleContext {
   public:
-    PointedTypeContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    ArrayTypeContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    SimpleTypeContext *simpleType();
-    FunctionTypeContext *functionType();
+    TypeContext *type();
+    std::vector<antlr4::tree::TerminalNode *> LEFT_SQUARE();
+    antlr4::tree::TerminalNode* LEFT_SQUARE(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> RIGHT_SQUARE();
+    antlr4::tree::TerminalNode* RIGHT_SQUARE(size_t i);
 
    
   };
 
-  PointedTypeContext* pointedType();
+  ArrayTypeContext* arrayType();
 
   class  TypeContext : public antlr4::ParserRuleContext {
   public:
@@ -506,6 +509,7 @@ public:
     virtual size_t getRuleIndex() const override;
     SimpleTypeContext *simpleType();
     PointerTypeContext *pointerType();
+    ArrayTypeContext *arrayType();
     FunctionTypeContext *functionType();
 
    
