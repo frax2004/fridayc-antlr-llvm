@@ -350,8 +350,8 @@ struct Vec2 {
 // Structs are allocated by default in the stack with the `operator new`
 // The following statement is an aggregate initialization, not a constructor call.
 let y = new Vec2{
-  y: 56;
-  x: 43; // Order independent field initialization
+  y: 56,
+  x: 43 // Order independent field initialization
 };
 ```
 Here the `operator new` is **only a syntax indicator** and **does not mean** nothing else (like a memory **heap allocation** in other languages).

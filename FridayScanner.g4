@@ -13,6 +13,7 @@ FN: 'fn';
 FOR: 'for';
 WHILE: 'while';
 DEFER: 'defer';
+NATIVE: 'native';
 NAMESPACE: 'namespace';
 USING: 'using';
 CONST: 'const';
@@ -21,6 +22,12 @@ NEW: 'new';
 IF: 'if';
 ELIF: 'elif';
 ELSE: 'else';
+AND: 'and';
+OR: 'or';
+NOT: 'not';
+AS: 'as';
+SIZEOF: 'sizeof';
+ALIGNOF: 'alignof';
 
 // Literals
 BOOL_LIT: 'true' | 'false';
@@ -42,12 +49,8 @@ COL: ':';
 COMMA: ',';
 ARROW: '->';
 FAT_ARROW: '=>';
-AND: 'and';
-OR: 'or';
-NOT: 'not';
-AS: 'as';
-SIZEOF: 'sizeof';
-ALIGNOF: 'alignof';
+INCREMENT: '++';
+DECREMENT: '--';
 
 // Operators
 PLUS: '+';
