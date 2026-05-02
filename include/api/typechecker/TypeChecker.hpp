@@ -41,75 +41,75 @@ namespace friday::inline api::inline typechecker {
     /// @return a Struct type or Struct::getErrorType() if any error has occurred during semantic checks
     auto visitPrintStatement(FridayParser::PrintStatementContext *ctx) -> std::any override;
 
-    /// @brief visit a Block
-    /// @param ctx the Block context
+    /// @brief visit a Scope
+    /// @param ctx the Scope context
     /// @return a Struct type or Struct::getErrorType() if any error has occurred during semantic checks
-    auto visitBlock(FridayParser::BlockContext *ctx) -> std::any override;
+    auto visitScope(FridayParser::ScopeContext *ctx) -> std::any override;
 
-    /// @brief visit a InlineBlock
-    /// @param ctx the InlineBlock context
+    /// @brief visit a InlineScope
+    /// @param ctx the InlineScope context
     /// @return a Struct type or Struct::getErrorType() if any error has occurred during semantic checks
-    auto visitInlineBlock(FridayParser::InlineBlockContext *ctx) -> std::any override;
+    auto visitInlineScope(FridayParser::InlineScopeContext *ctx) -> std::any override;
 
     /// @brief visit a FunctionStatement
     /// @param ctx the FunctionStatement context
     /// @return a Struct type or Struct::getErrorType() if any error has occurred during semantic checks
     auto visitFunctionStatement(FridayParser::FunctionStatementContext *ctx) -> std::any override;
 
-    /// @brief visit a Call
-    /// @param ctx the Call context
+    /// @brief visit a CallExpression
+    /// @param ctx the CallExpression context
     /// @return a Struct type or Struct::getErrorType() if any error has occurred during semantic checks
-    auto visitCall(FridayParser::CallContext *ctx) -> std::any override;
+    auto visitCallExpression(FridayParser::CallExpressionContext *ctx) -> std::any override;
 
-    /// @brief visit a IdentifierContext
-    /// @param ctx the IdentifierContext context
+    /// @brief visit a IdentifierExpressionContext
+    /// @param ctx the IdentifierExpressionContext context
     /// @return a Struct type or Struct::getErrorType() if any error has occurred during semantic checks
-    auto visitIdentifier(FridayParser::IdentifierContext *ctx) -> std::any override;
+    auto visitIdentifierExpression(FridayParser::IdentifierExpressionContext *ctx) -> std::any override;
 
-    /// @brief visit a CharLiteralContext
-    /// @param ctx the CharLiteralContext context
+    /// @brief visit a CharLiteralExpressionContext
+    /// @param ctx the CharLiteralExpressionContext context
     /// @return a Struct type or Struct::getErrorType() if any error has occurred during semantic checks
-    auto visitCharLiteral(FridayParser::CharLiteralContext *ctx) -> std::any override;
+    auto visitCharLiteralExpression(FridayParser::CharLiteralExpressionContext *ctx) -> std::any override;
 
-    /// @brief visit a StringLiteralContext
-    /// @param ctx the StringLiteralContext context
+    /// @brief visit a StringLiteralExpressionContext
+    /// @param ctx the StringLiteralExpressionContext context
     /// @return a Struct type or Struct::getErrorType() if any error has occurred during semantic checks
-    auto visitStringLiteral(FridayParser::StringLiteralContext *ctx) -> std::any override;
+    auto visitStringLiteralExpression(FridayParser::StringLiteralExpressionContext *ctx) -> std::any override;
 
-    /// @brief visit a BoolLiteralContext
-    /// @param ctx the BoolLiteralContext context
+    /// @brief visit a BoolLiteralExpressionContext
+    /// @param ctx the BoolLiteralExpressionContext context
     /// @return a Struct type or Struct::getErrorType() if any error has occurred during semantic checks
-    auto visitBoolLiteral(FridayParser::BoolLiteralContext *ctx) -> std::any override;
+    auto visitBoolLiteralExpression(FridayParser::BoolLiteralExpressionContext *ctx) -> std::any override;
 
-    /// @brief visit a FloatLiteralContext
-    /// @param ctx the FloatLiteralContext context
+    /// @brief visit a FloatLiteralExpressionContext
+    /// @param ctx the FloatLiteralExpressionContext context
     /// @return a Struct type or Struct::getErrorType() if any error has occurred during semantic checks
-    auto visitFloatLiteral(FridayParser::FloatLiteralContext *ctx) -> std::any override;
+    auto visitFloatLiteralExpression(FridayParser::FloatLiteralExpressionContext *ctx) -> std::any override;
 
-    /// @brief visit a IntLiteralContext
-    /// @param ctx the IntLiteralContext context
+    /// @brief visit a IntLiteralExpressionContext
+    /// @param ctx the IntLiteralExpressionContext context
     /// @return a Struct type or Struct::getErrorType() if any error has occurred during semantic checks
-    auto visitIntLiteral(FridayParser::IntLiteralContext *ctx) -> std::any override;
+    auto visitIntLiteralExpression(FridayParser::IntLiteralExpressionContext *ctx) -> std::any override;
     
-    /// @brief visit a Grouping
-    /// @param ctx the Grouping context
+    /// @brief visit a GroupingExpression
+    /// @param ctx the GroupingExpression context
     /// @return a Struct type or Struct::getErrorType() if any error has occurred during semantic checks
-    auto visitGrouping(FridayParser::GroupingContext *ctx) -> std::any override;
+    auto visitGroupingExpression(FridayParser::GroupingExpressionContext *ctx) -> std::any override;
 
-    /// @brief visit a Subscript
-    /// @param ctx the Subscript context
+    /// @brief visit a SubscriptExpression
+    /// @param ctx the SubscriptExpression context
     /// @return a Struct type or Struct::getErrorType() if any error has occurred during semantic checks
-    auto visitSubscript(FridayParser::SubscriptContext *ctx) -> std::any override;
+    auto visitSubscriptExpression(FridayParser::SubscriptExpressionContext *ctx) -> std::any override;
 
-    /// @brief visit a Binary
-    /// @param ctx the Binary context
+    /// @brief visit a BinaryExpression
+    /// @param ctx the BinaryExpression context
     /// @return a Struct type or Struct::getErrorType() if any error has occurred during semantic checks
-    auto visitBinary(FridayParser::BinaryContext *ctx) -> std::any override;
+    auto visitBinaryExpression(FridayParser::BinaryExpressionContext *ctx) -> std::any override;
 
-    /// @brief visit a Unary
-    /// @param ctx the Unary context
+    /// @brief visit a UnaryPrefixExpression
+    /// @param ctx the UnaryPrefixExpression context
     /// @return a Struct type or Struct::getErrorType() if any error has occurred during semantic checks
-    auto visitUnary(FridayParser::UnaryContext *ctx) -> std::any override;
+    auto visitUnaryPrefixExpression(FridayParser::UnaryPrefixExpressionContext *ctx) -> std::any override;
 
     /// @brief Visit a SimpleType
     /// @param ctx the SimpleType context
@@ -139,6 +139,12 @@ namespace friday::inline api::inline typechecker {
     /// @brief Pop the current scope out of the stack of scopes in the call stack
     auto endScope() noexcept -> void;
 
+    /// @brief Gets the bound visitor to this instance
+    /// @tparam T the context type
+    /// @return The bound visitor
+    template<class T>
+    auto byVisiting() const noexcept -> std::function<std::any (T*)>;
+
     private:
     /// @brief the errors
     Vector<SemanticError> M_errors { };
@@ -148,6 +154,9 @@ namespace friday::inline api::inline typechecker {
     Type* M_currentFunctionReturnType { nullptr };
     /// @brief the current scope (used as a stack of scopes)
     SymbolTable* M_currentScope { nullptr };
-  };
-}
+  
+  }; // struct TypeChecker
+} // namespace friday::api::typechecker
 
+
+#include "TypeChecker.inl"

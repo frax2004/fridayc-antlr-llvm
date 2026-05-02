@@ -46,14 +46,14 @@ namespace friday::inline api::inline typechecker {
     /// @param oper the unary operator
     /// @param T the type
     /// @return the name of the unary operator
-    static auto getUnaryOperatorName(u64 oper, Type* T) noexcept -> String; 
+    static auto getUnaryPrefixExpressionOperatorName(u64 oper, Type* T) noexcept -> String; 
 
     /// @brief Gets the binary operator name for the given types
     /// @param oper the binary operator
     /// @param T the lhs type
     /// @param U the rhs type
     /// @return the name of the binary operator
-    static auto getBinaryOperatorName(u64 oper, Type* T, Type* U) noexcept -> String; 
+    static auto getBinaryExpressionOperatorName(u64 oper, Type* T, Type* U) noexcept -> String; 
 
   }; // struct Type
 } // namespace friday::api::typechecker

@@ -73,11 +73,11 @@ namespace friday::inline api::inline compiler {
     return visitChildren(ctx);
   }
 
-  auto Compiler::visitFunctionBlock(FridayParser::FunctionBlockContext *ctx) -> std::any {
+  auto Compiler::visitFunctionScope(FridayParser::FunctionScopeContext *ctx) -> std::any {
     return visitChildren(ctx);
   }
 
-  auto Compiler::visitBlock(FridayParser::BlockContext *ctx) -> std::any {
+  auto Compiler::visitScope(FridayParser::ScopeContext *ctx) -> std::any {
     return visitChildren(ctx);
   }
 
@@ -85,49 +85,49 @@ namespace friday::inline api::inline compiler {
     return visitChildren(ctx);
   }
 
-  auto Compiler::visitCall(FridayParser::CallContext *ctx) -> std::any {
+  auto Compiler::visitCallExpression(FridayParser::CallExpressionContext *ctx) -> std::any {
     return visitChildren(ctx);
   }
 
-  auto Compiler::visitIdentifier(FridayParser::IdentifierContext *ctx) -> std::any {
+  auto Compiler::visitIdentifierExpression(FridayParser::IdentifierExpressionContext *ctx) -> std::any {
     return visitChildren(ctx);
   }
   
-  auto Compiler::visitCharLiteral(FridayParser::CharLiteralContext *ctx) -> std::any {
+  auto Compiler::visitCharLiteralExpression(FridayParser::CharLiteralExpressionContext *ctx) -> std::any {
     return visitChildren(ctx);
   }
   
-  auto Compiler::visitStringLiteral(FridayParser::StringLiteralContext *ctx) -> std::any {
+  auto Compiler::visitStringLiteralExpression(FridayParser::StringLiteralExpressionContext *ctx) -> std::any {
     return visitChildren(ctx);
   }
   
-  auto Compiler::visitBoolLiteral(FridayParser::BoolLiteralContext *ctx) -> std::any {
+  auto Compiler::visitBoolLiteralExpression(FridayParser::BoolLiteralExpressionContext *ctx) -> std::any {
     return visitChildren(ctx);
   }
   
-  auto Compiler::visitFloatLiteral(FridayParser::FloatLiteralContext *ctx) -> std::any {
+  auto Compiler::visitFloatLiteralExpression(FridayParser::FloatLiteralExpressionContext *ctx) -> std::any {
     return visitChildren(ctx);
   }
   
-  auto Compiler::visitIntLiteral(FridayParser::IntLiteralContext *ctx) -> std::any {
+  auto Compiler::visitIntLiteralExpression(FridayParser::IntLiteralExpressionContext *ctx) -> std::any {
     return visitChildren(ctx);
   }
   
 
 
-  auto Compiler::visitGrouping(FridayParser::GroupingContext *ctx) -> std::any {
+  auto Compiler::visitGroupingExpression(FridayParser::GroupingExpressionContext *ctx) -> std::any {
     return visitChildren(ctx);
   }
 
-  auto Compiler::visitSubscript(FridayParser::SubscriptContext *ctx) -> std::any {
+  auto Compiler::visitSubscriptExpression(FridayParser::SubscriptExpressionContext *ctx) -> std::any {
     return visitChildren(ctx);
   }
 
-  auto Compiler::visitBinary(FridayParser::BinaryContext *ctx) -> std::any {
+  auto Compiler::visitBinaryExpression(FridayParser::BinaryExpressionContext *ctx) -> std::any {
     return visitChildren(ctx);
   }
 
-  auto Compiler::visitUnary(FridayParser::UnaryContext *ctx) -> std::any {
+  auto Compiler::visitUnaryPrefixExpression(FridayParser::UnaryPrefixExpressionContext *ctx) -> std::any {
     return visitChildren(ctx);
   }
 

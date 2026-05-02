@@ -35,8 +35,8 @@ public:
     RuleDeclarationStatement = 9, RuleIfStatement = 10, RuleForStatement = 11, 
     RuleWhileStatement = 12, RuleExpressionStatement = 13, RuleDeferStatement = 14, 
     RulePrintStatement = 15, RuleScope = 16, RuleReturnStatement = 17, RuleInlineScope = 18, 
-    RuleFunctionScope = 19, RuleExpression = 20, RuleType = 21, RuleSimpleType = 22, 
-    RuleFunctionType = 23, RulePointerType = 24, RuleArrayType = 25
+    RuleFunctionScope = 19, RuleExpression = 20, RuleType = 21, RuleFunctionType = 22, 
+    RuleSimpleType = 23, RulePointerType = 24, RuleArrayType = 25
   };
 
   explicit FridayParser(antlr4::TokenStream *input);
@@ -78,8 +78,8 @@ public:
   class FunctionScopeContext;
   class ExpressionContext;
   class TypeContext;
-  class SimpleTypeContext;
   class FunctionTypeContext;
+  class SimpleTypeContext;
   class PointerTypeContext;
   class ArrayTypeContext; 
 
@@ -661,17 +661,6 @@ public:
 
   TypeContext* type();
 
-  class  SimpleTypeContext : public antlr4::ParserRuleContext {
-  public:
-    SimpleTypeContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *IDENTIFIER();
-
-   
-  };
-
-  SimpleTypeContext* simpleType();
-
   class  FunctionTypeContext : public antlr4::ParserRuleContext {
   public:
     FridayParser::TypeContext *typeContext = nullptr;
@@ -693,8 +682,20 @@ public:
 
   FunctionTypeContext* functionType();
 
+  class  SimpleTypeContext : public antlr4::ParserRuleContext {
+  public:
+    SimpleTypeContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *IDENTIFIER();
+
+   
+  };
+
+  SimpleTypeContext* simpleType();
+
   class  PointerTypeContext : public antlr4::ParserRuleContext {
   public:
+    FridayParser::TypeContext *pointedType = nullptr;
     PointerTypeContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     TypeContext *type();
@@ -708,6 +709,7 @@ public:
 
   class  ArrayTypeContext : public antlr4::ParserRuleContext {
   public:
+    FridayParser::TypeContext *elementType = nullptr;
     ArrayTypeContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     TypeContext *type();

@@ -47,8 +47,8 @@ namespace friday::inline api::inline typechecker {
     } else return (Type*)this->M_currentScope->resolve("void")->as<Struct>();
   }
 
-  auto TypeChecker::visitBlock(FridayParser::BlockContext *ctx) -> std::any {
-    Console::debug("BlockContext: {}"_f.format(ctx->getText()));
+  auto TypeChecker::visitScope(FridayParser::ScopeContext *ctx) -> std::any {
+    Console::debug("ScopeContext: {}"_f.format(ctx->getText()));
 
     auto toType = (Type*(*)(std::any const&))&std::any_cast<Type*>;
     auto byVisiting = [this](FridayParser::StatementContext* ctx) -> std::any {
@@ -73,8 +73,8 @@ namespace friday::inline api::inline typechecker {
     return (Type*)(ok ? (Type*)this->M_currentScope->resolve("void")->as<Struct>() : (Type*)Struct::getErrorType());
   }
 
-  auto TypeChecker::visitInlineBlock(FridayParser::InlineBlockContext *ctx) -> std::any {
-    Console::debug("InlineBlockContext: {}"_f.format(ctx->getText()));
+  auto TypeChecker::visitInlineScope(FridayParser::InlineScopeContext *ctx) -> std::any {
+    Console::debug("InlineScopeContext: {}"_f.format(ctx->getText()));
     Type* T = std::any_cast<Type*>(this->visit(ctx->expr()));
     if(T == Struct::getErrorType() or T != this->M_currentFunctionReturnType) {
       this->errorAt(
@@ -153,7 +153,7 @@ namespace friday::inline api::inline typechecker {
     Type* blockType = ({
       Type* tmpRetType = this->M_currentFunctionReturnType;
       this->M_currentFunctionReturnType = returnType;
-      Type* res = std::any_cast<Type*>(this->visit(ctx->functionBlock()));
+      Type* res = std::any_cast<Type*>(this->visit(ctx->functionScope()));
       this->M_currentFunctionReturnType = tmpRetType;
       res;
     });

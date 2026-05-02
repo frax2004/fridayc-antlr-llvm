@@ -15,7 +15,7 @@ namespace friday::inline core {
 
   template<class MessageType>
   constexpr inline auto Error<MessageType>::trace() const noexcept -> String {
-    constexpr auto traceCallToString = [](std::stacktrace_entry const& trace) noexcept -> String {
+    constexpr auto traceCallExpressionToString = [](std::stacktrace_entry const& trace) noexcept -> String {
       return "from {}{}{}:{}{} in function : {}{}{}{}"_f.format(
         Console::Color::BOLD,
         Console::Color::rgb(150, 150, 150),
@@ -29,13 +29,13 @@ namespace friday::inline core {
       );
     };
 
-    constexpr auto traceCallFilter = [](std::stacktrace_entry const& trace) noexcept -> bool {
+    constexpr auto traceCallExpressionFilter = [](std::stacktrace_entry const& trace) noexcept -> bool {
       return trace.source_file() != "" and trace.source_line() != 0;
     };
 
     return this->M_trace
-    | std::views::filter(traceCallFilter)
-    | std::views::transform(traceCallToString)
+    | std::views::filter(traceCallExpressionFilter)
+    | std::views::transform(traceCallExpressionToString)
     | std::views::join_with("\n"s)
     | std::ranges::to<String>();
     

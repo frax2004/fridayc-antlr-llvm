@@ -11,7 +11,7 @@ namespace friday::inline api::inline typechecker {
     return this->M_visibility;
   }
   
-  auto Type::getUnaryOperatorName(u64 oper, Type* T) noexcept -> String {
+  auto Type::getUnaryPrefixExpressionOperatorName(u64 oper, Type* T) noexcept -> String {
     switch(oper) {
       case FridayScanner::PLUS: return "operator+({})"_f.format(T->getName());
       case FridayScanner::MINUS: return "operator-({})"_f.format(T->getName());
@@ -22,7 +22,7 @@ namespace friday::inline api::inline typechecker {
   }
 
   
-  auto Type::getBinaryOperatorName(u64 oper, Type* T, Type* U) noexcept -> String {
+  auto Type::getBinaryExpressionOperatorName(u64 oper, Type* T, Type* U) noexcept -> String {
     switch(oper) {
       case FridayScanner::PLUS: return "operator+({}, {})"_f.format(T->getName(), U->getName());
       case FridayScanner::MINUS: return "operator-({}, {})"_f.format(T->getName(), U->getName());

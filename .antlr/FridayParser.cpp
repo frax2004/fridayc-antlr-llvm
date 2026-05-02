@@ -56,7 +56,7 @@ void fridayparserParserInitialize() {
       "deferrableStatement", "declarationStatement", "ifStatement", "forStatement", 
       "whileStatement", "expressionStatement", "deferStatement", "printStatement", 
       "scope", "returnStatement", "inlineScope", "functionScope", "expression", 
-      "type", "simpleType", "functionType", "pointerType", "arrayType"
+      "type", "functionType", "simpleType", "pointerType", "arrayType"
     },
     std::vector<std::string>{
       "", "", "", "", "'struct'", "'return'", "'print'", "'fn'", "'for'", 
@@ -110,18 +110,18 @@ void fridayparserParserInitialize() {
   	1,20,1,20,1,20,1,20,1,20,1,20,1,20,1,20,1,20,1,20,1,20,1,20,5,20,319,
   	8,20,10,20,12,20,322,9,20,3,20,324,8,20,1,20,1,20,1,20,1,20,1,20,1,20,
   	1,20,1,20,1,20,1,20,1,20,1,20,5,20,338,8,20,10,20,12,20,341,9,20,1,21,
-  	1,21,1,21,1,21,3,21,347,8,21,1,22,1,22,1,23,1,23,1,23,1,23,1,23,5,23,
-  	356,8,23,10,23,12,23,359,9,23,3,23,361,8,23,1,23,1,23,1,23,1,23,1,24,
-  	4,24,368,8,24,11,24,12,24,369,1,24,1,24,1,25,1,25,4,25,376,8,25,11,25,
-  	12,25,377,1,25,1,25,1,25,3,178,249,262,1,40,26,0,2,4,6,8,10,12,14,16,
-  	18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,0,10,1,0,14,15,4,0,
-  	22,22,45,47,52,52,70,70,1,0,24,25,1,0,47,49,1,0,45,46,1,0,50,51,1,0,54,
-  	57,1,0,58,59,1,0,60,69,1,0,43,44,427,0,53,1,0,0,0,2,67,1,0,0,0,4,69,1,
-  	0,0,0,6,92,1,0,0,0,8,96,1,0,0,0,10,100,1,0,0,0,12,116,1,0,0,0,14,147,
-  	1,0,0,0,16,157,1,0,0,0,18,159,1,0,0,0,20,169,1,0,0,0,22,185,1,0,0,0,24,
+  	1,21,1,21,1,21,3,21,347,8,21,1,22,1,22,1,22,1,22,1,22,5,22,354,8,22,10,
+  	22,12,22,357,9,22,3,22,359,8,22,1,22,1,22,1,22,1,22,1,23,1,23,1,24,4,
+  	24,368,8,24,11,24,12,24,369,1,24,1,24,1,25,1,25,4,25,376,8,25,11,25,12,
+  	25,377,1,25,1,25,1,25,3,178,249,262,1,40,26,0,2,4,6,8,10,12,14,16,18,
+  	20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,0,10,1,0,14,15,4,0,22,
+  	22,45,47,52,52,70,70,1,0,24,25,1,0,47,49,1,0,45,46,1,0,50,51,1,0,54,57,
+  	1,0,58,59,1,0,60,69,1,0,43,44,427,0,53,1,0,0,0,2,67,1,0,0,0,4,69,1,0,
+  	0,0,6,92,1,0,0,0,8,96,1,0,0,0,10,100,1,0,0,0,12,116,1,0,0,0,14,147,1,
+  	0,0,0,16,157,1,0,0,0,18,159,1,0,0,0,20,169,1,0,0,0,22,185,1,0,0,0,24,
   	192,1,0,0,0,26,196,1,0,0,0,28,199,1,0,0,0,30,202,1,0,0,0,32,206,1,0,0,
   	0,34,215,1,0,0,0,36,221,1,0,0,0,38,227,1,0,0,0,40,279,1,0,0,0,42,346,
-  	1,0,0,0,44,348,1,0,0,0,46,350,1,0,0,0,48,367,1,0,0,0,50,375,1,0,0,0,52,
+  	1,0,0,0,44,348,1,0,0,0,46,364,1,0,0,0,48,367,1,0,0,0,50,375,1,0,0,0,52,
   	54,3,6,3,0,53,52,1,0,0,0,53,54,1,0,0,0,54,58,1,0,0,0,55,57,3,2,1,0,56,
   	55,1,0,0,0,57,60,1,0,0,0,58,56,1,0,0,0,58,59,1,0,0,0,59,61,1,0,0,0,60,
   	58,1,0,0,0,61,62,5,0,0,1,62,1,1,0,0,0,63,68,3,8,4,0,64,68,3,10,5,0,65,
@@ -204,19 +204,19 @@ void fridayparserParserInitialize() {
   	1,0,0,0,337,296,1,0,0,0,337,299,1,0,0,0,337,302,1,0,0,0,337,305,1,0,0,
   	0,337,308,1,0,0,0,337,311,1,0,0,0,337,313,1,0,0,0,337,326,1,0,0,0,337,
   	331,1,0,0,0,337,334,1,0,0,0,338,341,1,0,0,0,339,337,1,0,0,0,339,340,1,
-  	0,0,0,340,41,1,0,0,0,341,339,1,0,0,0,342,347,3,44,22,0,343,347,3,48,24,
-  	0,344,347,3,50,25,0,345,347,3,46,23,0,346,342,1,0,0,0,346,343,1,0,0,0,
-  	346,344,1,0,0,0,346,345,1,0,0,0,347,43,1,0,0,0,348,349,5,72,0,0,349,45,
-  	1,0,0,0,350,351,5,7,0,0,351,360,5,32,0,0,352,357,3,42,21,0,353,354,5,
-  	40,0,0,354,356,3,42,21,0,355,353,1,0,0,0,356,359,1,0,0,0,357,355,1,0,
-  	0,0,357,358,1,0,0,0,358,361,1,0,0,0,359,357,1,0,0,0,360,352,1,0,0,0,360,
-  	361,1,0,0,0,361,362,1,0,0,0,362,363,5,35,0,0,363,364,5,41,0,0,364,365,
-  	3,42,21,0,365,47,1,0,0,0,366,368,5,47,0,0,367,366,1,0,0,0,368,369,1,0,
+  	0,0,0,340,41,1,0,0,0,341,339,1,0,0,0,342,347,3,46,23,0,343,347,3,48,24,
+  	0,344,347,3,50,25,0,345,347,3,44,22,0,346,342,1,0,0,0,346,343,1,0,0,0,
+  	346,344,1,0,0,0,346,345,1,0,0,0,347,43,1,0,0,0,348,349,5,7,0,0,349,358,
+  	5,32,0,0,350,355,3,42,21,0,351,352,5,40,0,0,352,354,3,42,21,0,353,351,
+  	1,0,0,0,354,357,1,0,0,0,355,353,1,0,0,0,355,356,1,0,0,0,356,359,1,0,0,
+  	0,357,355,1,0,0,0,358,350,1,0,0,0,358,359,1,0,0,0,359,360,1,0,0,0,360,
+  	361,5,35,0,0,361,362,5,41,0,0,362,363,3,42,21,0,363,45,1,0,0,0,364,365,
+  	5,72,0,0,365,47,1,0,0,0,366,368,5,47,0,0,367,366,1,0,0,0,368,369,1,0,
   	0,0,369,367,1,0,0,0,369,370,1,0,0,0,370,371,1,0,0,0,371,372,3,42,21,0,
   	372,49,1,0,0,0,373,374,5,33,0,0,374,376,5,36,0,0,375,373,1,0,0,0,376,
   	377,1,0,0,0,377,375,1,0,0,0,377,378,1,0,0,0,378,379,1,0,0,0,379,380,3,
   	42,21,0,380,51,1,0,0,0,32,53,58,67,82,85,109,111,128,131,147,157,163,
-  	178,183,210,217,227,249,252,262,265,273,279,320,323,337,339,346,357,360,
+  	178,183,210,217,227,249,252,262,265,273,279,320,323,337,339,346,355,358,
   	369,377
   };
   staticData->serializedATN = antlr4::atn::SerializedATNView(serializedATNSegment, sizeof(serializedATNSegment) / sizeof(serializedATNSegment[0]));
@@ -3106,48 +3106,6 @@ FridayParser::TypeContext* FridayParser::type() {
   return _localctx;
 }
 
-//----------------- SimpleTypeContext ------------------------------------------------------------------
-
-FridayParser::SimpleTypeContext::SimpleTypeContext(ParserRuleContext *parent, size_t invokingState)
-  : ParserRuleContext(parent, invokingState) {
-}
-
-tree::TerminalNode* FridayParser::SimpleTypeContext::IDENTIFIER() {
-  return getToken(FridayParser::IDENTIFIER, 0);
-}
-
-
-size_t FridayParser::SimpleTypeContext::getRuleIndex() const {
-  return FridayParser::RuleSimpleType;
-}
-
-
-FridayParser::SimpleTypeContext* FridayParser::simpleType() {
-  SimpleTypeContext *_localctx = _tracker.createInstance<SimpleTypeContext>(_ctx, getState());
-  enterRule(_localctx, 44, FridayParser::RuleSimpleType);
-
-#if __cplusplus > 201703L
-  auto onExit = finally([=, this] {
-#else
-  auto onExit = finally([=] {
-#endif
-    exitRule();
-  });
-  try {
-    enterOuterAlt(_localctx, 1);
-    setState(348);
-    match(FridayParser::IDENTIFIER);
-   
-  }
-  catch (RecognitionException &e) {
-    _errHandler->reportError(this, e);
-    _localctx->exception = std::current_exception();
-    _errHandler->recover(this, _localctx->exception);
-  }
-
-  return _localctx;
-}
-
 //----------------- FunctionTypeContext ------------------------------------------------------------------
 
 FridayParser::FunctionTypeContext::FunctionTypeContext(ParserRuleContext *parent, size_t invokingState)
@@ -3194,7 +3152,7 @@ size_t FridayParser::FunctionTypeContext::getRuleIndex() const {
 
 FridayParser::FunctionTypeContext* FridayParser::functionType() {
   FunctionTypeContext *_localctx = _tracker.createInstance<FunctionTypeContext>(_ctx, getState());
-  enterRule(_localctx, 46, FridayParser::RuleFunctionType);
+  enterRule(_localctx, 44, FridayParser::RuleFunctionType);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -3206,39 +3164,81 @@ FridayParser::FunctionTypeContext* FridayParser::functionType() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(350);
+    setState(348);
     match(FridayParser::FN);
-    setState(351);
+    setState(349);
     match(FridayParser::LEFT_PAREN);
-    setState(360);
+    setState(358);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if ((((_la & ~ 0x3fULL) == 0) &&
       ((1ULL << _la) & 140746078290048) != 0) || _la == FridayParser::IDENTIFIER) {
-      setState(352);
+      setState(350);
       antlrcpp::downCast<FunctionTypeContext *>(_localctx)->typeContext = type();
       antlrcpp::downCast<FunctionTypeContext *>(_localctx)->paramsTypes.push_back(antlrcpp::downCast<FunctionTypeContext *>(_localctx)->typeContext);
-      setState(357);
+      setState(355);
       _errHandler->sync(this);
       _la = _input->LA(1);
       while (_la == FridayParser::COMMA) {
-        setState(353);
+        setState(351);
         match(FridayParser::COMMA);
-        setState(354);
+        setState(352);
         antlrcpp::downCast<FunctionTypeContext *>(_localctx)->typeContext = type();
         antlrcpp::downCast<FunctionTypeContext *>(_localctx)->paramsTypes.push_back(antlrcpp::downCast<FunctionTypeContext *>(_localctx)->typeContext);
-        setState(359);
+        setState(357);
         _errHandler->sync(this);
         _la = _input->LA(1);
       }
     }
-    setState(362);
+    setState(360);
     match(FridayParser::RIGHT_PAREN);
-    setState(363);
+    setState(361);
     match(FridayParser::ARROW);
-    setState(364);
+    setState(362);
     antlrcpp::downCast<FunctionTypeContext *>(_localctx)->returnType = type();
+   
+  }
+  catch (RecognitionException &e) {
+    _errHandler->reportError(this, e);
+    _localctx->exception = std::current_exception();
+    _errHandler->recover(this, _localctx->exception);
+  }
+
+  return _localctx;
+}
+
+//----------------- SimpleTypeContext ------------------------------------------------------------------
+
+FridayParser::SimpleTypeContext::SimpleTypeContext(ParserRuleContext *parent, size_t invokingState)
+  : ParserRuleContext(parent, invokingState) {
+}
+
+tree::TerminalNode* FridayParser::SimpleTypeContext::IDENTIFIER() {
+  return getToken(FridayParser::IDENTIFIER, 0);
+}
+
+
+size_t FridayParser::SimpleTypeContext::getRuleIndex() const {
+  return FridayParser::RuleSimpleType;
+}
+
+
+FridayParser::SimpleTypeContext* FridayParser::simpleType() {
+  SimpleTypeContext *_localctx = _tracker.createInstance<SimpleTypeContext>(_ctx, getState());
+  enterRule(_localctx, 46, FridayParser::RuleSimpleType);
+
+#if __cplusplus > 201703L
+  auto onExit = finally([=, this] {
+#else
+  auto onExit = finally([=] {
+#endif
+    exitRule();
+  });
+  try {
+    enterOuterAlt(_localctx, 1);
+    setState(364);
+    match(FridayParser::IDENTIFIER);
    
   }
   catch (RecognitionException &e) {
@@ -3307,7 +3307,7 @@ FridayParser::PointerTypeContext* FridayParser::pointerType() {
       alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 30, _ctx);
     } while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER);
     setState(371);
-    type();
+    antlrcpp::downCast<PointerTypeContext *>(_localctx)->pointedType = type();
    
   }
   catch (RecognitionException &e) {
@@ -3386,7 +3386,7 @@ FridayParser::ArrayTypeContext* FridayParser::arrayType() {
       alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 31, _ctx);
     } while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER);
     setState(379);
-    type();
+    antlrcpp::downCast<ArrayTypeContext *>(_localctx)->elementType = type();
    
   }
   catch (RecognitionException &e) {

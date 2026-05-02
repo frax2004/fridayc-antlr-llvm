@@ -23,53 +23,85 @@ public:
 
     virtual std::any visitTopLevelStatement(FridayParser::TopLevelStatementContext *context) = 0;
 
-    virtual std::any visitReturnStatement(FridayParser::ReturnStatementContext *context) = 0;
+    virtual std::any visitNativeFunctionStatement(FridayParser::NativeFunctionStatementContext *context) = 0;
 
-    virtual std::any visitPrintStatement(FridayParser::PrintStatementContext *context) = 0;
+    virtual std::any visitNamespaceStatement(FridayParser::NamespaceStatementContext *context) = 0;
 
-    virtual std::any visitStatement(FridayParser::StatementContext *context) = 0;
+    virtual std::any visitUsingStatement(FridayParser::UsingStatementContext *context) = 0;
 
-    virtual std::any visitInlineBlock(FridayParser::InlineBlockContext *context) = 0;
-
-    virtual std::any visitBlock(FridayParser::BlockContext *context) = 0;
-
-    virtual std::any visitFunctionBlock(FridayParser::FunctionBlockContext *context) = 0;
+    virtual std::any visitStructStatement(FridayParser::StructStatementContext *context) = 0;
 
     virtual std::any visitFunctionStatement(FridayParser::FunctionStatementContext *context) = 0;
 
-    virtual std::any visitCall(FridayParser::CallContext *context) = 0;
+    virtual std::any visitStatement(FridayParser::StatementContext *context) = 0;
 
-    virtual std::any visitIdentifier(FridayParser::IdentifierContext *context) = 0;
+    virtual std::any visitDeferrableStatement(FridayParser::DeferrableStatementContext *context) = 0;
 
-    virtual std::any visitCharLiteral(FridayParser::CharLiteralContext *context) = 0;
+    virtual std::any visitDeclarationStatement(FridayParser::DeclarationStatementContext *context) = 0;
 
-    virtual std::any visitStringLiteral(FridayParser::StringLiteralContext *context) = 0;
+    virtual std::any visitIfStatement(FridayParser::IfStatementContext *context) = 0;
 
-    virtual std::any visitBoolLiteral(FridayParser::BoolLiteralContext *context) = 0;
+    virtual std::any visitForStatement(FridayParser::ForStatementContext *context) = 0;
 
-    virtual std::any visitFloatLiteral(FridayParser::FloatLiteralContext *context) = 0;
+    virtual std::any visitWhileStatement(FridayParser::WhileStatementContext *context) = 0;
 
-    virtual std::any visitIntLiteral(FridayParser::IntLiteralContext *context) = 0;
+    virtual std::any visitExpressionStatement(FridayParser::ExpressionStatementContext *context) = 0;
 
-    virtual std::any visitGrouping(FridayParser::GroupingContext *context) = 0;
+    virtual std::any visitDeferStatement(FridayParser::DeferStatementContext *context) = 0;
 
-    virtual std::any visitSubscript(FridayParser::SubscriptContext *context) = 0;
+    virtual std::any visitPrintStatement(FridayParser::PrintStatementContext *context) = 0;
 
-    virtual std::any visitBinary(FridayParser::BinaryContext *context) = 0;
+    virtual std::any visitScope(FridayParser::ScopeContext *context) = 0;
 
-    virtual std::any visitNullLiteral(FridayParser::NullLiteralContext *context) = 0;
+    virtual std::any visitReturnStatement(FridayParser::ReturnStatementContext *context) = 0;
 
-    virtual std::any visitUnary(FridayParser::UnaryContext *context) = 0;
+    virtual std::any visitInlineScope(FridayParser::InlineScopeContext *context) = 0;
 
-    virtual std::any visitSimpleType(FridayParser::SimpleTypeContext *context) = 0;
+    virtual std::any visitFunctionScope(FridayParser::FunctionScopeContext *context) = 0;
+
+    virtual std::any visitMemberAccessExpression(FridayParser::MemberAccessExpressionContext *context) = 0;
+
+    virtual std::any visitUnaryPostfixExpression(FridayParser::UnaryPostfixExpressionContext *context) = 0;
+
+    virtual std::any visitStringLiteralExpression(FridayParser::StringLiteralExpressionContext *context) = 0;
+
+    virtual std::any visitFloatLiteralExpression(FridayParser::FloatLiteralExpressionContext *context) = 0;
+
+    virtual std::any visitNewExpression(FridayParser::NewExpressionContext *context) = 0;
+
+    virtual std::any visitArrayLiteralExpression(FridayParser::ArrayLiteralExpressionContext *context) = 0;
+
+    virtual std::any visitExplicitCastExpression(FridayParser::ExplicitCastExpressionContext *context) = 0;
+
+    virtual std::any visitIntLiteralExpression(FridayParser::IntLiteralExpressionContext *context) = 0;
+
+    virtual std::any visitIdentifierExpression(FridayParser::IdentifierExpressionContext *context) = 0;
+
+    virtual std::any visitBinaryExpression(FridayParser::BinaryExpressionContext *context) = 0;
+
+    virtual std::any visitGroupingExpression(FridayParser::GroupingExpressionContext *context) = 0;
+
+    virtual std::any visitUnaryPrefixExpression(FridayParser::UnaryPrefixExpressionContext *context) = 0;
+
+    virtual std::any visitSubscriptExpression(FridayParser::SubscriptExpressionContext *context) = 0;
+
+    virtual std::any visitBoolLiteralExpression(FridayParser::BoolLiteralExpressionContext *context) = 0;
+
+    virtual std::any visitCharLiteralExpression(FridayParser::CharLiteralExpressionContext *context) = 0;
+
+    virtual std::any visitCallExpression(FridayParser::CallExpressionContext *context) = 0;
+
+    virtual std::any visitNullLiteralExpression(FridayParser::NullLiteralExpressionContext *context) = 0;
+
+    virtual std::any visitType(FridayParser::TypeContext *context) = 0;
 
     virtual std::any visitFunctionType(FridayParser::FunctionTypeContext *context) = 0;
 
+    virtual std::any visitSimpleType(FridayParser::SimpleTypeContext *context) = 0;
+
     virtual std::any visitPointerType(FridayParser::PointerTypeContext *context) = 0;
 
-    virtual std::any visitPointedType(FridayParser::PointedTypeContext *context) = 0;
-
-    virtual std::any visitType(FridayParser::TypeContext *context) = 0;
+    virtual std::any visitArrayType(FridayParser::ArrayTypeContext *context) = 0;
 
 
 };

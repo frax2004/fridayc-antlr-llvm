@@ -166,12 +166,11 @@ type
 | functionType
 ;
 
-simpleType: IDENTIFIER;
-
 functionType
 : FN LEFT_PAREN (paramsTypes += type (COMMA paramsTypes += type)*)? RIGHT_PAREN ARROW returnType = type
 ;
 
-pointerType: STAR+ type;
-arrayType: (LEFT_SQUARE RIGHT_SQUARE)+ type;
+simpleType: IDENTIFIER;
+pointerType: STAR+ pointedType = type;
+arrayType: (LEFT_SQUARE RIGHT_SQUARE)+ elementType = type;
 ///////////////////////////////////////////////////
