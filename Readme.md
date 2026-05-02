@@ -526,7 +526,7 @@ Memory can be **stack** allocated or **heap** allocated.
 Memory is allocated and freed with 2 native functions coming from C: **malloc** and **free**
 from the `cstd` library.
 
-```fridaylang
+```C++
 using cstd;
 
 fn main() -> void {
