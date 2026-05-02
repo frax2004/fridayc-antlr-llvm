@@ -229,7 +229,8 @@ Here is a table of the available fundamental types and their matching version in
 Here's a table of each Friday type and the operators supported by each type
 |Precedence|Operator|Description|Built-in for|Associativity|Can be overloaded|
 |-|-|-|-|-|-|
-|10 (Highest)|`++`, `--`| postfix increment | `int`, `float`|Left-to-right|✅|
+|10 (Highest)|`++`| postfix increment | `int`, `float`|Left-to-right|✅|
+|10|`--`| postfix decrement | `int`, `float`|Left-to-right|✅|
 |10|`()`| function call | `any-function-pointer` |Left-to-right|✅|
 |10|`[]`| array element access | `[]non-void`, `*non-void` |Left-to-right|✅|
 |10|`.`| member access | `any-struct`, `[]any` |Left-to-right|❌|
