@@ -54,20 +54,24 @@ options {
 
   //////////////////////////////
   ///
-  /// Regular statements
+  /// Statements
   ///
   //////////////////////////////
-  regularStatement
+  statement
   : printStatement
   | deferStatement
+  | returnStatement
+  | scope
   ;
 
   deferStatement: DEFER deferrableStatement;
   printStatement: PRINT expr SEMI;
+  scope: LEFT_CURLY (statement*) RIGHT_CURLY;
+  returnStatement: RETURN (expr?) SEMI;
   //////////////////////////////
   //////////////////////////////
   //////////////////////////////
-  
+
 
 
 
@@ -77,35 +81,14 @@ options {
   /// 
   //////////////////////////////
   deferrableStatement
-  : deferrableScope
-  | regularStatement
-  ;
-
-  deferrableScope: LEFT_CURLY (deferrableStatement*) RIGHT_CURLY;
-  //////////////////////////////
-  //////////////////////////////
-  //////////////////////////////
-
-
-
-  //////////////////////////////
-  ///
-  /// Scoped statements
-  ///
-  //////////////////////////////
-  scope: LEFT_CURLY (scopedStatement*) RIGHT_CURLY;
-
-  scopedStatement
-  : scope
-  | regularStatement
+  : printStatement
   | returnStatement
+  | scope
   ;
 
-  returnStatement: RETURN (expr?) SEMI;
   //////////////////////////////
   //////////////////////////////
   //////////////////////////////
-
 
 
 
@@ -128,35 +111,36 @@ options {
 ///////////////////////////////////////////////////
 /// EXPRESSIONS
 expr
-  : IDENTIFIER # IdentifierExpression
-  | INT_LIT # IntLiteralExpression
-  | CHAR_LIT # CharLiteralExpression
-  | STRING_LIT # StringLiteralExpression
-  | FLOAT_LIT # FloatLiteralExpression
-  | BOOL_LIT # BoolLiteralExpression
-  | NULL_LIT # NullLiteralExpression
-  | array = expr LEFT_SQUARE index = expr RIGHT_SQUARE # SubscriptExpression
-  | func = expr LEFT_PAREN (args += expr (COMMA args += expr)*)? RIGHT_PAREN # CallExpression
-  | unaryOperator = (PLUS | MINUS) expr # UnaryExpression
-  | left = expr binaryOperator = (STAR | SLASH | MODULO) right = expr # BinaryExpression
-  | left = expr binaryOperator = (PLUS | MINUS) right = expr # BinaryExpression
-  | LEFT_PAREN expr RIGHT_PAREN # GroupingExpression
-  ;
+: IDENTIFIER # IdentifierExpression
+| INT_LIT # IntLiteralExpression
+| CHAR_LIT # CharLiteralExpression
+| STRING_LIT # StringLiteralExpression
+| FLOAT_LIT # FloatLiteralExpression
+| BOOL_LIT # BoolLiteralExpression
+| NULL_LIT # NullLiteralExpression
+| array = expr LEFT_SQUARE index = expr RIGHT_SQUARE # SubscriptExpression
+| func = expr LEFT_PAREN (args += expr (COMMA args += expr)*)? RIGHT_PAREN # CallExpression
+| unaryOperator = (PLUS | MINUS) expr # UnaryExpression
+| left = expr binaryOperator = (STAR | SLASH | MODULO) right = expr # BinaryExpression
+| left = expr binaryOperator = (PLUS | MINUS) right = expr # BinaryExpression
+| LEFT_PAREN expr RIGHT_PAREN # GroupingExpression
+;
+
 
 simpleType: IDENTIFIER;
 
 functionType
-  : FN LEFT_PAREN (paramsTypes += type (COMMA paramsTypes += type)*)? RIGHT_PAREN ARROW returnType = type
-  ;
+: FN LEFT_PAREN (paramsTypes += type (COMMA paramsTypes += type)*)? RIGHT_PAREN ARROW returnType = type
+;
 
 pointerType: STAR+ type;
 arrayType: (LEFT_SQUARE RIGHT_SQUARE)+ type;
 
 type
-  : simpleType
-  | pointerType
-  | arrayType
-  | functionType
-  ;
+: simpleType
+| pointerType
+| arrayType
+| functionType
+;
 
 ///////////////////////////////////////////////////

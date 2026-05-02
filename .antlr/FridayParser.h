@@ -31,11 +31,10 @@ public:
   enum {
     RuleProgram = 0, RuleTopLevelStatement = 1, RuleNamespaceStatement = 2, 
     RuleUsingStatement = 3, RuleStructStatement = 4, RuleFunctionStatement = 5, 
-    RuleRegularStatement = 6, RuleDeferStatement = 7, RulePrintStatement = 8, 
-    RuleDeferrableStatement = 9, RuleDeferrableScope = 10, RuleScope = 11, 
-    RuleScopedStatement = 12, RuleReturnStatement = 13, RuleInlineScope = 14, 
-    RuleFunctionScope = 15, RuleExpr = 16, RuleSimpleType = 17, RuleFunctionType = 18, 
-    RulePointerType = 19, RuleArrayType = 20, RuleType = 21
+    RuleStatement = 6, RuleDeferStatement = 7, RulePrintStatement = 8, RuleScope = 9, 
+    RuleReturnStatement = 10, RuleDeferrableStatement = 11, RuleInlineScope = 12, 
+    RuleFunctionScope = 13, RuleExpr = 14, RuleSimpleType = 15, RuleFunctionType = 16, 
+    RulePointerType = 17, RuleArrayType = 18, RuleType = 19
   };
 
   explicit FridayParser(antlr4::TokenStream *input);
@@ -61,14 +60,12 @@ public:
   class UsingStatementContext;
   class StructStatementContext;
   class FunctionStatementContext;
-  class RegularStatementContext;
+  class StatementContext;
   class DeferStatementContext;
   class PrintStatementContext;
-  class DeferrableStatementContext;
-  class DeferrableScopeContext;
   class ScopeContext;
-  class ScopedStatementContext;
   class ReturnStatementContext;
+  class DeferrableStatementContext;
   class InlineScopeContext;
   class FunctionScopeContext;
   class ExprContext;
@@ -189,17 +186,19 @@ public:
 
   FunctionStatementContext* functionStatement();
 
-  class  RegularStatementContext : public antlr4::ParserRuleContext {
+  class  StatementContext : public antlr4::ParserRuleContext {
   public:
-    RegularStatementContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    StatementContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     PrintStatementContext *printStatement();
     DeferStatementContext *deferStatement();
+    ReturnStatementContext *returnStatement();
+    ScopeContext *scope();
 
    
   };
 
-  RegularStatementContext* regularStatement();
+  StatementContext* statement();
 
   class  DeferStatementContext : public antlr4::ParserRuleContext {
   public:
@@ -226,58 +225,19 @@ public:
 
   PrintStatementContext* printStatement();
 
-  class  DeferrableStatementContext : public antlr4::ParserRuleContext {
-  public:
-    DeferrableStatementContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
-    DeferrableScopeContext *deferrableScope();
-    RegularStatementContext *regularStatement();
-
-   
-  };
-
-  DeferrableStatementContext* deferrableStatement();
-
-  class  DeferrableScopeContext : public antlr4::ParserRuleContext {
-  public:
-    DeferrableScopeContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *LEFT_CURLY();
-    antlr4::tree::TerminalNode *RIGHT_CURLY();
-    std::vector<DeferrableStatementContext *> deferrableStatement();
-    DeferrableStatementContext* deferrableStatement(size_t i);
-
-   
-  };
-
-  DeferrableScopeContext* deferrableScope();
-
   class  ScopeContext : public antlr4::ParserRuleContext {
   public:
     ScopeContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *LEFT_CURLY();
     antlr4::tree::TerminalNode *RIGHT_CURLY();
-    std::vector<ScopedStatementContext *> scopedStatement();
-    ScopedStatementContext* scopedStatement(size_t i);
+    std::vector<StatementContext *> statement();
+    StatementContext* statement(size_t i);
 
    
   };
 
   ScopeContext* scope();
-
-  class  ScopedStatementContext : public antlr4::ParserRuleContext {
-  public:
-    ScopedStatementContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
-    ScopeContext *scope();
-    RegularStatementContext *regularStatement();
-    ReturnStatementContext *returnStatement();
-
-   
-  };
-
-  ScopedStatementContext* scopedStatement();
 
   class  ReturnStatementContext : public antlr4::ParserRuleContext {
   public:
@@ -291,6 +251,19 @@ public:
   };
 
   ReturnStatementContext* returnStatement();
+
+  class  DeferrableStatementContext : public antlr4::ParserRuleContext {
+  public:
+    DeferrableStatementContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    PrintStatementContext *printStatement();
+    ReturnStatementContext *returnStatement();
+    ScopeContext *scope();
+
+   
+  };
+
+  DeferrableStatementContext* deferrableStatement();
 
   class  InlineScopeContext : public antlr4::ParserRuleContext {
   public:

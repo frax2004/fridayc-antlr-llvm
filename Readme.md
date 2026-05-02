@@ -227,36 +227,49 @@ Here is a table of the available fundamental types and their matching version in
 
 #### Operators
 Here's a table of each Friday type and the operators supported by each type
-|Operator|Description|Supported by default by|
-|-|-|-|
-|`+`| unary plus | `int`, `float`|
-|`-`| unary minus | `int`, `float`|
-|`+`| binary plus | `int`, `float`|
-|`-`| binary minus | `int`, `float`|
-|`*`| multiply | `int`, `float`|
-|`/`| divide | `int`, `float`|
-|`%`| division rest | `int` |
-|`<<`| bitwise shift left | `int` |
-|`<`| less than | `int`, `float`, `byte`, `*any`, `[]any` |
-|`<=`| less than or equal to | `int`, `float`, `byte`, `*any`, `[]any` |
-|`==`| equal to | `int`, `float`, `byte`, `*any`, `[]any` |
-|`!=`| not equal to | `int`, `float`, `byte`, `*any`, `[]any` |
-|`>`| greater than | `int`, `float`, `byte`, `*any`, `[]any` |
-|`>=`| greater than or equal to | `int`, `float`, `byte`, `*any`, `[]any` |
-|`>>`| bitwise shift right | `int` |
-|`and`| logical and | `bool` |
-|`or`| logical or | `bool` |
-|`not`| logical not | `bool` |
-|`&`| bitwise and | `bool`, `int` |
-|`\|`| bitwise or | `bool`, `int` |
-|`~`| bitwise not | `bool`, `int` |
-|`.`| member access | `any-struct`, `[]any` |
-|`*`| dereference | `*non-void` |
-|`&`| reference | `any-type` |
-|`as`| explicit cast | `non-void` |
-|`sizeof`| byte size operator | `any-object`, `any-type` |
-|`alignof`| byte alignment operator | `any-object`, `any-type` |
-|`[]`| array element access | `[]non-void`, `*non-void` |
+|Precedence|Operator|Description|Built-in for|Associativity|
+|-|-|-|-|-|
+|10 (Highest)|`++`, `--`| postfix increment | `int`, `float`|Left-to-right|
+|10|`()`| function call | `any-function-pointer` |Left-to-right|
+|10|`[]`| array element access | `[]non-void`, `*non-void` |Left-to-right|
+|10|`.`| member access | `any-struct`, `[]any` |Left-to-right|
+|20|`+`| unary plus | `int`, `float`|Right-to-left|
+|20|`-`| unary minus | `int`, `float`|Right-to-left|
+|20|`not`| logical not | `bool` |Right-to-left|
+|20|`~`| bitwise not | `bool`, `int` |Right-to-left|
+|20|`as`| explicit cast | `non-void` |Right-to-left|
+|20|`*`| dereference | `*non-void` |Right-to-left|
+|20|`&`| reference | `any-type` |Right-to-left|
+|20|`sizeof`| byte size operator | `any-object`, `any-type` |Right-to-left|
+|20|`alignof`| byte alignment operator | `any-object`, `any-type` |Right-to-left|
+|30|`*`| multiply | `int`, `float`|Left-to-right|
+|30|`/`| divide | `int`, `float`|Left-to-right|
+|30|`%`| division rest | `int` |Left-to-right|
+|40|`+`| binary plus | `int`, `float`|Left-to-right|
+|40|`-`| binary minus | `int`, `float`|Left-to-right|
+|50|`<<`| bitwise shift left | `int` |Left-to-right|
+|50|`>>`| bitwise shift right | `int` |Left-to-right|
+|60|`<`| less than | `int`, `float`, `byte`, `*any`, `[]any` |Left-to-right|
+|60|`<=`| less than or equal to | `int`, `float`, `byte`, `*any`, `[]any` |Left-to-right|
+|60|`>`| greater than | `int`, `float`, `byte`, `*any`, `[]any` |Left-to-right|
+|60|`>=`| greater than or equal to | `int`, `float`, `byte`, `*any`, `[]any` |Left-to-right|
+|70|`==`| equal to | `int`, `float`, `byte`, `*any`, `[]any` |Left-to-right|
+|70|`!=`| not equal to | `int`, `float`, `byte`, `*any`, `[]any` |Left-to-right|
+|80|`&`| bitwise and | `bool`, `int` |Left-to-right|
+|100|`\|`| bitwise or | `bool`, `int` |Left-to-right|
+|110|`and`| logical and | `bool` |Left-to-right|
+|120|`or`| logical or | `bool` |Left-to-right|
+|140|`=`| assignment | `any` |Right-to-left|
+|140|`+=`| plus assignment | `int`, `float` |Right-to-left|
+|140|`-=`| minus assignment | `int`, `float` |Right-to-left|
+|140|`*=`| multiply assignment | `int`, `float` |Right-to-left|
+|140|`/=`| division assignment | `int`, `float` |Right-to-left|
+|140|`%=`| division rest assignment | `int` |Right-to-left|
+|140|`<<=`| bitwise shift left assignment | `int` |Right-to-left|
+|140|`>>=`| bitwise shift right assignment | `int` |Right-to-left|
+|140|`&=`| bit and assignment | `bool`, `int` |Right-to-left|
+|140 (Lowest)|`\|=`| bit or assignment | `bool`, `int` |Right-to-left|
+
 
 #### Explicit Casts
 Implicit casts are not supported in Friday since they are almost always the cause of unwanted errors or non-intentional numeric overflows.
