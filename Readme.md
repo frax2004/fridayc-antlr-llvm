@@ -227,48 +227,48 @@ Here is a table of the available fundamental types and their matching version in
 
 #### Operators
 Here's a table of each Friday type and the operators supported by each type
-|Precedence|Operator|Description|Built-in for|Associativity|
-|-|-|-|-|-|
-|10 (Highest)|`++`, `--`| postfix increment | `int`, `float`|Left-to-right|
-|10|`()`| function call | `any-function-pointer` |Left-to-right|
-|10|`[]`| array element access | `[]non-void`, `*non-void` |Left-to-right|
-|10|`.`| member access | `any-struct`, `[]any` |Left-to-right|
-|20|`+`| unary plus | `int`, `float`|Right-to-left|
-|20|`-`| unary minus | `int`, `float`|Right-to-left|
-|20|`not`| logical not | `bool` |Right-to-left|
-|20|`~`| bitwise not | `bool`, `int` |Right-to-left|
-|20|`as`| explicit cast | `non-void` |Right-to-left|
-|20|`*`| dereference | `*non-void` |Right-to-left|
-|20|`&`| reference | `any-type` |Right-to-left|
-|20|`sizeof`| byte size operator | `any-object`, `any-type` |Right-to-left|
-|20|`alignof`| byte alignment operator | `any-object`, `any-type` |Right-to-left|
-|30|`*`| multiply | `int`, `float`|Left-to-right|
-|30|`/`| divide | `int`, `float`|Left-to-right|
-|30|`%`| division rest | `int` |Left-to-right|
-|40|`+`| binary plus | `int`, `float`|Left-to-right|
-|40|`-`| binary minus | `int`, `float`|Left-to-right|
-|50|`<<`| bitwise shift left | `int` |Left-to-right|
-|50|`>>`| bitwise shift right | `int` |Left-to-right|
-|60|`<`| less than | `int`, `float`, `byte`, `*any`, `[]any` |Left-to-right|
-|60|`<=`| less than or equal to | `int`, `float`, `byte`, `*any`, `[]any` |Left-to-right|
-|60|`>`| greater than | `int`, `float`, `byte`, `*any`, `[]any` |Left-to-right|
-|60|`>=`| greater than or equal to | `int`, `float`, `byte`, `*any`, `[]any` |Left-to-right|
-|70|`==`| equal to | `int`, `float`, `byte`, `*any`, `[]any` |Left-to-right|
-|70|`!=`| not equal to | `int`, `float`, `byte`, `*any`, `[]any` |Left-to-right|
-|80|`&`| bitwise and | `bool`, `int` |Left-to-right|
-|100|`\|`| bitwise or | `bool`, `int` |Left-to-right|
-|110|`and`| logical and | `bool` |Left-to-right|
-|120|`or`| logical or | `bool` |Left-to-right|
-|140|`=`| assignment | `any` |Right-to-left|
-|140|`+=`| plus assignment | `int`, `float` |Right-to-left|
-|140|`-=`| minus assignment | `int`, `float` |Right-to-left|
-|140|`*=`| multiply assignment | `int`, `float` |Right-to-left|
-|140|`/=`| division assignment | `int`, `float` |Right-to-left|
-|140|`%=`| division rest assignment | `int` |Right-to-left|
-|140|`<<=`| bitwise shift left assignment | `int` |Right-to-left|
-|140|`>>=`| bitwise shift right assignment | `int` |Right-to-left|
-|140|`&=`| bit and assignment | `bool`, `int` |Right-to-left|
-|140 (Lowest)|`\|=`| bit or assignment | `bool`, `int` |Right-to-left|
+|Precedence|Operator|Description|Built-in for|Associativity|Can be overloaded|
+|-|-|-|-|-|-|
+|10 (Highest)|`++`, `--`| postfix increment | `int`, `float`|Left-to-right|✅|
+|10|`()`| function call | `any-function-pointer` |Left-to-right|✅|
+|10|`[]`| array element access | `[]non-void`, `*non-void` |Left-to-right|✅|
+|10|`.`| member access | `any-struct`, `[]any` |Left-to-right|❌|
+|20|`+`| unary plus | `int`, `float`|Right-to-left|✅|
+|20|`-`| unary minus | `int`, `float`|Right-to-left|✅|
+|20|`not`| logical not | `bool` |Right-to-left|✅|
+|20|`~`| bitwise not | `bool`, `int` |Right-to-left|✅|
+|20|`as`| explicit cast | `non-void` |Right-to-left|❌|
+|20|`*`| dereference | `*non-void` |Right-to-left|✅|
+|20|`&`| reference | `any-type` |Right-to-left|❌|
+|20|`sizeof`| byte size operator | `any-object`, `any-type` |Right-to-left|❌|
+|20|`alignof`| byte alignment operator | `any-object`, `any-type` |Right-to-left|❌|
+|30|`*`| multiply | `int`, `float`|Left-to-right|✅|
+|30|`/`| divide | `int`, `float`|Left-to-right|✅|
+|30|`%`| division rest | `int` |Left-to-right|✅|
+|40|`+`| binary plus | `int`, `float`|Left-to-right|✅|
+|40|`-`| binary minus | `int`, `float`|Left-to-right|✅|
+|50|`<<`| bitwise shift left | `int` |Left-to-right|✅|
+|50|`>>`| bitwise shift right | `int` |Left-to-right|✅|
+|60|`<`| less than | `int`, `float`, `byte`, `*any`, `[]any` |Left-to-right|✅|
+|60|`<=`| less than or equal to | `int`, `float`, `byte`, `*any`, `[]any` |Left-to-right|✅|
+|60|`>`| greater than | `int`, `float`, `byte`, `*any`, `[]any` |Left-to-right|✅|
+|60|`>=`| greater than or equal to | `int`, `float`, `byte`, `*any`, `[]any` |Left-to-right|✅|
+|70|`==`| equal to | `int`, `float`, `byte`, `*any`, `[]any` |Left-to-right|✅|
+|70|`!=`| not equal to | `int`, `float`, `byte`, `*any`, `[]any` |Left-to-right|✅|
+|80|`&`| bitwise and | `bool`, `int` |Left-to-right|✅|
+|100|`\|`| bitwise or | `bool`, `int` |Left-to-right|✅|
+|110|`and`| logical and | `bool` |Left-to-right|✅|
+|120|`or`| logical or | `bool` |Left-to-right|✅|
+|140|`=`| assignment | `any` |Right-to-left|❌|
+|140|`+=`| plus assignment | `int`, `float` |Right-to-left|✅|
+|140|`-=`| minus assignment | `int`, `float` |Right-to-left|✅|
+|140|`*=`| multiply assignment | `int`, `float` |Right-to-left|✅|
+|140|`/=`| division assignment | `int`, `float` |Right-to-left|✅|
+|140|`%=`| division rest assignment | `int` |Right-to-left|✅|
+|140|`<<=`| bitwise shift left assignment | `int` |Right-to-left|✅|
+|140|`>>=`| bitwise shift right assignment | `int` |Right-to-left|✅|
+|140|`&=`| bit and assignment | `bool`, `int` |Right-to-left|✅|
+|140 (Lowest)|`\|=`| bit or assignment | `bool`, `int` |Right-to-left|✅|
 
 
 #### Explicit Casts
@@ -511,12 +511,6 @@ fn main() -> void {
   (u + v).describe();
 }
 ```
-
-All operators can be overloaded except:
-- `.` (field access operator)
-- `as` (explicit cast operator)
-- `sizeof` (byte size operator)
-- `alignof` (byte align operator)
 
 ### Memory Model
 ---
