@@ -1,0 +1,98 @@
+@startuml TypeSystem
+
+interface Symbol {
+  + {static} getDemangledId(id: String): String
+  + getQualifiedId(): String
+  + getFullQualifiedId(): String
+  + getMangledId(): String
+}
+
+interface SymbolTable {
+  + lookUp(id: String, defaultValue: Symbol): Symbol
+  + lookUpIf(id: String, predicate: bool(Symbol), defaultValue: Symbol): Symbol
+  + define(symbol: Symbol): bool
+  + isDefined(id: String): bool
+  + getParent(): SymbolTable
+}
+
+' TODO: Builder<MangledName>
+
+enum VisibilityModifier {
+  + PRIVATE
+  + PUBLIC
+}
+
+class Namespace implements Symbol, SymbolTable {
+  - parent: Namespace
+  - structs: Map<String, Struct>
+  - variables: Map<String, Variable>
+  - functions: Map<String, Function>
+  ---
+  + Namespace(
+    parent: Namespace, 
+    structs: Map<String, Struct>, 
+    variables: Map<String, Variable>, 
+    functions: Map<String, Function>
+  )
+  ---
+  + {static} getGlobal(): Namespace
+  + getFunction(id: String, defaultValue: Function): Function
+  + getStruct(id: String, defaultValue: Struct): Struct
+  + getVariable(id: String, defaultValue: Variable): Variable
+  + getOuterNamespace(): Namespace
+}
+
+class Scope implements SymbolTable {
+  - parent: Scope
+  - structs: Map<String, Struct>
+  - variables: Map<String, Variable>
+  - functions: Map<String, Function>
+  ---
+  + Namespace(
+    parent: Namespace, 
+    structs: Map<String, Struct>, 
+    variables: Map<String, Variable>, 
+    functions: Map<String, Function>
+  )
+  ---
+  + {static} getGlobal(): Namespace
+  + getFunction(id: String, defaultValue: Function): Function
+  + getStruct(id: String, defaultValue: Struct): Struct
+  + getVariable(id: String, defaultValue: Variable): Variable
+  + getOuterNamespace(): Namespace
+}
+
+interface TypedSymbol extends Symbol {
+  + getType(): Type
+}
+
+interface Type {
+  + getName(): String
+  + getLLVMType(): llvm.Type
+}
+
+class Struct implements Type, Symbol, SymbolTable {
+  
+}
+
+class FunctionType implements Type {
+
+}
+
+class Function implements TypedSymbol {
+
+}
+
+class Variable implements TypedSymbol {
+
+}
+
+class PointerType implements Type {
+
+}
+
+class ArrayType implements Type {
+
+}
+
+@enduml

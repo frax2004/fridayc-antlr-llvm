@@ -103,6 +103,16 @@ namespace friday::inline core {
 
 
   namespace rtti {
-    auto nameOf(std::type_info const& info) noexcept -> String;    
+    auto nameOf(std::type_info const& info) noexcept -> String;
+    
+    template<class From, class To>
+    auto cast(From* from) -> To* {
+      return dynamic_cast<To*>(from);
+    }
+
+    template<class T, class U>
+    auto instanceOf(T* object) -> bool {
+      return dynamic_cast<U*>(object) != nullptr;
+    }
   }
 } // namespace friday
