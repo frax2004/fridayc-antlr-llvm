@@ -1,10 +1,23 @@
 @startuml TypeSystem
 
+enum Modifiers {
+  CONST
+
+}
+
+interface Attributes {
+  + getVisibility(): VisibilityModifier
+  + getSourceLocation(): SourceLocation
+  + getModifiers(): int
+}
+
 interface Symbol {
   + {static} getDemangledId(id: String): String
   + getQualifiedId(): String
   + getFullQualifiedId(): String
   + getMangledId(): String
+  + getDeclaringSymbolTable(): SymbolTable
+  + getAttributes(): Attributes
 }
 
 interface SymbolTable {
@@ -15,7 +28,16 @@ interface SymbolTable {
   + getParent(): SymbolTable
 }
 
-' TODO: Builder<MangledName>
+class FullQualifiedIdBuilder {
+  - parameterTypes: Vector<Type>
+  - ids: Vector<String>
+  ---
+  + FullQualifiedIdBuilder(startId: String)
+  ---
+  + dot(id: String): FullQualifiedIdBuilder
+  + addParameter(T: Type): FullQualifiedIdBuilder
+  + build(): String
+}
 
 enum VisibilityModifier {
   + PRIVATE
@@ -39,27 +61,15 @@ class Namespace implements Symbol, SymbolTable {
   + getFunction(id: String, defaultValue: Function): Function
   + getStruct(id: String, defaultValue: Struct): Struct
   + getVariable(id: String, defaultValue: Variable): Variable
-  + getOuterNamespace(): Namespace
 }
 
 class Scope implements SymbolTable {
-  - parent: Scope
-  - structs: Map<String, Struct>
+  - parent: SymbolTable
   - variables: Map<String, Variable>
-  - functions: Map<String, Function>
   ---
-  + Namespace(
-    parent: Namespace, 
-    structs: Map<String, Struct>, 
-    variables: Map<String, Variable>, 
-    functions: Map<String, Function>
-  )
+  + Scope(parent: SymbolTable, variables: Map<String, Variable>)
   ---
-  + {static} getGlobal(): Namespace
-  + getFunction(id: String, defaultValue: Function): Function
-  + getStruct(id: String, defaultValue: Struct): Struct
   + getVariable(id: String, defaultValue: Variable): Variable
-  + getOuterNamespace(): Namespace
 }
 
 interface TypedSymbol extends Symbol {
@@ -68,31 +78,91 @@ interface TypedSymbol extends Symbol {
 
 interface Type {
   + getName(): String
-  + getLLVMType(): llvm.Type
+  + getLLVMType(ctx: llvm.LLVMContext): llvm.Type
+  + {static} getIntType(ctx: llvm.LLVMContext): Type
+  + {static} getFloatType(ctx: llvm.LLVMContext): Type
+  + {static} getByteType(ctx: llvm.LLVMContext): Type
+  + {static} getBoolType(ctx: llvm.LLVMContext): Type
+  + {static} getErrorType(ctx: llvm.LLVMContext): Type
 }
 
 class Struct implements Type, Symbol, SymbolTable {
-  
+  - name: String
+  - fields: Map<String, Field>
+  - methods: Map<String, Method>
+  ---
+  + Struct(
+    parent: Namespace,
+    name: String, 
+    fields: Map<String, Field>,
+    methods: Map<String, Method>,
+    visibility: VisibilityModifier
+  )
+  ---
+  + addMethod(method: Method): bool
+  + getField(name: String, defaultValue: Field): Field
+  + getMethod(name: String, defaultValue: Method): Method
 }
 
 class FunctionType implements Type {
-
+  - returnType: Type
+  - parametersTypes: Vector<Type>
+  - name: String
+  ---
+  - FunctionType(returnType: Type, parametersTypes: Vector<Type>)
+  ---
+  + {static} get(returnType: Type, parametersTypes: Vector<Type>): Type
+  + getParameterType(index: int): Type
+  + getParametersTypes(): Vector<Type>
+  + getParametersCount(): int
+  + getReturnType(): Type
 }
 
 class Function implements TypedSymbol {
-
+  - name: String
+  - signature: FunctionType
+  - parametersNames: Vector<String>
+  - declaringSymbolTable: SymbolTable
+  ---
+  + Function(
+    parent: SymbolTable,
+    name: String,
+    returnType: Type,
+    parameters: Vector<Pair<String, Type>>
+  )
+  ---
+  + getParameterName(index: int): String;
+  + getParameter(index: int): Pair<String, Type>;
 }
 
 class Variable implements TypedSymbol {
-
+  - name: String
+  - type: Type
+  - declaringScope: SymbolTable
+  ---
+  + Variable(parent: SymbolTable, name: String, type: Type)
 }
 
 class PointerType implements Type {
-
+  - elementType: Type
+  - dimensions: int
+  ---
+  - PointerType(elementType: Type, dimensions: int)
+  ---
+  + {static} get(elementType: Type, dimensions: int): Type
+  + getElementType(): Type
+  + getDimensions(): int
 }
 
 class ArrayType implements Type {
-
+  - elementType: Type
+  - length: int
+  ---
+  - ArrayType(elementType: Type, length: int)
+  ---
+  + {static} get(elementType: Type, length: int): Type
+  + getElementType(): Type
+  + getLength(): int
 }
 
 @enduml
