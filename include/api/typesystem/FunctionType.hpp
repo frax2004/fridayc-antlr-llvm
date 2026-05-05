@@ -2,7 +2,7 @@
 
 #include "Type.hpp"
 
-namespace friday::inline api::inline typechecker {
+namespace friday::inline api::inline typesystem {
 
   /// @brief Represents a function signature type
   struct FunctionType : public Type {
@@ -54,4 +54,4 @@ namespace friday::inline api::inline typechecker {
     /// @return the return type
     auto getReturnType() const noexcept -> Type*;
   }; // struct FunctionType
-} // namespace friday::api::typechecker
+} // namespace friday::api::typesystem

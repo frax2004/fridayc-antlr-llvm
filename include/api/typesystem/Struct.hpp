@@ -1,13 +1,14 @@
 #pragma once
 
+#include "SymbolTable.hpp"
 #include "Type.hpp"
 #include "Variable.hpp"
 #include "Function.hpp"
 
-namespace friday::inline api::inline typechecker {
+namespace friday::inline api::inline typesystem {
   
   /// @brief Represents a type in the type system
-  struct Struct : public Symbol, public Type {
+  struct Struct : public Symbol, public Type, public SymbolTable {
     private:
     /// @brief The struct name
     String M_name;
@@ -15,8 +16,6 @@ namespace friday::inline api::inline typechecker {
     Map<String, Variable> M_fields;
     /// @brief the struct methods
     Map<String, Function> M_methods;
-    /// @brief The struct visibility modifier
-    VisibilityModifier M_visibility;
 
     public:
     /// @brief Constructs a struct
@@ -27,8 +26,7 @@ namespace friday::inline api::inline typechecker {
     Struct(
       String name, 
       Map<String, Variable> fields = {}, 
-      Map<String, Function> methods = {},
-      VisibilityModifier visibility = VisibilityModifier::PUBLIC
+      Map<String, Function> methods = {}
     ) noexcept;
 
     /// @brief Adds a method the struct
@@ -47,10 +45,6 @@ namespace friday::inline api::inline typechecker {
     /// @param defaultValue a fallback value 
     /// @return the method or defaultValue if not present
     auto getMethod(String const& name, const Function* defaultValue = nullptr) const noexcept -> const Function*;
-
-    /// @brief Get the visibility modifier of the struct
-    /// @return the visibility modifier
-    auto getVisibility() const noexcept -> VisibilityModifier override;
 
     /// @brief Get the type
     /// @return the type

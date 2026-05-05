@@ -35,7 +35,7 @@ namespace friday::inline api::inline typechecker {
   auto TypeChecker::visitPrintStatement(FridayParser::PrintStatementContext *ctx) -> std::any {
     Console::debug("PrintStatementContext: {}"_f.format(ctx->getText()));
 
-    Type* expected = Pointer::get((Type*)this->M_currentScope->resolve("byte")->as<Struct>(), 1);
+    Type* expected = PointerType::get((Type*)this->M_currentScope->resolve("byte")->as<Struct>(), 1);
     Type* actual = std::any_cast<Type*>(this->visit(ctx->expr()));
 
     if(expected != actual) {

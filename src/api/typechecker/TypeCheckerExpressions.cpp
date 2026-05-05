@@ -102,7 +102,7 @@ namespace friday::inline api::inline typechecker {
 
   auto TypeChecker::visitStringLiteralExpression(FridayParser::StringLiteralExpressionContext *ctx) -> std::any {
     Console::debug("StringLiteralExpressionContext: {}"_f.format(ctx->getText()));
-    return (Type*)Pointer::get(
+    return (Type*)PointerType::get(
       this->M_currentScope->resolve("byte")->as<Struct>(), 
       1
     );
@@ -134,14 +134,14 @@ namespace friday::inline api::inline typechecker {
     Type* arrayType = std::any_cast<Type*>(this->visit(ctx->array));
     Type* indexType = std::any_cast<Type*>(this->visit(ctx->index));
 
-    Type* asPointerType = arrayType->as<Pointer>();
-    Type* voidPointer = Pointer::get(this->M_currentScope->resolve("void")->as<Struct>(), 1);
+    Type* asPointerTypeType = arrayType->as<PointerType>();
+    Type* voidPointerType = PointerType::get(this->M_currentScope->resolve("void")->as<Struct>(), 1);
 
     bool ok = true;
     if(
-      asPointerType == nullptr
-      or asPointerType == Struct::getErrorType()
-      or asPointerType == voidPointer
+      asPointerTypeType == nullptr
+      or asPointerTypeType == Struct::getErrorType()
+      or asPointerTypeType == voidPointerType
     ) {
       ok = false;
       this->errorAt(
@@ -165,7 +165,7 @@ namespace friday::inline api::inline typechecker {
       );
     }
 
-    return (Type*)(ok ? arrayType->as<Pointer>()->getPointedType() : (Type*)Struct::getErrorType());
+    return (Type*)(ok ? arrayType->as<PointerType>()->getPointedType() : (Type*)Struct::getErrorType());
   }
 
   auto TypeChecker::visitBinaryExpression(FridayParser::BinaryExpressionContext *ctx) -> std::any {
@@ -296,8 +296,8 @@ namespace friday::inline api::inline typechecker {
     return ok ? FunctionType::get(retType, std::move(paramsTypes)) : Struct::getErrorType();
   }
 
-  auto TypeChecker::visitPointerType(FridayParser::PointerTypeContext *ctx) -> std::any {
-    Console::debug("PointerTypeContext: {}"_f.format(ctx->getText()));
+  auto TypeChecker::visitPointerTypeType(FridayParser::PointerTypeTypeContext *ctx) -> std::any {
+    Console::debug("PointerTypeTypeContext: {}"_f.format(ctx->getText()));
     
     Type* type = std::any_cast<Type*>(this->visit(ctx->pointedType));
     u64 dimensions = ctx->STAR().size();
@@ -311,7 +311,7 @@ namespace friday::inline api::inline typechecker {
           ctx->pointedType->getText()
         )
       );
-    } else type = Pointer::get(type, dimensions);
+    } else type = PointerType::get(type, dimensions);
 
     return type;
   }

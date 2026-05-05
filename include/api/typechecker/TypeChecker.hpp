@@ -1,13 +1,5 @@
 #pragma once
 
-#include "Symbol.hpp"
-#include "Type.hpp"
-#include "Pointer.hpp"
-#include "FunctionType.hpp"
-#include "Variable.hpp"
-#include "Function.hpp"
-#include "Struct.hpp"
-#include "SymbolTable.hpp"
 #include "SemanticError.hpp"
 
 #include "api/parser/FridayParserBaseVisitor.h"
@@ -121,10 +113,10 @@ namespace friday::inline api::inline typechecker {
     /// @return a Struct type or Struct::getErrorType() if any error has occurred during semantic checks
     auto visitFunctionType(FridayParser::FunctionTypeContext *ctx) -> std::any override;
     
-    /// @brief visit a PointerType
-    /// @param ctx the PointerType context 
+    /// @brief visit a PointerTypeType
+    /// @param ctx the PointerTypeType context 
     /// @return a Struct type or Struct::getErrorType() if any error has occurred during semantic checks
-    auto visitPointerType(FridayParser::PointerTypeContext *ctx) -> std::any override;
+    auto visitPointerTypeType(FridayParser::PointerTypeTypeContext *ctx) -> std::any override;
 
     private:
     /// @brief Raises an error

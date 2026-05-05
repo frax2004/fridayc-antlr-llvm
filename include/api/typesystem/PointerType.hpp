@@ -2,10 +2,10 @@
 
 #include "Type.hpp"
 
-namespace friday::inline api::inline typechecker {
+namespace friday::inline api::inline typesystem {
 
   /// @brief Represents a pointer type
-  struct Pointer : public Type {
+  struct PointerType : public Type {
     private:
     /// @brief The pointed type
     Type* M_pointedType;
@@ -18,7 +18,7 @@ namespace friday::inline api::inline typechecker {
     /// @brief Constructs a pointer type
     /// @param pointedType the pointed type
     /// @param dimensions the dimensions
-    Pointer(Type* pointedType, u64 dimensions) noexcept;
+    PointerType(Type* pointedType, u64 dimensions) noexcept;
 
     public:
     /// @brief Get the pointed type
@@ -43,5 +43,5 @@ namespace friday::inline api::inline typechecker {
     /// @param dimensions the dimensions
     /// @return the pointer type
     static auto get(Type* pointedType, u64 dimensions) noexcept -> Type*;
-  };
-}
+  }; // struct PointerType
+} // namespace friday::api::typesystem

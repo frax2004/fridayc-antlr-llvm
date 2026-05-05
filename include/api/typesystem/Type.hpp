@@ -4,7 +4,7 @@
 #include "Symbol.hpp"
 
 
-namespace friday::inline api::inline typechecker {
+namespace friday::inline api::inline typesystem {
   
   /// @brief Represents a type in the type system
   struct Type {
