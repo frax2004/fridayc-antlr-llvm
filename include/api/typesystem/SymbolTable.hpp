@@ -13,16 +13,11 @@ namespace friday::inline api::inline typesystem {
     virtual auto isDefined(String const& id) -> bool = 0;
     virtual auto getParent() -> SymbolTable* = 0;
 
-    /// @brief Finds the most similar symbol in the symbol table
-    /// @param name the target name
-    /// @param maxEditDistance the maximium distance used by the edit distance algorithm
-    /// @param filter a filter predicate
-    /// @return the most similar symbol (if there is one)
-    auto mostSimilar(
+    virtual auto mostSimilar(
       String const& name, 
       u64 maxEditDistance = 0, 
       std::function<bool (Symbol*)> filter = [](Symbol*) { return true; }
-    ) noexcept -> Opt<Symbol*>;
+    ) noexcept -> Opt<Symbol*> = 0;
 
   }; // struct SymbolTable
 } // namespace friday::api::typechecker

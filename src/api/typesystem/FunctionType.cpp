@@ -1,6 +1,6 @@
 #include "api/typesystem/FunctionType.hpp"
 
-namespace friday::inline api::inline typechecker {
+namespace friday::inline api::inline typesystem {
   FunctionType::FunctionType(Type* returnType, Vector<Type*> paramsTypes) noexcept
     : Type { } 
     , M_name { 

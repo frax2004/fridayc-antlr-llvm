@@ -12,16 +12,16 @@ namespace friday::inline api::inline typesystem {
   struct Namespace : public Symbol, public SymbolTable {
     private:
     Namespace* M_parent;
-    Map<String, Box<Struct>> M_structs;
-    Map<String, Box<Variable>> M_variables;
-    Map<String, Box<Function>> M_functions;
+    Map<String, Struct> M_structs;
+    Map<String, Variable> M_variables;
+    Map<String, Function> M_functions;
     
     public:
     Namespace(
       Namespace* parent,
-      Map<String, Box<Variable>> variables,
-      Map<String, Box<Function>> functions,
-      Map<String, Box<Struct>> structs
+      Map<String, Variable> variables,
+      Map<String, Function> functions,
+      Map<String, Struct> structs
     );
 
     static auto getGlobal() -> Namespace*;

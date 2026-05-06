@@ -1,38 +1,16 @@
 #pragma once
 
-#include "Symbol.hpp"
+#include "TypedSymbol.hpp"
 
-namespace friday::inline api::inline typechecker {
 
-  struct Type;
+namespace friday::inline api::inline typesystem {
 
-  /// @brief Represents a variable
-  struct Variable : public Symbol {
+  struct Variable : public TypedSymbol {
     private:
-    /// @brief the name of the variable
     String M_name;
-    /// @brief the type of the variable
     Type* M_type;
-    /// @brief the visibility of the variable
-    VisibilityModifier M_visibility;
-    
+
     public:
-    /// @brief Constructs a variable
-    /// @param name the name
-    /// @param type the type
-    /// @param visibility the visibility modifier
-    Variable(String name, Type* type, VisibilityModifier visibility = VisibilityModifier::PUBLIC) noexcept;
-
-    /// @brief Gets the name of the variable
-    /// @return the name of the variable
-    auto getName() const noexcept -> String const& override;
-
-    /// @brief Gets the type of the variable
-    /// @return the type of the variable
-    auto getType() const noexcept -> Type* override;
-
-    /// @brief Gets the visibility modifier of the variable
-    /// @return the visibility modifier
-    auto getVisibility() const noexcept -> VisibilityModifier override;
+    Variable(String name, Type* type) noexcept;
   }; // struct Variable
-} // namespace friday::api::typechecker
+} // namespace friday::api::typesystem

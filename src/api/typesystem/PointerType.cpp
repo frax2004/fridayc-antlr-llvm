@@ -1,6 +1,6 @@
 #include "api/typesystem/PointerType.hpp"
 
-namespace friday::inline api::inline typechecker {
+namespace friday::inline api::inline typesystem {
 
   PointerType::PointerType(Type* pointedType, u64 dimensions) noexcept
     : Type { }
