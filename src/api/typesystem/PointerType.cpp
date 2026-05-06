@@ -1,0 +1,40 @@
+#include "api/typesystem/PointerType.hpp"
+
+namespace friday::inline api::inline typechecker {
+
+  PointerType::PointerType(Type* pointedType, u64 dimensions) noexcept
+    : Type { }
+    , M_name { std::format("{:*>{}}{}", "", dimensions, pointedType->getName()) }
+    , M_pointedType { pointedType }
+    , M_dimensions { dimensions }
+  {}
+
+  auto PointerType::getName() const noexcept -> String const& {
+    return this->M_name;
+  }
+
+  auto PointerType::getLLVMType(llvm::LLVMContext& ctx) const noexcept -> llvm::Type* {
+    return llvm::PointerType::get(ctx, 0);
+  }
+
+  auto PointerType::getPointedType() const noexcept -> Type* {
+    return this->M_pointedType;
+  }
+
+  auto PointerType::getDimensions() const noexcept -> u64 {
+    return this->M_dimensions;
+  }
+
+  auto PointerType::get(Type* elementType, u64 dimensions) noexcept -> Type* {
+    static Map<String, PointerType> S_PointerTypes = {};
+
+    if(auto pointer = dynamic_cast<PointerType*>(elementType)) {
+      elementType = pointer->getPointedType();
+      dimensions += pointer->getDimensions();
+    }
+  
+    PointerType pointer { elementType, dimensions };
+    return &S_PointerTypes.try_emplace(pointer.getName(), pointer).first->second;
+  }
+
+}
