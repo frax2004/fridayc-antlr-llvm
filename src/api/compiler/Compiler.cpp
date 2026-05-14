@@ -1,6 +1,6 @@
 #include "api/compiler/Compiler.hpp"
 #include "api/parser/Parser.hpp"
-#include "api/typechecker/TypeChecker.hpp"
+// #include "api/typechecker/TypeChecker.hpp"
 
 namespace friday::inline api::inline compiler {
   
@@ -35,20 +35,20 @@ namespace friday::inline api::inline compiler {
       );
     }
     
-    auto typeErrors = TypeChecker{ unit }.check();
+    // auto typeErrors = TypeChecker{ unit }.check();
     
-    if(not typeErrors.empty()) {
-      std::ranges::for_each(typeErrors, SemanticError::report);
+    // if(not typeErrors.empty()) {
+    //   std::ranges::for_each(typeErrors, SemanticError::report);
 
-      return Console::note(
-        "{} {}{}error(s){} encountered during semantic analysis of this source file. "_f.format(
-          typeErrors.size(),
-          Console::Color::BOLD,
-          Console::Color::RED,
-          Console::Color::RESET
-        )
-      );
-    }
+    //   return Console::note(
+    //     "{} {}{}error(s){} encountered during semantic analysis of this source file. "_f.format(
+    //       typeErrors.size(),
+    //       Console::Color::BOLD,
+    //       Console::Color::RED,
+    //       Console::Color::RESET
+    //     )
+    //   );
+    // }
 
     
   }
@@ -139,13 +139,13 @@ namespace friday::inline api::inline compiler {
     return visitChildren(ctx);
   }
 
-  auto Compiler::visitPointerType(FridayParser::PointerTypeContext *ctx) -> std::any {
-    return visitChildren(ctx);
-  }
+  // auto Compiler::visitPointerType(FridayParser::PointerTypeContext *ctx) -> std::any {
+  //   return visitChildren(ctx);
+  // }
 
-  auto Compiler::visitPointedType(FridayParser::PointedTypeContext *ctx) -> std::any {
-    return visitChildren(ctx);
-  }
+  // auto Compiler::visitPointedType(FridayParser::PointedTypeContext *ctx) -> std::any {
+  //   return visitChildren(ctx);
+  // }
 
   auto Compiler::visitType(FridayParser::TypeContext *ctx) -> std::any {
     return visitChildren(ctx);

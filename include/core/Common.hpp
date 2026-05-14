@@ -103,6 +103,8 @@ namespace friday::inline core {
 
 
   namespace rtti {
+    auto demangle(const char* name) noexcept -> String;
+
     auto nameOf(std::type_info const& info) noexcept -> String;
     
     template<class From, class To>

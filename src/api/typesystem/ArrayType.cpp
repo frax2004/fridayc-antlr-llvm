@@ -1,5 +1,5 @@
 #include "api/typesystem/ArrayType.hpp"
-
+#include "core/errors/OperationNotSupportedError.hpp"
 
 namespace friday::inline api::inline typesystem {
   ArrayType::ArrayType(Type* elementType, u64 length) noexcept
@@ -9,7 +9,10 @@ namespace friday::inline api::inline typesystem {
   {}
 
   auto ArrayType::get(Type* elementType, u64 length) noexcept -> Type* {
+    static Map<String, ArrayType> S_arrayTypes = {};
 
+    ArrayType array { elementType, length };
+    return &S_arrayTypes.try_emplace(array.getName(), array).first->second;
   }
 
   auto ArrayType::getElementType() const noexcept -> Type* {

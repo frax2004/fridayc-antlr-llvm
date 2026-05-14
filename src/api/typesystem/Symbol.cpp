@@ -1,19 +1,10 @@
-#include "api/typechecker/Symbol.hpp"
+#include "api/typesystem/Symbol.hpp"
 
 #include "core/IO/Console.hpp"
 #include "core/errors/OperationNotSupportedError.hpp"
 
-namespace friday::inline api::inline typechecker {
-
-  auto mangle(StringRef name) -> String {
-    auto error = OperationNotSupportedError{"TODO: implement universal name mangler"};    
-    Console::warning("{}\n{}"_f.format(error.what(), error.trace()));
-    return String{ name };
-  }
-  
-  auto demangle(StringRef mangledName) -> String {
-    auto error = OperationNotSupportedError{"TODO: implement universal name mangler"};    
-    Console::warning("{}\n{}"_f.format(error.what(), error.trace()));
-    return String{ mangledName };
+namespace friday::inline api::inline typesystem {
+  auto Symbol::getDemangledId(String const& id) -> String {
+    return rtti::demangle(id.data());
   }
 }

@@ -1,12 +1,19 @@
 #pragma once
 
-
+#include "ArrayType.hpp"
+#include "Attributes.hpp"
+#include "Field.hpp"
 #include "Function.hpp"
 #include "FunctionType.hpp"
+#include "Method.hpp"
+#include "Modifiers.hpp"
 #include "Namespace.hpp"
 #include "PointerType.hpp"
+#include "Scope.hpp"
 #include "Struct.hpp"
 #include "Symbol.hpp"
 #include "SymbolTable.hpp"
 #include "Type.hpp"
+#include "TypedSymbol.hpp"
 #include "Variable.hpp"
+#include "VisibilityModifier.hpp"

@@ -3,7 +3,7 @@
 #include "api/typesystem/Struct.hpp"
 #include "api/typesystem/Namespace.hpp"
 
-namespace friday::inline api::inline typechecker {
+namespace friday::inline api::inline typesystem {
 
   struct ErrorType : public Struct {
     ErrorType() noexcept

@@ -4,7 +4,7 @@ namespace friday::inline core {
 
 #if defined(__GNUC__) || defined(__clang__)
 #include <cxxabi.h>
-  static String demangle(const char* name) {
+  String demangle(const char* name) {
     i32 status = -4;
 
     std::unique_ptr<char, void(*)(void*)> result {
@@ -15,7 +15,7 @@ namespace friday::inline core {
     return status == 0 ? result.get() : name;
   }
 #else
-  static String demangle(const char* name) {
+  String demangle(const char* name) {
     return String{ name };
   }
 #endif

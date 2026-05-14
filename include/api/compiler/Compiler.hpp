@@ -30,8 +30,8 @@ namespace friday::inline api::inline compiler {
     auto visitUnaryPrefixExpression(FridayParser::UnaryPrefixExpressionContext *ctx) -> std::any override;
     auto visitSimpleType(FridayParser::SimpleTypeContext *ctx) -> std::any override;
     auto visitFunctionType(FridayParser::FunctionTypeContext *ctx) -> std::any override;
-    auto visitPointerTypeType(FridayParser::PointerTypeTypeContext *ctx) -> std::any override;
-    auto visitPointedType(FridayParser::PointedTypeContext *ctx) -> std::any override;
+    // auto visitPointerTypeType(FridayParser::PointerTypeTypeContext *ctx) -> std::any override;
+    // auto visitPointedType(FridayParser::PointedTypeContext *ctx) -> std::any override;
     
     auto visitType(FridayParser::TypeContext *ctx) -> std::any override;
 

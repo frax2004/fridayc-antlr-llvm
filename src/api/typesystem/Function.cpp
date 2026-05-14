@@ -1,4 +1,5 @@
 #include "api/typesystem/Function.hpp"
+#include "api/typesystem/SymbolTable.hpp"
 
 namespace friday::inline api::inline typesystem {
   
@@ -28,6 +29,33 @@ namespace friday::inline api::inline typesystem {
       this->M_parameters.at(index),
       this->M_signature->getParameterType(index)
     );
+  }
+
+  auto Function::getQualifiedId() const -> String {
+    return this->M_name;
+  }
+
+  auto Function::getFullQualifiedId() const -> String {
+    return "{}.{}"_f.format(
+      dynamic_cast<Symbol*>(this->M_declaringSymbolTable)->getFullQualifiedId(), 
+      this->M_name
+    );
+  }
+
+  auto Function::getMangledId() const -> String {
+    
+  }
+
+  auto Function::getDeclaringSymbolTable() -> SymbolTable* {
+    return this->M_declaringSymbolTable;
+  }
+
+  auto Function::getAttributes() const -> Attributes const& {
+    return {};
+  }
+
+  auto Function::getType() -> Type* {
+    return this->M_signature;
   }
 
 }
