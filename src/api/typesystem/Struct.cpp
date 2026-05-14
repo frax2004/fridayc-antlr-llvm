@@ -3,7 +3,6 @@
 
 namespace friday::inline api::inline typesystem {
 
-
   Struct::Struct(Namespace* parent, String name, Map<String, Field> fields, Map<String, Method> methods) noexcept
     : M_name { std::move(name) }
     , M_fields { std::move(fields) }

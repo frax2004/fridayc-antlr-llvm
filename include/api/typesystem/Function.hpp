@@ -25,7 +25,7 @@ namespace friday::inline api::inline typesystem {
     /// @param returnType the return type
     /// @param parameters an array of parameters, that is, an array a pairs: (name, type)
     Function(
-      SymbolTable* parent,
+      SymbolTable& parent,
       String name,
       Type* returnType,
       Vector<std::pair<String, Type*>> parameters

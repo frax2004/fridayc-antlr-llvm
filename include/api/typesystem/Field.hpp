@@ -19,7 +19,7 @@ namespace friday::inline api::inline typesystem {
     /// @param name the name of the field
     /// @param type the type of the field
     /// @param visiblity the visibility of the field
-    Field(Struct* parent, String name, Type* type, VisibilityModifier visiblity = VisibilityModifier::PUBLIC);
+    Field(Struct& parent, String name, Type* type, VisibilityModifier visibility = VisibilityModifier::PUBLIC);
 
     /// @brief Get the field visibility
     /// @return the visibility
