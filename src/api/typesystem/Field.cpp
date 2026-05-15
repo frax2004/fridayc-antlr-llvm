@@ -3,7 +3,7 @@
 
 namespace friday::inline api::inline typesystem {
   Field::Field(Struct& parent, String name, Type* type, VisibilityModifier visibility)
-    : Variable{ parent, name, type }
+    : Variable{ (SymbolTable&)parent, name, type }
     , M_visibility { visibility }
   {}
 

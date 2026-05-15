@@ -4,7 +4,7 @@
 namespace friday::inline api::inline typesystem {
   
   Method::Method(Struct& parent, String name, Type* returnType, Vector<std::pair<String, Type*>> parameters, VisibilityModifier visibility)
-    : Function{ parent, std::move(name), returnType, std::move(parameters) }
+    : Function{ (SymbolTable&)parent, std::move(name), returnType, std::move(parameters) }
     , M_visibility { visibility }
   {}
 

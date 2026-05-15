@@ -51,7 +51,6 @@ namespace friday::inline api::inline typesystem {
   }
 
   auto Function::getAttributes() const -> Attributes const& {
-    return {};
   }
 
   auto Function::getType() -> Type* {
