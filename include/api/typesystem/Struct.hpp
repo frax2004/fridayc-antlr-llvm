@@ -18,6 +18,8 @@ namespace friday::inline api::inline typesystem {
     Map<String, Field> M_fields;
     /// @brief The methods
     Map<String, Method> M_methods;
+    /// @brief The namespace where the struct was defined
+    Namespace* M_declaryingNamespace;
 
     public:
     /// @brief Creates a struct
@@ -26,7 +28,7 @@ namespace friday::inline api::inline typesystem {
     /// @param fields the fields of the struct
     /// @param methods the methods of the struct
     Struct(
-      Namespace* parent,
+      Namespace& parent,
       String name, 
       Map<String, Field> fields = {}, 
       Map<String, Method> methods = {}

@@ -12,8 +12,6 @@ namespace friday::inline api::inline typesystem {
   /// @brief Represents a namespace
   struct Namespace : public Symbol, public SymbolTable {
     private:
-    /// @brief The parent namespace
-    Namespace* M_parent;
     /// @brief The declared structs
     Map<String, Struct> M_structs;
     /// @brief The declared variables
@@ -23,15 +21,13 @@ namespace friday::inline api::inline typesystem {
     
     public:
     /// @brief Creates a namespace
-    /// @param parent the parent namespace
     /// @param variables the initial variables
     /// @param functions the initial functions
     /// @param structs the initial structs
     Namespace(
-      Namespace* parent,
-      Map<String, Variable> variables,
-      Map<String, Function> functions,
-      Map<String, Struct> structs
+      Map<String, Variable> variables = {},
+      Map<String, Function> functions = {},
+      Map<String, Struct> structs = {}
     );
 
     /// @brief Get the global namespace

@@ -7,7 +7,7 @@ namespace friday::inline api::inline typesystem {
 
   struct ErrorType : public Struct {
     ErrorType() noexcept
-      : Struct { Namespace::getGlobal(), "<error-type>" }
+      : Struct { *Namespace::getGlobal(), "<error-type>" }
     {}
 
     auto getLLVMType(llvm::LLVMContext& ctx) const noexcept -> llvm::Type* override {
@@ -19,7 +19,7 @@ namespace friday::inline api::inline typesystem {
   struct Primitive : public Struct {
 
     Primitive(String name, llvm::Type* T)
-      : Struct { Namespace::getGlobal(), std::move(name) }
+      : Struct { *Namespace::getGlobal(), std::move(name) }
       , M_type { T }
     {}
 

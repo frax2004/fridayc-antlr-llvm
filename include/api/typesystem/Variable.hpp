@@ -20,7 +20,7 @@ namespace friday::inline api::inline typesystem {
     /// @param declaringScope the scope where the variable was defined
     /// @param name the name
     /// @param type the type
-    Variable(SymbolTable* declaringScope, String name, Type* type) noexcept;
+    Variable(SymbolTable& declaringScope, String name, Type* type) noexcept;
 
     /// @brief Get the qualified id
     /// @return the qualified id

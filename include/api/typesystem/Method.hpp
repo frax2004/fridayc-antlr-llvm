@@ -21,7 +21,7 @@ namespace friday::inline api::inline typesystem {
     /// @param returnType the return type of the method
     /// @param parameters a list of parameters, that is, a list of pairs (name, type) representing the method's parameters
     /// @param visiblity the visibility
-    Method(Struct* parent, String name, Type* returnType, Vector<std::pair<String, Type*>> parameters, VisibilityModifier visiblity = VisibilityModifier::PUBLIC);
+    Method(Struct& parent, String name, Type* returnType, Vector<std::pair<String, Type*>> parameters, VisibilityModifier visibility = VisibilityModifier::PUBLIC);
 
     /// @brief Get the visibility
     /// @return the visibility

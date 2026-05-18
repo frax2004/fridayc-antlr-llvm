@@ -3,8 +3,8 @@
 
 namespace friday::inline api::inline typesystem {
   
-  Function::Function(SymbolTable* parent, String name, Type* returnType, Vector<std::pair<String, Type*>> parameters)
-    : M_declaringSymbolTable { parent }
+  Function::Function(SymbolTable& parent, String name, Type* returnType, Vector<std::pair<String, Type*>> parameters)
+    : M_declaringSymbolTable { &parent }
     , M_name { std::move(name) }
     , M_parameters {
       parameters 
@@ -51,7 +51,6 @@ namespace friday::inline api::inline typesystem {
   }
 
   auto Function::getAttributes() const -> Attributes const& {
-    return {};
   }
 
   auto Function::getType() -> Type* {

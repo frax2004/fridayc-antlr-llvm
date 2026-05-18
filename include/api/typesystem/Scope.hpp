@@ -17,7 +17,7 @@ namespace friday::inline api::inline typesystem {
     /// @brief Creates a scope 
     /// @param parent the parent symbol table
     /// @param variables the initial variables
-    Scope(SymbolTable* parent, Map<String, Variable> variables = {});
+    Scope(SymbolTable& parent, Map<String, Variable> variables = {});
 
     /// @brief Get a defined variable
     /// @param id the mangled identifier
