@@ -1,19 +1,36 @@
-namespace std;
+namespace collections;
+
 using libc;
 
 
-struct ArrayList {
-  data: **void;
-  size: int;
-  capacity: int;
+public struct ArrayList<T> {
+  private data: **void;
+  private count: int;
+  private capacity: int;
 
-  fn create() -> ArrayList => new ArrayList{
-    data: null,
-    size: 0,
-    capacity: 0
-  };
+  public fn get(index: int) -> *void => this.data[index];
+  public fn set(index: int, element: *void) -> void => this.data[index] = element;
+  public fn size() -> int => this.count;
+  public fn max_size() -> int => this.capacity;
+  public fn pop(this: *ArrayList) -> void => this.count -= 1;
+  public fn create() -> ArrayList => new ArrayList{data: null, count: 0, capacity: 0};
 
-  fn grow(this: *ArrayList) -> void {
+  public fn push(this: *ArrayList, obj: *void) -> void {
+    if this.count >= this.capacity {
+      this.grow();
+    }
+
+    this.data[this.count] = obj;
+    this.count++;
+  }
+
+  public fn destroy(this: *ArrayList) -> void {
+    free(this.data);
+    this.count = 0;
+    this.capacity = 0;
+  }
+
+  private fn grow(this: *ArrayList) -> void {
     if this.capacity == 0 {
       this.capacity = 1;
     } else {
@@ -21,19 +38,23 @@ struct ArrayList {
     }
     this.data = realloc(this.data, this.capacity * sizeof *void);
   }
+}
 
-  fn push(this: *ArrayList, obj: *void) -> void {
-    if this.size >= this.capacity {
-      this.grow();
-    }
+public fn main() -> void {
+  let a = ArrayList.create();
+  defer a.destroy();
 
-    this.data[this.size] = obj;
-    this.size++;
+  const x: int = 0;
+  const y: float = 0.0;
+
+  a.push(&x as *void);
+  a.push(&y as *void);
+  a.push(&y as *void);
+
+  a.pop();
+
+  for let i = 0; i < a.size(); i += 1 {
+    print a.get(i);
   }
 
-  fn destroy(this: *ArrayList) -> void {
-    free(this.data);
-    this.size = 0;
-    this.capacity = 0;
-  }
 }

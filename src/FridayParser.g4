@@ -34,7 +34,7 @@ options {
   ///
   //////////////////////////////
   nativeFunctionStatement
-  : NATIVE FN name = IDENTIFIER LEFT_PAREN (
+  : accessModifier = (PRIVATE | PUBLIC)? NATIVE FN name = IDENTIFIER LEFT_PAREN (
     paramsNames += IDENTIFIER COL paramsTypes += type (COMMA paramsNames += IDENTIFIER COL paramsTypes += type)* 
   )? RIGHT_PAREN ARROW returnType = type SEMI
   ;
@@ -42,13 +42,13 @@ options {
   namespaceStatement: NAMESPACE IDENTIFIER SEMI;
   usingStatement: USING IDENTIFIER SEMI;
 
-  structStatement: STRUCT IDENTIFIER LEFT_CURLY 
-    ((fieldsNames += IDENTIFIER COL fieldsTypes += type SEMI) | methods += functionStatement)*
+  structStatement: accessModifier = (PRIVATE | PUBLIC)? STRUCT IDENTIFIER LEFT_CURLY 
+    ((accessModifier = (PRIVATE | PUBLIC)? fieldsNames += IDENTIFIER COL fieldsTypes += type SEMI) | methods += functionStatement)*
   RIGHT_CURLY
   ;
 
   functionStatement
-  : FN name = IDENTIFIER LEFT_PAREN (
+  : accessModifier = (PRIVATE | PUBLIC)? FN name = IDENTIFIER LEFT_PAREN (
     paramsNames += IDENTIFIER COL paramsTypes += type (COMMA paramsNames += IDENTIFIER COL paramsTypes += type)* 
   )? RIGHT_PAREN ARROW returnType = type functionScope
   ;

@@ -6,6 +6,8 @@ COMMENT: '/*'([.\n\r])*'*/' -> skip;
 SPACE: [ \t\r\n] -> skip;
 
 // Keywords
+PRIVATE: 'private';
+PUBLIC: 'public';
 STRUCT: 'struct';
 RETURN: 'return';
 PRINT: 'print';
@@ -33,7 +35,7 @@ ALIGNOF: 'alignof';
 BOOL_LIT: 'true' | 'false';
 NULL_LIT: 'null';
 INT_LIT: ('0' | [1-9][0-9]*);
-FLOAT_LIT: ([1-9][0-9]*)'.'([0-9]+) | ([1-9][0-9]+)'.'([0-9]*);
+FLOAT_LIT: ('0' | [1-9][0-9]*) '.' [0-9]+;
 STRING_LIT: '"'(.*?)'"';
 CHAR_LIT: '\''(. | '\\'.)'\'';
 

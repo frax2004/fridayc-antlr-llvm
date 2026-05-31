@@ -14,6 +14,4 @@ auto Main(vector<string_ref> args) -> void {
   auto parser = FridayParser(&tokens);
 
   auto ast = parser.program();
-
-  
 }
