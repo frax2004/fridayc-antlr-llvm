@@ -3,12 +3,12 @@
 #endif
 
 namespace friday::inline core {
-  constexpr inline OperationNotSupportedError::OperationNotSupportedError(String info) noexcept
+  constexpr inline OperationNotSupportedError::OperationNotSupportedError(string info) noexcept
     : Error<> { }
     , M_info { info }
   {}
 
-  constexpr inline auto OperationNotSupportedError::what() const noexcept -> String {
+  constexpr inline auto OperationNotSupportedError::what() const noexcept -> string {
     return this->M_info;
   }
 }

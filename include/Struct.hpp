@@ -11,19 +11,19 @@ namespace friday::inline api::inline typesystem {
 
   struct Struct : ISymbol, Type, SymbolTable<Variable, Overload> {
     private:
-    String M_name;
+    string M_name;
     Namespace* M_declaryingNamespace;
 
     public:
-    Struct(Namespace& parent, String name) noexcept;
+    Struct(Namespace& parent, string name) noexcept;
 
-    auto getField(String const& name, Variable* defaultValue = nullptr) noexcept -> Variable*;
-    auto getMethod(String const& name, Overload* defaultValue = nullptr) noexcept -> Overload*;
-    auto getName() const noexcept -> String const& override;
+    auto getField(string const& name, Variable* defaultValue = nullptr) noexcept -> Variable*;
+    auto getMethod(string const& name, Overload* defaultValue = nullptr) noexcept -> Overload*;
+    auto getName() const noexcept -> string const& override;
     auto getLLVMType(llvm::LLVMContext& ctx) const noexcept -> llvm::Type* override;
-    auto getQualifiedId() const -> String override;
-    auto getFullQualifiedId() const -> String override;
-    auto getMangledId() const -> String override;
+    auto getQualifiedId() const -> string override;
+    auto getFullQualifiedId() const -> string override;
+    auto getMangledId() const -> string override;
     auto getAttributes() const -> Attributes override;
     auto getParent() -> ISymbolTable* override;
     auto getDeclaringSymbolTable() -> ISymbolTable* override;

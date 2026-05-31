@@ -11,13 +11,13 @@ namespace friday::inline api::inline typesystem {
     private:
     Overload* M_owner;
     FunctionType* M_signature;
-    Vector<String> M_parameters;
+    vector<string> M_parameters;
 
     public:
-    Function(Overload& owner, String name, Type& returnType, Vector<std::pair<String, Type*>> parameters = {});
+    Function(Overload& owner, string name, Type& returnType, vector<pair<string, Type*>> parameters = {});
 
-    auto getParameterName(u64 index) const -> String const&;
-    auto getParameter(u64 index) const -> std::pair<String, Type*>;
+    auto getParameterName(u64 index) const -> string const&;
+    auto getParameter(u64 index) const -> pair<string, Type*>;
 
     auto getType() -> Type* override;
   };

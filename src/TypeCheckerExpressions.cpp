@@ -2,12 +2,12 @@
 // #include <OperationNotSupportedError.hpp>
 
 // namespace friday::inline api::inline typechecker {
-//   auto TypeChecker::visitCallExpression(FridayParser::CallExpressionContext *ctx) -> std::any {
+//   auto TypeChecker::visitCallExpression(FridayParser::CallExpressionContext *ctx) -> any {
 //     Console::debug("CallExpressionContext: {}"_f.format(ctx->getText()));
 
-//     constexpr auto toType = (Type*(*)(std::any const&))&std::any_cast<Type*>;
+//     constexpr auto toType = (Type*(*)(any const&))&any_cast<Type*>;
 
-//     auto candidate = std::any_cast<Type*>(this->visit(ctx->func));
+//     auto candidate = any_cast<Type*>(this->visit(ctx->func));
 //     if(candidate == this->ERROR or not rtti::instanceOf<FunctionType>(candidate)) {
 //       this->errorAt(
 //         ctx->getStart(),
@@ -22,9 +22,9 @@
 //     auto funcType = (FunctionType*)candidate;
 
 //     auto argsTypes = ctx->args
-//     | std::views::transform(this->byVisiting<FridayParser::ExpressionContext>())
-//     | std::views::transform(toType)
-//     | std::ranges::to<std::vector>();
+//     | views::transform(this->byVisiting<FridayParser::ExpressionContext>())
+//     | views::transform(toType)
+//     | ranges::to<vector>();
 
 //     bool ok = true;
 //     if(funcType->getParametersCount() != argsTypes.size()) {
@@ -40,7 +40,7 @@
 //       );
 //     }
 
-//     for(u64 i = 0; i < std::min(argsTypes.size(), funcType->getParametersCount()); i++) {
+//     for(u64 i = 0; i < min(argsTypes.size(), funcType->getParametersCount()); i++) {
 //       Type* T = argsTypes[i];
 
 //       if(T != funcType->getParameterType(i)) {
@@ -60,25 +60,25 @@
 //     return (Type*)(ok ? funcType->getReturnType() : this->ERROR);
 //   }
 
-//   auto TypeChecker::visitIdentifierExpression(FridayParser::IdentifierExpressionContext *ctx) -> std::any {
+//   auto TypeChecker::visitIdentifierExpression(FridayParser::IdentifierExpressionContext *ctx) -> any {
 //     Console::debug("IdentifierExpressionContext: {}"_f.format(ctx->getText()));
     
 //     auto isVariableOrFunction = [](ISymbol* symbol) -> bool {
 //       return rtti::instanceOf<Variable>(symbol) or rtti::instanceOf<Function>(symbol);
 //     };
     
-//     String id = ctx->IDENTIFIER()->getText();
+//     string id = ctx->IDENTIFIER()->getText();
 //     ISymbol* symbol = this->topScope()->lookUpIf(id, isVariableOrFunction);
 
 //     bool ok = true;
 //     if(symbol == nullptr) {
 //       ok = false;
 
-//       auto toSuggestion = [](String const& message) {
-//         return std::format(" Did you mean '{}'?", message);
+//       auto toSuggestion = [](string const& message) {
+//         return format(" Did you mean '{}'?", message);
 //       };
 
-//       String suggestion = this->topScope()->mostSimilar(id, isVariableOrFunction, 3)
+//       string suggestion = this->topScope()->mostSimilar(id, isVariableOrFunction, 3)
 //       .transform(toSuggestion)
 //       .value_or("");
 
@@ -94,41 +94,41 @@
 //     return (Type*)(ok ? ((TypedEntity*)symbol)->getType() : this->ERROR);
 //   }
 
-//   auto TypeChecker::visitCharLiteralExpression(FridayParser::CharLiteralExpressionContext *ctx) -> std::any {
+//   auto TypeChecker::visitCharLiteralExpression(FridayParser::CharLiteralExpressionContext *ctx) -> any {
 //     Console::debug("CharLiteralExpressionContext: {}"_f.format(ctx->getText()));
 //     return (Type*)this->BYTE;
 //   }
 
-//   auto TypeChecker::visitStringLiteralExpression(FridayParser::StringLiteralExpressionContext *ctx) -> std::any {
-//     Console::debug("StringLiteralExpressionContext: {}"_f.format(ctx->getText()));
+//   auto TypeChecker::visitstringLiteralExpression(FridayParser::stringLiteralExpressionContext *ctx) -> any {
+//     Console::debug("stringLiteralExpressionContext: {}"_f.format(ctx->getText()));
 //     return (Type*)PointerType::get(*this->BYTE, 1);
 //   }
 
-//   auto TypeChecker::visitBoolLiteralExpression(FridayParser::BoolLiteralExpressionContext *ctx) -> std::any {
+//   auto TypeChecker::visitBoolLiteralExpression(FridayParser::BoolLiteralExpressionContext *ctx) -> any {
 //     Console::debug("BoolLiteralExpressionContext: {}"_f.format(ctx->getText()));
 //     return (Type*)this->BOOL;
 //   }
 
-//   auto TypeChecker::visitFloatLiteralExpression(FridayParser::FloatLiteralExpressionContext *ctx) -> std::any {
+//   auto TypeChecker::visitFloatLiteralExpression(FridayParser::FloatLiteralExpressionContext *ctx) -> any {
 //     Console::debug("FloatLiteralExpressionContext: {}"_f.format(ctx->getText()));
 //     return (Type*)this->FLOAT;
 //   }
 
-//   auto TypeChecker::visitIntLiteralExpression(FridayParser::IntLiteralExpressionContext *ctx) -> std::any {
+//   auto TypeChecker::visitIntLiteralExpression(FridayParser::IntLiteralExpressionContext *ctx) -> any {
 //     Console::debug("IntLiteralExpressionContext: {}"_f.format(ctx->getText()));
 //     return (Type*)this->INT;
 //   }
 
-//   auto TypeChecker::visitGroupingExpression(FridayParser::GroupingExpressionContext *ctx) -> std::any {
+//   auto TypeChecker::visitGroupingExpression(FridayParser::GroupingExpressionContext *ctx) -> any {
 //     Console::debug("GroupingExpressionContext: {}"_f.format(ctx->getText()));
-//     return (Type*)std::any_cast<Type*>(this->visit(ctx->expression()));
+//     return (Type*)any_cast<Type*>(this->visit(ctx->expression()));
 //   }
 
-//   auto TypeChecker::visitSubscriptExpression(FridayParser::SubscriptExpressionContext *ctx) -> std::any {
+//   auto TypeChecker::visitSubscriptExpression(FridayParser::SubscriptExpressionContext *ctx) -> any {
 //     Console::debug("SubscriptExpressionContext: {}"_f.format(ctx->getText()));
 
-//     Type* arrayType = std::any_cast<Type*>(this->visit(ctx->array));
-//     Type* indexType = std::any_cast<Type*>(this->visit(ctx->index));
+//     Type* arrayType = any_cast<Type*>(this->visit(ctx->array));
+//     Type* indexType = any_cast<Type*>(this->visit(ctx->index));
 
 //     ArrayType* asArrayType = rtti::cast<ArrayType>(arrayType);
 
@@ -162,11 +162,11 @@
 //     return (Type*)(ok ? asArrayType->getElementType() : this->ERROR);
 //   }
 
-//   auto TypeChecker::visitBinaryExpression(FridayParser::BinaryExpressionContext *ctx) -> std::any {
+//   auto TypeChecker::visitBinaryExpression(FridayParser::BinaryExpressionContext *ctx) -> any {
 //     Console::debug("BinaryExpressionContext: {}"_f.format(ctx->getText()));
 
-//     Type* lhsType = std::any_cast<Type*>(this->visit(ctx->left));
-//     Type* rhsType = std::any_cast<Type*>(this->visit(ctx->right));
+//     Type* lhsType = any_cast<Type*>(this->visit(ctx->left));
+//     Type* rhsType = any_cast<Type*>(this->visit(ctx->right));
 
 //     auto operatorName = "operator{}({}, {})"_f.format(
 //       ctx->binaryOperator->getText(),
@@ -174,7 +174,7 @@
 //       rhsType->getName()
 //     );
 
-//     String suggestion = "";
+//     string suggestion = "";
 
 //     if(rtti::instanceOf<Struct>(lhsType) and rtti::instanceOf<Struct>(rhsType)) {
 //       if(lhsType == rhsType) {
@@ -197,12 +197,12 @@
 //     return this->ERROR;
 //   }
 
-//   auto TypeChecker::visitUnaryPrefixExpression(FridayParser::UnaryPrefixExpressionContext *ctx) -> std::any {
+//   auto TypeChecker::visitUnaryPrefixExpression(FridayParser::UnaryPrefixExpressionContext *ctx) -> any {
 //     Console::debug("UnaryPrefixExpressionContext: {}"_f.format(ctx->getText()));
 
-//     Type* type = std::any_cast<Type*>(this->visit(ctx->expression()));
+//     Type* type = any_cast<Type*>(this->visit(ctx->expression()));
 //     u64 oper = ctx->unaryOperator->getType();
-//     String unaryOperatorName = Type::getUnaryPrefixExpressionOperatorName(oper, type);
+//     string unaryOperatorName = Type::getUnaryPrefixExpressionOperatorName(oper, type);
 
 
 //     if(Struct* asStruct = type->as<Struct>()) {
@@ -222,7 +222,7 @@
 //     return this->ERROR;
 //   }
 
-//   auto TypeChecker::visitSimpleType(FridayParser::SimpleTypeContext *ctx) -> std::any {
+//   auto TypeChecker::visitSimpleType(FridayParser::SimpleTypeContext *ctx) -> any {
 //     Console::debug("SimpleTypeContext: {}"_f.format(ctx->getText()));
 
 //     auto token = ctx->IDENTIFIER()->getSymbol();
@@ -232,11 +232,11 @@
 //     Type* T = rtti::cast<Struct>(this->topScope()->lookUpIf(id, isType));
 
 //     if(T == nullptr or T == this->ERROR) {
-//       auto toSuggestion = [](String const& message) {
-//         return std::format(" Did you mean '{}'?", message);
+//       auto toSuggestion = [](string const& message) {
+//         return format(" Did you mean '{}'?", message);
 //       };
 
-//       String suggestion = this
+//       string suggestion = this
 //       ->topScope()
 //       ->mostSimilar(id, isType, 3)
 //       .transform(toSuggestion)
@@ -251,16 +251,16 @@
 //     return (Type*)T;
 //   }
 
-//   auto TypeChecker::visitFunctionType(FridayParser::FunctionTypeContext *ctx) -> std::any {
+//   auto TypeChecker::visitFunctionType(FridayParser::FunctionTypeContext *ctx) -> any {
 //     Console::debug("FunctionTypeContext: {}"_f.format(ctx->getText()));
 
-//     constexpr auto toType = (Type*(*)(std::any const&))&std::any_cast<Type*>;
+//     constexpr auto toType = (Type*(*)(any const&))&any_cast<Type*>;
 
-//     Type* retType = std::any_cast<Type*>(this->visit(ctx->returnType));
-//     Vector<Type*> paramsTypes = ctx->paramsTypes
-//     | std::views::transform(this->byVisiting<FridayParser::TypeContext>())
-//     | std::views::transform(toType)
-//     | std::ranges::to<std::vector>();
+//     Type* retType = any_cast<Type*>(this->visit(ctx->returnType));
+//     vector<Type*> paramsTypes = ctx->paramsTypes
+//     | views::transform(this->byVisiting<FridayParser::TypeContext>())
+//     | views::transform(toType)
+//     | ranges::to<vector>();
 
 
 //     bool ok = true;
@@ -290,13 +290,13 @@
 //       );
 //     }
 
-//     return (Type*)(ok ? FunctionType::get(*retType, std::move(paramsTypes)) : this->ERROR);
+//     return (Type*)(ok ? FunctionType::get(*retType, move(paramsTypes)) : this->ERROR);
 //   }
 
-//   auto TypeChecker::visitPointerType(FridayParser::PointerTypeContext *ctx) -> std::any {
+//   auto TypeChecker::visitPointerType(FridayParser::PointerTypeContext *ctx) -> any {
 //     Console::debug("PointerTypeTypeContext: {}"_f.format(ctx->getText()));
     
-//     Type* type = std::any_cast<Type*>(this->visit(ctx->pointedType));
+//     Type* type = any_cast<Type*>(this->visit(ctx->pointedType));
 //     u64 dimensions = ctx->STAR().size();
 
 //     if(type == this->ERROR) {

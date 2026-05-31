@@ -11,7 +11,7 @@ namespace friday::inline api::inline typesystem {
     public:
     Scope(ISymbolTable& parent);
 
-    auto getVariable(String const& id, Variable* defaultValue = nullptr) -> Variable*;
+    auto getVariable(string const& id, Variable* defaultValue = nullptr) -> Variable*;
     auto getParent() -> ISymbolTable* override;
   };
 }

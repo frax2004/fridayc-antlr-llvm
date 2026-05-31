@@ -8,14 +8,14 @@ namespace friday::inline api::inline typesystem {
 
   struct MangledNameBuilder final {
     private:
-    Vector<String> M_names;
-    Vector<Type*> M_argsTypes;
+    vector<string> M_names;
+    vector<Type*> M_argsTypes;
 
     public:
-    MangledNameBuilder(String name);
+    MangledNameBuilder(string name);
     
-    auto dot(String name) -> MangledNameBuilder&;
+    auto dot(string name) -> MangledNameBuilder&;
     auto param(Type* type) -> MangledNameBuilder&;
-    auto build() -> String;
+    auto build() -> string;
   };
 }

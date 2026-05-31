@@ -8,11 +8,11 @@ namespace friday::inline api::inline typesystem {
   struct ISymbolTable;
 
   struct ISymbol {
-    static auto getDemangledId(String const& id) -> String;
+    static auto getDemangledId(string const& id) -> string;
 
-    virtual auto getMangledId() const -> String = 0;
-    virtual auto getQualifiedId() const -> String = 0;
-    virtual auto getFullQualifiedId() const -> String = 0;
+    virtual auto getMangledId() const -> string = 0;
+    virtual auto getQualifiedId() const -> string = 0;
+    virtual auto getFullQualifiedId() const -> string = 0;
     virtual auto getDeclaringSymbolTable() -> ISymbolTable* = 0;
     virtual auto getAttributes() const -> Attributes = 0;
   };

@@ -6,8 +6,8 @@
 
 namespace friday::inline api::inline typesystem {
   
-  template<std::derived_from<ISymbol>... Ts>
-  auto SymbolTable<Ts...>::lookUp(String const& id, ISymbol* defaultValue) -> ISymbol* {
+  template<derived_from<ISymbol>... Ts>
+  auto SymbolTable<Ts...>::lookUp(string const& id, ISymbol* defaultValue) -> ISymbol* {
     if(not SymbolTable::assertInstanceOf<Ts...>(defaultValue)) {
       return defaultValue;
     }
@@ -19,8 +19,8 @@ namespace friday::inline api::inline typesystem {
     } else return defaultValue;
   }
 
-  template<std::derived_from<ISymbol>... Ts>
-  auto SymbolTable<Ts...>::lookUpIf(String const& id, Predicate<ISymbol*> predicate, ISymbol* defaultValue) -> ISymbol* {
+  template<derived_from<ISymbol>... Ts>
+  auto SymbolTable<Ts...>::lookUpIf(string const& id, Predicate<ISymbol*> predicate, ISymbol* defaultValue) -> ISymbol* {
     if(not SymbolTable::assertInstanceOf<Ts...>(defaultValue)) {
       return defaultValue;
     }
@@ -38,25 +38,25 @@ namespace friday::inline api::inline typesystem {
     return defaultValue;
   }
 
-  template<std::derived_from<ISymbol>... Ts>
-  auto SymbolTable<Ts...>::isDefined(String const& id) -> bool {
+  template<derived_from<ISymbol>... Ts>
+  auto SymbolTable<Ts...>::isDefined(string const& id) -> bool {
     auto it = this->M_symbols.find(id);
     return it != this->M_symbols.end() and SymbolTable::assertInstanceOf(it->second.get());
   }
 
-  template<std::derived_from<ISymbol>... Ts>
-  auto SymbolTable<Ts...>::mostSimilar(String const& name, Predicate<ISymbol*> filter, u64 maxEditDistance) noexcept -> Opt<ISymbol*> {
-    return std::nullopt;
+  template<derived_from<ISymbol>... Ts>
+  auto SymbolTable<Ts...>::mostSimilar(string const& name, Predicate<ISymbol*> filter, u64 maxEditDistance) noexcept -> optional<ISymbol*> {
+    return nullopt;
     /// TODO: to implement
   }
 
-  template<std::derived_from<ISymbol>... Ts>
+  template<derived_from<ISymbol>... Ts>
   template<class... Bases>
   auto SymbolTable<Ts...>::assertInstanceOf(ISymbol* object) -> bool {
     return (dynamic_cast<Bases*>(object) || ...);
   }
   
-  template<std::derived_from<ISymbol>... Ts>
+  template<derived_from<ISymbol>... Ts>
   auto SymbolTable<Ts...>::define(ISymbol* symbol) -> bool {
     if(not SymbolTable::assertInstanceOf<Ts...>(symbol)) {
       throw InvalidArgumentError{"Invalid symbol type"};
@@ -65,12 +65,12 @@ namespace friday::inline api::inline typesystem {
     return this->M_symbols.try_emplace(symbol->getQualifiedId(), symbol).second;
   }
 
-  template<std::derived_from<ISymbol>... Ts>
-  auto SymbolTable<Ts...>::getSymbols() const -> Vector<ISymbol*> {
+  template<derived_from<ISymbol>... Ts>
+  auto SymbolTable<Ts...>::getSymbols() const -> vector<ISymbol*> {
     return this->M_symbols
-    | std::views::values
-    | std::views::transform(Box<ISymbol>::get)
-    | std::ranges::to<std::vector>();
+    | views::values
+    | views::transform(box<ISymbol>::get)
+    | ranges::to<vector>();
   }
 
 }

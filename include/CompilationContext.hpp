@@ -9,6 +9,6 @@ namespace friday::inline core::inline util {
     ant::tree::ParseTree* ast;
     llvm::Module* mod;
     llvm::LLVMContext* ctx;
-    String path;
+    string path;
   };
 }

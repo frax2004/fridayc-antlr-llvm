@@ -1,27 +1,27 @@
 #include <FunctionType.hpp>
 
 namespace friday::inline api::inline typesystem {
-  FunctionType::FunctionType(Type& returnType, Vector<Type*> paramsTypes) noexcept
+  FunctionType::FunctionType(Type& returnType, vector<Type*> paramsTypes) noexcept
     : Type { } 
     , M_name { 
-        std::format(
+        format(
           "{}({})", 
           returnType.getName(), 
           paramsTypes
-          | std::views::transform(Type::getName)
-          | std::views::join_with(", "s)
-          | std::ranges::to<std::string>()
+          | views::transform(Type::getName)
+          | views::join_with(", "s)
+          | ranges::to<string>()
         )
       }
     , M_returnType { &returnType }
     , M_parameters { paramsTypes }
   {}
 
-  auto FunctionType::getParametersTypes() const noexcept -> Vector<Type*> const& {
+  auto FunctionType::getParametersTypes() const noexcept -> vector<Type*> const& {
     return this->M_parameters;
   }
 
-  auto FunctionType::getName() const noexcept -> String const& {
+  auto FunctionType::getName() const noexcept -> string const& {
     return this->M_name;
   }
   
@@ -35,16 +35,16 @@ namespace friday::inline api::inline typesystem {
     };
 
     auto paramsTypes = this->M_parameters
-    | std::views::transform(toLLVMType)
-    | std::ranges::to<std::vector>();
+    | views::transform(toLLVMType)
+    | ranges::to<vector>();
 
     return llvm::FunctionType::get(this->M_returnType->getLLVMType(ctx), paramsTypes, false);
   }
 
-  auto FunctionType::get(Type& returnType, Vector<Type*> paramsTypes) noexcept -> Type* {
-    static Map<String, FunctionType> S_functionTypes = {};
+  auto FunctionType::get(Type& returnType, vector<Type*> paramsTypes) noexcept -> Type* {
+    static map<string, FunctionType> S_functionTypes = {};
 
-    FunctionType functionType { returnType, std::move(paramsTypes) };
+    FunctionType functionType { returnType, move(paramsTypes) };
     return &S_functionTypes.try_emplace(functionType.getName(), functionType).first->second;
   }
 

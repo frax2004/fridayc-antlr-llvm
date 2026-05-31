@@ -7,7 +7,7 @@ namespace friday::inline api::inline typesystem {
     private:
     Type* M_elementType;
     u64 M_length;
-    String M_name;
+    string M_name;
 
     private:
     ArrayType(Type& elementType, u64 length) noexcept;
@@ -17,7 +17,7 @@ namespace friday::inline api::inline typesystem {
 
     auto getElementType() const noexcept -> Type*;
     auto getLength() const noexcept -> u64;
-    auto getName() const noexcept -> String const& override;
+    auto getName() const noexcept -> string const& override;
     auto getLLVMType(llvm::LLVMContext& ctx) const noexcept -> llvm::Type* override;
   };
 }

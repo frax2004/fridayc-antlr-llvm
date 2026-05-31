@@ -3,12 +3,12 @@
 
 namespace friday::inline api::inline typesystem {
 
-  Struct::Struct(Namespace& parent, String name) noexcept
+  Struct::Struct(Namespace& parent, string name) noexcept
     : M_declaryingNamespace { &parent }
-    , M_name { std::move(name) }
+    , M_name { move(name) }
   {}
 
-  auto Struct::getField(String const& name, Variable* defaultValue) noexcept -> Variable* {
+  auto Struct::getField(string const& name, Variable* defaultValue) noexcept -> Variable* {
     constexpr auto isVariable = [](ISymbol* symbol) {
       return dynamic_cast<Variable*>(symbol) != nullptr;
     };
@@ -16,7 +16,7 @@ namespace friday::inline api::inline typesystem {
     return (Variable*)lookUpIf(name, isVariable, defaultValue);
   }
 
-  auto Struct::getMethod(String const& name, Overload* defaultValue) noexcept -> Overload* {
+  auto Struct::getMethod(string const& name, Overload* defaultValue) noexcept -> Overload* {
     constexpr auto isMethod = [](ISymbol* symbol) {
       return dynamic_cast<Overload*>(symbol) != nullptr;
     };
@@ -24,7 +24,7 @@ namespace friday::inline api::inline typesystem {
     return (Overload*)lookUpIf(name, isMethod, defaultValue);
   }
 
-  auto Struct::getName() const noexcept -> String const& {
+  auto Struct::getName() const noexcept -> string const& {
     return this->M_name;
   }
 
@@ -44,23 +44,23 @@ namespace friday::inline api::inline typesystem {
     return llvm::StructType::get(
       ctx,
       this->getSymbols()
-      | std::views::filter(isVariable)
-      | std::views::transform(toVariable)
-      | std::views::transform(Variable::getType)
-      | std::views::transform(toLLVMType)
-      | std::ranges::to<std::vector>()
+      | views::filter(isVariable)
+      | views::transform(toVariable)
+      | views::transform(Variable::getType)
+      | views::transform(toLLVMType)
+      | ranges::to<vector>()
     );
   }
 
-  auto Struct::getQualifiedId() const -> String {
+  auto Struct::getQualifiedId() const -> string {
     return this->M_name;
   }
 
-  auto Struct::getFullQualifiedId() const -> String {
+  auto Struct::getFullQualifiedId() const -> string {
 
   }
 
-  auto Struct::getMangledId() const -> String {
+  auto Struct::getMangledId() const -> string {
 
   }
 

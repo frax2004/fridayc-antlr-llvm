@@ -1,8 +1,8 @@
 #include <Primitive.hpp>
 
 namespace friday::inline api::inline typesystem {
-  Primitive::Primitive(Namespace& global, String name, llvm::Type* T)
-    : Struct { global, std::move(name) }
+  Primitive::Primitive(Namespace& global, string name, llvm::Type* T)
+    : Struct { global, move(name) }
     , M_type { T }
   {}
 

@@ -83,4 +83,3 @@ DOT: '.';
 
 // Identifier
 IDENTIFIER: [a-zA-Z_][a-zA-Z0-9_]*;
-NAMESPACE_IDENTIFIER: IDENTIFIER ('.' IDENTIFIER)*?;

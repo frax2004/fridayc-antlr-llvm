@@ -3,13 +3,13 @@
 
 
 namespace friday::inline api::inline parser {
-  SemanticError::SemanticError(SourceLocation location, String message)
+  SemanticError::SemanticError(SourceLocation location, string message)
     : Error<> { }
-    , M_location { std::move(location) }
-    , M_message { std::move(message) }
+    , M_location { move(location) }
+    , M_message { move(message) }
   {}
 
-  auto SemanticError::what() const noexcept -> String {
+  auto SemanticError::what() const noexcept -> string {
     return this->M_message;
   }
 

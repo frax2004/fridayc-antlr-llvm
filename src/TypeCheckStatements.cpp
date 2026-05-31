@@ -9,20 +9,20 @@
 //   constexpr static auto PARAM_REDECLARATION = "In function declaration, redeclaration of parameter #{} named '{}' of type '{}' previously already defined."_f;
 //   constexpr static auto INVALID_PARAM_TYPE = "In function declaration, parameter #{} named '{}' has an invalid type '{}'."_f;
 
-//   auto TypeChecker::visitProgram(FridayParser::ProgramContext *ctx) -> std::any {
+//   auto TypeChecker::visitProgram(FridayParser::ProgramContext *ctx) -> any {
 //     Console::debug("ProgramContext: {}"_f.format(ctx->getText()));
 
 //     SymbolTable globalScope = SymbolTable::builtins(*this->M_unit->getModule());
     
 //     this->beginScope(globalScope);
-//     std::any result = this->visitChildren(ctx);
+//     any result = this->visitChildren(ctx);
 //     this->endScope();
 
-//     return std::move(result);
+//     return move(result);
 //   }
 
-//   auto TypeChecker::visitReturnStatement(FridayParser::ReturnStatementContext *ctx) -> std::any {
-//     Type* actual = std::any_cast<Type*>(this->visit(ctx->expr()));
+//   auto TypeChecker::visitReturnStatement(FridayParser::ReturnStatementContext *ctx) -> any {
+//     Type* actual = any_cast<Type*>(this->visit(ctx->expr()));
 //     if(actual == Struct::getErrorType() or actual != this->M_currentFunctionReturnType) {
 //       this->errorAt(
 //         ctx->expr()->getStart(),
@@ -32,11 +32,11 @@
 //     } else return (Type*)this->M_currentScope->resolve("void")->as<Struct>();
 //   }
 
-//   auto TypeChecker::visitPrintStatement(FridayParser::PrintStatementContext *ctx) -> std::any {
+//   auto TypeChecker::visitPrintStatement(FridayParser::PrintStatementContext *ctx) -> any {
 //     Console::debug("PrintStatementContext: {}"_f.format(ctx->getText()));
 
 //     Type* expected = PointerType::get((Type*)this->M_currentScope->resolve("byte")->as<Struct>(), 1);
-//     Type* actual = std::any_cast<Type*>(this->visit(ctx->expr()));
+//     Type* actual = any_cast<Type*>(this->visit(ctx->expr()));
 
 //     if(expected != actual) {
 //       this->errorAt(
@@ -47,17 +47,17 @@
 //     } else return (Type*)this->M_currentScope->resolve("void")->as<Struct>();
 //   }
 
-//   auto TypeChecker::visitScope(FridayParser::ScopeContext *ctx) -> std::any {
+//   auto TypeChecker::visitScope(FridayParser::ScopeContext *ctx) -> any {
 //     Console::debug("ScopeContext: {}"_f.format(ctx->getText()));
 
-//     auto toType = (Type*(*)(std::any const&))&std::any_cast<Type*>;
-//     auto byVisiting = [this](FridayParser::StatementContext* ctx) -> std::any {
+//     auto toType = (Type*(*)(any const&))&any_cast<Type*>;
+//     auto byVisiting = [this](FridayParser::StatementContext* ctx) -> any {
 //       return this->visit(ctx);
 //     };
 
 //     auto statements = ctx->statement()
-//     | std::views::transform(byVisiting)
-//     | std::views::transform(toType);
+//     | views::transform(byVisiting)
+//     | views::transform(toType);
     
 //     SymbolTable scope { this->M_currentScope };
 //     this->beginScope(scope);
@@ -73,9 +73,9 @@
 //     return (Type*)(ok ? (Type*)this->M_currentScope->resolve("void")->as<Struct>() : (Type*)Struct::getErrorType());
 //   }
 
-//   auto TypeChecker::visitInlineScope(FridayParser::InlineScopeContext *ctx) -> std::any {
+//   auto TypeChecker::visitInlineScope(FridayParser::InlineScopeContext *ctx) -> any {
 //     Console::debug("InlineScopeContext: {}"_f.format(ctx->getText()));
-//     Type* T = std::any_cast<Type*>(this->visit(ctx->expr()));
+//     Type* T = any_cast<Type*>(this->visit(ctx->expr()));
 //     if(T == Struct::getErrorType() or T != this->M_currentFunctionReturnType) {
 //       this->errorAt(
 //         ctx->expr()->getStart(),
@@ -85,33 +85,33 @@
 //     } else return (Type*)this->M_currentScope->resolve("void")->as<Struct>();
 //   }
 
-//   auto TypeChecker::visitFunctionStatement(FridayParser::FunctionStatementContext *ctx) -> std::any {
+//   auto TypeChecker::visitFunctionStatement(FridayParser::FunctionStatementContext *ctx) -> any {
 //     Console::debug("FunctionStatementContext: {}"_f.format(ctx->getText()));
 
-//     auto toType = (Type*(*)(std::any const&))&std::any_cast<Type*>;
+//     auto toType = (Type*(*)(any const&))&any_cast<Type*>;
 
-//     auto byVisiting = [this](FridayParser::TypeContext* ctx) -> std::any {
+//     auto byVisiting = [this](FridayParser::TypeContext* ctx) -> any {
 //       return this->visit(ctx);
 //     };
-//     auto toPair = [](std::tuple<String, Type*> const& pair) -> std::pair<String, Type*> {
-//       return std::make_pair(std::get<0>(pair), std::get<1>(pair));
+//     auto toPair = [](tuple<string, Type*> const& pair) -> pair<string, Type*> {
+//       return make_pair(get<0>(pair), get<1>(pair));
 //     };
 //     auto isFunctionOrVariable = [](Symbol* symbol) -> bool {
 //       return symbol->is<Function>() or symbol->is<Variable>();
 //     };
 
-//     String name = ctx->name->getText();
-//     Type* returnType = std::any_cast<Type*>(this->visit(ctx->returnType));
+//     string name = ctx->name->getText();
+//     Type* returnType = any_cast<Type*>(this->visit(ctx->returnType));
 
-//     Vector<std::pair<String, Type*>> parameters = std::views::zip(
+//     vector<pair<string, Type*>> parameters = views::zip(
 //       ctx->paramsNames
-//       | std::views::transform(ant::Token::getText),
+//       | views::transform(ant::Token::getText),
 //       ctx->paramsTypes
-//       | std::views::transform(byVisiting)
-//       | std::views::transform(toType)
+//       | views::transform(byVisiting)
+//       | views::transform(toType)
 //     )
-//     | std::views::transform(toPair)
-//     | std::ranges::to<std::vector>();
+//     | views::transform(toPair)
+//     | ranges::to<vector>();
 
 //     bool ok = true;
 
@@ -153,7 +153,7 @@
 //     Type* blockType = ({
 //       Type* tmpRetType = this->M_currentFunctionReturnType;
 //       this->M_currentFunctionReturnType = returnType;
-//       Type* res = std::any_cast<Type*>(this->visit(ctx->functionScope()));
+//       Type* res = any_cast<Type*>(this->visit(ctx->functionScope()));
 //       this->M_currentFunctionReturnType = tmpRetType;
 //       res;
 //     });

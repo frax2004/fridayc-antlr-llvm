@@ -4,10 +4,10 @@
 #include <OperationNotSupportedError.hpp>
 
 namespace friday::inline api::inline typesystem {
-  auto ISymbol::getDemangledId(String const& id) -> String {
+  auto ISymbol::getDemangledId(string const& id) -> string {
     return rtti::demangle(id.data())
-    | std::views::split("::"s)
-    | std::views::join_with("."s)
-    | std::ranges::to<std::string>();
+    | views::split("::"s)
+    | views::join_with("."s)
+    | ranges::to<string>();
   }
 }

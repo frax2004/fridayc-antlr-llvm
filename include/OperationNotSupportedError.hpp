@@ -7,11 +7,11 @@ namespace friday::inline core {
 
   struct OperationNotSupportedError final : public Error<> {
 
-    constexpr inline OperationNotSupportedError(String info) noexcept;
-    constexpr inline auto what() const noexcept -> String override;
+    constexpr inline OperationNotSupportedError(string info) noexcept;
+    constexpr inline auto what() const noexcept -> string override;
 
     private:
-    String M_info { "" };
+    string M_info { "" };
   };
 }
 

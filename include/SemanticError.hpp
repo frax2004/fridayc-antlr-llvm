@@ -6,14 +6,14 @@
 namespace friday::inline api::inline parser {
 
   struct SemanticError : public Error<> {
-    SemanticError(SourceLocation location, String message);
+    SemanticError(SourceLocation location, string message);
 
     auto report() const noexcept -> void;
-    auto what() const noexcept -> String override;
+    auto what() const noexcept -> string override;
     auto where() const noexcept -> SourceLocation;
 
     private:
     SourceLocation M_location;
-    String M_message;
+    string M_message;
   };
 }

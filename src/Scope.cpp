@@ -5,7 +5,7 @@ namespace friday::inline api::inline typesystem {
     : M_parent { &parent }
   {}
 
-  auto Scope::getVariable(String const& id, Variable* defaultValue) -> Variable* {
+  auto Scope::getVariable(string const& id, Variable* defaultValue) -> Variable* {
     constexpr auto isVariable = [](ISymbol* symbol) {
       return dynamic_cast<Variable*>(symbol) != nullptr;
     };

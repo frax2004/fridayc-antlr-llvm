@@ -3,12 +3,12 @@
 namespace friday::inline api::inline typesystem {
 
   PointerType::PointerType(Type& pointedType, u64 dimensions) noexcept
-    : M_name { std::format("{:*>{}}{}", "", dimensions, pointedType.getName()) }
+    : M_name { format("{:*>{}}{}", "", dimensions, pointedType.getName()) }
     , M_pointedType { &pointedType }
     , M_dimensions { dimensions }
   {}
 
-  auto PointerType::getName() const noexcept -> String const& {
+  auto PointerType::getName() const noexcept -> string const& {
     return this->M_name;
   }
 
@@ -25,7 +25,7 @@ namespace friday::inline api::inline typesystem {
   }
 
   auto PointerType::get(Type& elementType, u64 dimensions) noexcept -> Type* {
-    static Map<String, PointerType> S_PointerTypes = {};
+    static map<string, PointerType> S_PointerTypes = {};
 
     Type* elementTypeRef = &elementType;
 

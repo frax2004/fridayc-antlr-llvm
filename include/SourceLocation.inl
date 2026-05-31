@@ -4,8 +4,8 @@
 
 namespace friday::inline core::inline util {
 
-  constexpr SourceLocation::SourceLocation(String filePath, u64 line, u64 column) noexcept
-    : M_filePath { std::move(filePath) }
+  constexpr SourceLocation::SourceLocation(string filePath, u64 line, u64 column) noexcept
+    : M_filePath { move(filePath) }
     , M_line { line }
     , M_column { column }
   {}
@@ -24,7 +24,7 @@ namespace friday::inline core::inline util {
     return this->M_column;
   }
 
-  constexpr auto SourceLocation::path() const noexcept -> StringRef {
+  constexpr auto SourceLocation::path() const noexcept -> string_ref {
     return this->M_filePath;
   }
 

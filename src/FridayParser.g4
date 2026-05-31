@@ -39,8 +39,8 @@ options {
   )? RIGHT_PAREN ARROW returnType = type SEMI
   ;
 
-  namespaceStatement: NAMESPACE NAMESPACE_IDENTIFIER SEMI;
-  usingStatement: USING NAMESPACE_IDENTIFIER SEMI;
+  namespaceStatement: NAMESPACE IDENTIFIER SEMI;
+  usingStatement: USING IDENTIFIER SEMI;
 
   structStatement: STRUCT IDENTIFIER LEFT_CURLY 
     ((fieldsNames += IDENTIFIER COL fieldsTypes += type SEMI) | methods += functionStatement)*
@@ -132,7 +132,7 @@ expression
 : id = IDENTIFIER # IdentifierExpression
 | literal = INT_LIT # IntLiteralExpression
 | literal = CHAR_LIT # CharLiteralExpression
-| literal = STRING_LIT # StringLiteralExpression
+| literal = STRING_LIT # stringLiteralExpression
 | literal = FLOAT_LIT # FloatLiteralExpression
 | literal = BOOL_LIT # BoolLiteralExpression
 | literal = NULL_LIT # NullLiteralExpression

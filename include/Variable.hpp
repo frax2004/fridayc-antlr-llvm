@@ -7,16 +7,16 @@ namespace friday::inline api::inline typesystem {
 
   struct Variable : TypedEntity, ISymbol {
     private:
-    String M_name;
+    string M_name;
     Type* M_type;
     ISymbolTable* M_declaringScope;
 
     public:
-    Variable(ISymbolTable& declaringScope, String name, Type& type) noexcept;
+    Variable(ISymbolTable& declaringScope, string name, Type& type) noexcept;
     
-    auto getQualifiedId() const -> String override;
-    auto getFullQualifiedId() const -> String override;
-    auto getMangledId() const -> String override;
+    auto getQualifiedId() const -> string override;
+    auto getFullQualifiedId() const -> string override;
+    auto getMangledId() const -> string override;
     auto getDeclaringSymbolTable() -> ISymbolTable* override;
 
     auto getAttributes() const -> Attributes override;

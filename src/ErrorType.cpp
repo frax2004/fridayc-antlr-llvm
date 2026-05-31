@@ -2,7 +2,7 @@
 
 namespace friday::inline api::inline typesystem {
 
-  auto ErrorType::getName() const noexcept -> String const& {
+  auto ErrorType::getName() const noexcept -> string const& {
     return this->M_name;
   }
 

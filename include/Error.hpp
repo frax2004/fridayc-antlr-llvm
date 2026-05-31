@@ -3,7 +3,7 @@
 
 namespace friday::inline core {
 
-  template<class MessageType = String>
+  template<class MessageType = string>
   struct Error {
     protected:
     constexpr inline Error() noexcept;
@@ -12,10 +12,10 @@ namespace friday::inline core {
     constexpr inline virtual ~Error() noexcept = default;
     
     constexpr inline virtual auto what() const noexcept -> MessageType = 0;
-    virtual constexpr inline auto trace() const noexcept -> String final;
+    virtual constexpr inline auto trace() const noexcept -> string final;
 
     private:
-    std::stacktrace M_trace;
+    stacktrace M_trace;
   };
 }
 

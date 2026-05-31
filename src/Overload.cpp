@@ -3,38 +3,38 @@
 
 namespace friday::inline api::inline typesystem {
 
-  auto Overload::getFunctions() const -> Vector<Function*> {
+  auto Overload::getFunctions() const -> vector<Function*> {
     return this->M_overloads 
-    | std::views::values 
-    | std::ranges::to<std::vector>();
+    | views::values 
+    | ranges::to<vector>();
   }
 
-  auto Overload::add(Vector<Type*> argsTypes, Function* function) -> void {
-    this->M_overloads.try_emplace(std::move(argsTypes), function);
+  auto Overload::add(vector<Type*> argsTypes, Function* function) -> void {
+    this->M_overloads.try_emplace(move(argsTypes), function);
   }
 
-  auto Overload::tryMatch(Vector<Type*> argsTypes) -> Function* {
+  auto Overload::tryMatch(vector<Type*> argsTypes) -> Function* {
     if(auto it = this->M_overloads.find(argsTypes); it != this->M_overloads.end()) {
       return it->second;
     } else return nullptr;
   }
 
-  auto Overload::hasMatch(Vector<Type*> argsTypes) -> bool {
+  auto Overload::hasMatch(vector<Type*> argsTypes) -> bool {
     return this->M_overloads.contains(argsTypes);
   }
 
-  auto Overload::getQualifiedId() const -> String {
+  auto Overload::getQualifiedId() const -> string {
     return this->M_name;
   }
 
-  auto Overload::getFullQualifiedId() const -> String {
+  auto Overload::getFullQualifiedId() const -> string {
     return "{}.{}"_f.format(
       dynamic_cast<ISymbol*>(this->M_declaringSymbolTable)->getFullQualifiedId(), 
       this->M_name
     );
   }
 
-  auto Overload::getMangledId() const -> String {
+  auto Overload::getMangledId() const -> string {
 
   }
 

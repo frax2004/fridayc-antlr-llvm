@@ -3,11 +3,11 @@
 
 namespace friday::inline api::inline typesystem {
 
-  MangledNameBuilder::MangledNameBuilder(String name) 
+  MangledNameBuilder::MangledNameBuilder(string name) 
     : M_names { name }
   {}
   
-  auto MangledNameBuilder::dot(String name) -> MangledNameBuilder& {
+  auto MangledNameBuilder::dot(string name) -> MangledNameBuilder& {
     this->M_names.push_back(name);
     return *this;
   }
@@ -17,23 +17,23 @@ namespace friday::inline api::inline typesystem {
     return *this;
   }
 
-  auto MangledNameBuilder::build() -> String {
-    auto mangle = [](String const& name) {
+  auto MangledNameBuilder::build() -> string {
+    auto mangle = [](string const& name) {
       return "{}{}"_f.format(name.length(), name);
     };
 
     return "_Z{}{}{}{}"_f.format(
       this->M_names.size() > 1 ? "N" : "",
       this->M_names
-      | std::views::transform(mangle)
-      | std::views::join_with(""s)
-      | std::ranges::to<std::string>(),
+      | views::transform(mangle)
+      | views::join_with(""s)
+      | ranges::to<string>(),
       this->M_names.size() > 1 ? "E" : "",
       this->M_argsTypes
-      | std::views::transform(Type::getName)
-      | std::views::transform(mangle)
-      | std::views::join_with(""s)
-      | std::ranges::to<std::string>()
+      | views::transform(Type::getName)
+      | views::transform(mangle)
+      | views::join_with(""s)
+      | ranges::to<string>()
     );
   }
 

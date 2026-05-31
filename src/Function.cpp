@@ -3,28 +3,28 @@
 
 namespace friday::inline api::inline typesystem {
   
-  Function::Function(Overload& parent, String name, Type& returnType, Vector<std::pair<String, Type*>> parameters)
+  Function::Function(Overload& parent, string name, Type& returnType, vector<pair<string, Type*>> parameters)
     : M_owner { &parent }
     , M_parameters {
       parameters 
-      | std::views::transform(&std::pair<String, Type*>::first) 
-      | std::ranges::to<std::vector>()
+      | views::transform(&pair<string, Type*>::first) 
+      | ranges::to<vector>()
     }
   {
     this->M_signature = (FunctionType*)FunctionType::get(
       returnType,
       parameters
-      | std::views::transform(&std::pair<String, Type*>::second)
-      | std::ranges::to<std::vector>()
+      | views::transform(&pair<string, Type*>::second)
+      | ranges::to<vector>()
     );
   }
 
-  auto Function::getParameterName(u64 index) const -> String const& {
+  auto Function::getParameterName(u64 index) const -> string const& {
     return this->M_parameters.at(index);
   }
 
-  auto Function::getParameter(u64 index) const -> std::pair<String, Type*> {
-    return std::make_pair(
+  auto Function::getParameter(u64 index) const -> pair<string, Type*> {
+    return make_pair(
       this->M_parameters.at(index),
       this->M_signature->getParameterType(index)
     );

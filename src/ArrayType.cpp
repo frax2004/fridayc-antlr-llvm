@@ -9,7 +9,7 @@ namespace friday::inline api::inline typesystem {
   {}
 
   auto ArrayType::get(Type& elementType, u64 length) noexcept -> Type* {
-    static Map<String, ArrayType> S_arrayTypes = {};
+    static map<string, ArrayType> S_arrayTypes = {};
 
     ArrayType array { elementType, length };
     return &S_arrayTypes.try_emplace(array.getName(), array).first->second;
@@ -23,7 +23,7 @@ namespace friday::inline api::inline typesystem {
     return this->M_length;
   }
 
-  auto ArrayType::getName() const noexcept -> String const& {
+  auto ArrayType::getName() const noexcept -> string const& {
     return this->M_name;
   }
 

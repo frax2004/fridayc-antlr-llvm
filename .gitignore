@@ -1,5 +1,3 @@
 /build
 CMakeLists.txt
 /.vscode
-/out
-/old

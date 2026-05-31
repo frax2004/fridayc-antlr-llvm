@@ -8,7 +8,7 @@ namespace friday::inline api::inline typesystem {
   struct PointerType final : public Type {
     private:
     Type* M_pointedType;
-    String M_name;
+    string M_name;
     u64 M_dimensions;
 
     private:
@@ -19,7 +19,7 @@ namespace friday::inline api::inline typesystem {
 
     auto getPointedType() const noexcept -> Type*;
     auto getDimensions() const noexcept -> u64;
-    auto getName() const noexcept -> String const& override;
+    auto getName() const noexcept -> string const& override;
     auto getLLVMType(llvm::LLVMContext& ctx) const noexcept -> llvm::Type* override;
   };
 }

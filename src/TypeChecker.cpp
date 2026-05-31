@@ -7,7 +7,7 @@
 //     : M_ctx { &ctx }
 //   {}
   
-//   auto TypeChecker::check() -> Vector<SemanticError> {
+//   auto TypeChecker::check() -> vector<SemanticError> {
 //     Namespace GLOBAL{};
 
 //     this->INT = Type::getIntType(GLOBAL, this->M_ctx->mod->getContext());
@@ -44,7 +44,7 @@
 //     return this->M_symbolTables.top();
 //   }
 
-//   auto TypeChecker::errorAt(ant::Token* token, String message) -> void {
+//   auto TypeChecker::errorAt(ant::Token* token, string message) -> void {
 //     this->M_errors.push_back(
 //       SemanticError{
 //         SourceLocation {
@@ -52,7 +52,7 @@
 //           token->getLine(),
 //           token->getCharPositionInLine()+1
 //         },
-//         std::move(message) 
+//         move(message) 
 //       }
 //     );
 //   }

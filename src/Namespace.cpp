@@ -6,7 +6,7 @@ namespace friday::inline api::inline typesystem {
     : M_parentNamespace{ &parent }
   {}
 
-  auto Namespace::getFunction(String const& id, Overload* defaultValue) -> Overload* {
+  auto Namespace::getFunction(string const& id, Overload* defaultValue) -> Overload* {
     constexpr auto isOverload = [](ISymbol* symbol) {
       return dynamic_cast<Overload*>(symbol) != nullptr;
     };
@@ -14,7 +14,7 @@ namespace friday::inline api::inline typesystem {
     return (Overload*)lookUpIf(id, isOverload, defaultValue);
   }
 
-  auto Namespace::getStruct(String const& id, Struct* defaultValue) -> Struct* {
+  auto Namespace::getStruct(string const& id, Struct* defaultValue) -> Struct* {
     constexpr auto isStruct = [](ISymbol* symbol) {
       return dynamic_cast<Struct*>(symbol) != nullptr;
     };
@@ -22,7 +22,7 @@ namespace friday::inline api::inline typesystem {
     return (Struct*)lookUpIf(id, isStruct, defaultValue);
   }
 
-  auto Namespace::getVariable(String const& id, Variable* defaultValue) -> Variable* {
+  auto Namespace::getVariable(string const& id, Variable* defaultValue) -> Variable* {
     constexpr auto isVariable = [](ISymbol* symbol) {
       return dynamic_cast<Variable*>(symbol) != nullptr;
     };
@@ -30,15 +30,15 @@ namespace friday::inline api::inline typesystem {
     return (Variable*)lookUpIf(id, isVariable, defaultValue);
   }
 
-  auto Namespace::getQualifiedId() const -> String {
+  auto Namespace::getQualifiedId() const -> string {
 
   }
 
-  auto Namespace::getFullQualifiedId() const -> String {
+  auto Namespace::getFullQualifiedId() const -> string {
 
   }
 
-  auto Namespace::getMangledId() const -> String {
+  auto Namespace::getMangledId() const -> string {
 
   }
 
