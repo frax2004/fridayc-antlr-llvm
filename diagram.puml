@@ -1,0 +1,388 @@
+@startuml
+set namespaceSeparator .
+namespace friday.api.typesystem {
+  class ArrayType {
+    +get(Type & elementType, u64 length) : auto
+    +getElementType() : auto
+    +getLength() : auto
+    +getName() : auto
+    +getLLVMType(llvm::LLVMContext & ctx) : auto
+    -M_elementType : Type *
+    -M_length : u64
+    -M_name : String
+    -ArrayType(Type & elementType, u64 length) : void
+  }
+}
+namespace friday.api.typesystem {
+  class Attributes {
+    +visibility : VisibilityModifier
+    +definition : SourceLocation
+    +isStatic : bool
+    +isConst : bool
+    +isUnused : bool
+  }
+}
+  class vector {
+    +operator()(std::vector<T *> const & vec) : auto
+  }
+namespace friday.core {
+  class FormatString {
+    +M_fmt : char
+    +format(Args & & ... args) : auto
+  }
+}
+namespace friday.core.util {
+  class CompilationContext {
+    +ast : ant::tree::ParseTree *
+    +mod : llvm::Module *
+    +ctx : llvm::LLVMContext *
+    +path : String
+  }
+}
+namespace friday.core.IO {
+  class Console {
+    +setDebugEnabled(bool enabled) : auto
+    +log(String message) : auto
+    +note(String message) : auto
+    +debug(String message) : auto
+    +warning(String message) : auto
+    +error(String message) : auto
+    -S_debugEnabled : static bool
+    -Console() : void
+  }
+}
+namespace friday.core.IO.Console {
+  class Color {
+    +BOLD : static const String
+    +RESET : static const String
+    +WHITE : static const String
+    +RED : static const String
+    +GREEN : static const String
+    +BLUE : static const String
+    +PURPLE : static const String
+    +YELLOW : static const String
+    +ORANGE : static const String
+    +rgb(u8 r, u8 g, u8 b) : auto
+    -Color() : void
+  }
+}
+namespace friday.core {
+  class Error {
+    +Error() : void
+    +what() : auto
+    +trace() : auto
+    #Error() : void
+    -M_trace : std::stacktrace
+  }
+}
+namespace friday.api.typesystem {
+  class ErrorType {
+    +getName() : auto
+    +getLLVMType(llvm::LLVMContext & ctx) : auto
+    -M_name : String
+  }
+}
+namespace friday.api.typesystem {
+  class Function {
+    +Function(Overload & owner, String name, Type & returnType, Vector<std::pair<String, Type *> > parameters) : void
+    +getParameterName(u64 index) : auto
+    +getParameter(u64 index) : auto
+    +getType() : auto
+    -M_owner : Overload *
+    -M_signature : FunctionType *
+    -M_parameters : Vector<String >
+  }
+}
+namespace friday.api.typesystem {
+  class FunctionType {
+    +get(Type & returnType, Vector<Type * > paramsTypes) : auto
+    +getParameterType(u64 index) : auto
+    +getParametersTypes() : auto
+    +getParametersCount() : auto
+    +getReturnType() : auto
+    +getLLVMType(llvm::LLVMContext & ctx) : auto
+    +getName() : auto
+    -M_returnType : Type *
+    -M_parameters : Vector<Type * >
+    -M_name : String
+    -FunctionType(Type & returnType, Vector<Type * > paramsTypes) : void
+  }
+}
+namespace friday.core {
+  class InvalidArgumentError {
+    +InvalidArgumentError(String info) : void
+    +what() : auto
+    -M_info : String
+  }
+}
+namespace friday.api.typesystem {
+  class MangledNameBuilder {
+    +MangledNameBuilder(String name) : void
+    +dot(String name) : auto
+    +param(Type * type) : auto
+    +build() : auto
+    -M_names : Vector<String >
+    -M_argsTypes : Vector<Type * >
+  }
+}
+namespace friday.api.typesystem {
+  class Namespace {
+    +Namespace() : void
+    +Namespace(Namespace & parent) : void
+    +getFunction(String const & id, Overload * defaultValue) : auto
+    +getStruct(String const & id, Struct * defaultValue) : auto
+    +getVariable(String const & id, Variable * defaultValue) : auto
+    +getQualifiedId() : auto
+    +getFullQualifiedId() : auto
+    +getMangledId() : auto
+    +getDeclaringSymbolTable() : auto
+    +getParent() : auto
+    +getAttributes() : auto
+    -M_parentNamespace : Namespace *
+  }
+}
+namespace friday.core {
+  class NullPointerError {
+    +NullPointerError() : void
+    +what() : auto
+  }
+}
+namespace friday.core {
+  class OperationNotSupportedError {
+    +OperationNotSupportedError(String info) : void
+    +what() : auto
+    -M_info : String
+  }
+}
+namespace friday.api.typesystem {
+  class Overload {
+    +Overload(ISymbolTable & parent, String name, FunctionType & firstSignature) : void
+    +getFunctions() : auto
+    +add(Vector<Type * > argsTypes, Function * function) : auto
+    +tryMatch(Vector<Type * > argsTypes) : auto
+    +hasMatch(Vector<Type * > argsTypes) : auto
+    +getQualifiedId() : auto
+    +getFullQualifiedId() : auto
+    +getMangledId() : auto
+    +getDeclaringSymbolTable() : auto
+    +getAttributes() : auto
+    -M_declaringSymbolTable : ISymbolTable *
+    -M_name : String
+    -M_overloads : std::unordered_map<Vector<Type *>, Function * >
+  }
+}
+namespace friday.api.typesystem {
+  class PointerType {
+    +get(Type & pointedType, u64 dimensions) : auto
+    +getPointedType() : auto
+    +getDimensions() : auto
+    +getName() : auto
+    +getLLVMType(llvm::LLVMContext & ctx) : auto
+    -M_pointedType : Type *
+    -M_name : String
+    -M_dimensions : u64
+    -PointerType(Type & pointedType, u64 dimensions) : void
+  }
+}
+namespace friday.api.typesystem {
+  class Primitive {
+    +Primitive(Namespace & global, String name, llvm::Type * T) : void
+    +getLLVMType(llvm::LLVMContext & ctx) : auto
+    -M_name : String
+    -M_type : llvm::Type *
+  }
+}
+namespace friday.api.typesystem {
+  class Scope {
+    +M_parent : ISymbolTable *
+    +Scope(ISymbolTable & parent) : void
+    +getVariable(String const & id, Variable * defaultValue) : auto
+    +getParent() : auto
+  }
+}
+namespace friday.api.parser {
+  class SemanticError {
+    +SemanticError(SourceLocation location, String message) : void
+    +report() : auto
+    +what() : auto
+    +where() : auto
+    -M_location : SourceLocation
+    -M_message : String
+  }
+}
+namespace friday.core.util {
+  class SourceLocation {
+    +SourceLocation() : void
+    +SourceLocation(SourceLocation const & other) : void
+    +SourceLocation(SourceLocation & & other) : void
+    +SourceLocation() : void
+    +SourceLocation(String filePath, u64 line, u64 column) : void
+    +operator==(SourceLocation const & other) : auto
+    +operator!=(SourceLocation const & other) : auto
+    +invalid() : consteval static inline auto
+    +line() : auto
+    +column() : auto
+    +path() : auto
+    -M_line : u64
+    -M_column : u64
+    -M_filePath : String
+  }
+}
+namespace friday.api.typesystem {
+  class Struct {
+    +Struct(Namespace & parent, String name) : void
+    +getField(String const & name, Variable * defaultValue) : auto
+    +getMethod(String const & name, Overload * defaultValue) : auto
+    +getName() : auto
+    +getLLVMType(llvm::LLVMContext & ctx) : auto
+    +getQualifiedId() : auto
+    +getFullQualifiedId() : auto
+    +getMangledId() : auto
+    +getAttributes() : auto
+    +getParent() : auto
+    +getDeclaringSymbolTable() : auto
+    -M_name : String
+    -M_declaryingNamespace : Namespace *
+  }
+}
+namespace friday.api.typesystem {
+  class ISymbol {
+    +getDemangledId(String const & id) : auto
+    +getMangledId() : auto
+    +getQualifiedId() : auto
+    +getFullQualifiedId() : auto
+    +getDeclaringSymbolTable() : auto
+    +getAttributes() : auto
+  }
+}
+namespace friday.api.typesystem {
+  class ISymbolTable {
+    +lookUp(String const & id, ISymbol * defaultValue) : auto
+    +lookUpIf(String const & id, Predicate<ISymbol * > predicate, ISymbol * defaultValue) : auto
+    +define(ISymbol * symbol) : auto
+    +isDefined(String const & id) : auto
+    +getParent() : auto
+    +mostSimilar(String const & name, Predicate<ISymbol * > filter, u64 maxEditDistance) : auto
+    +getSymbols() : auto
+  }
+}
+namespace friday.api.typesystem {
+  class SymbolTable {
+    +lookUp(String const & id, ISymbol * defaultValue) : auto
+    +lookUpIf(String const & id, Predicate<ISymbol * > predicate, ISymbol * defaultValue) : auto
+    +define(ISymbol * symbol) : auto
+    +isDefined(String const & id) : auto
+    +mostSimilar(String const & name, Predicate<ISymbol * > filter, u64 maxEditDistance) : auto
+    +getSymbols() : auto
+    -M_symbols : Map<String, Box<ISymbol> >
+    -assertInstanceOf(ISymbol * object) : auto
+  }
+}
+namespace friday.api.typesystem {
+  class Type {
+    +getName() : auto
+    +getLLVMType(llvm::LLVMContext & ctx) : auto
+  }
+}
+namespace friday.api.typechecker {
+  class TypeChecker {
+    +TypeChecker(CompilationContext & ctx) : void
+    +check() : auto
+    +visitProgram(FridayParser::ProgramContext * ctx) : auto
+    +visitNativeFunctionStatement(FridayParser::NativeFunctionStatementContext * ctx) : auto
+    +visitNamespaceStatement(FridayParser::NamespaceStatementContext * ctx) : auto
+    +visitUsingStatement(FridayParser::UsingStatementContext * ctx) : auto
+    +visitStructStatement(FridayParser::StructStatementContext * ctx) : auto
+    +visitFunctionStatement(FridayParser::FunctionStatementContext * ctx) : auto
+    +visitDeclarationStatement(FridayParser::DeclarationStatementContext * ctx) : auto
+    +visitIfStatement(FridayParser::IfStatementContext * ctx) : auto
+    +visitForStatement(FridayParser::ForStatementContext * ctx) : auto
+    +visitWhileStatement(FridayParser::WhileStatementContext * ctx) : auto
+    +visitExpressionStatement(FridayParser::ExpressionStatementContext * ctx) : auto
+    +visitDeferStatement(FridayParser::DeferStatementContext * ctx) : auto
+    +visitPrintStatement(FridayParser::PrintStatementContext * ctx) : auto
+    +visitScope(FridayParser::ScopeContext * ctx) : auto
+    +visitReturnStatement(FridayParser::ReturnStatementContext * ctx) : auto
+    +visitInlineScope(FridayParser::InlineScopeContext * ctx) : auto
+    +visitMemberAccessExpression(FridayParser::MemberAccessExpressionContext * ctx) : auto
+    +visitUnaryPostfixExpression(FridayParser::UnaryPostfixExpressionContext * ctx) : auto
+    +visitStringLiteralExpression(FridayParser::StringLiteralExpressionContext * ctx) : auto
+    +visitFloatLiteralExpression(FridayParser::FloatLiteralExpressionContext * ctx) : auto
+    +visitNewExpression(FridayParser::NewExpressionContext * ctx) : auto
+    +visitArrayLiteralExpression(FridayParser::ArrayLiteralExpressionContext * ctx) : auto
+    +visitExplicitCastExpression(FridayParser::ExplicitCastExpressionContext * ctx) : auto
+    +visitIntLiteralExpression(FridayParser::IntLiteralExpressionContext * ctx) : auto
+    +visitIdentifierExpression(FridayParser::IdentifierExpressionContext * ctx) : auto
+    +visitBinaryExpression(FridayParser::BinaryExpressionContext * ctx) : auto
+    +visitGroupingExpression(FridayParser::GroupingExpressionContext * ctx) : auto
+    +visitUnaryPrefixExpression(FridayParser::UnaryPrefixExpressionContext * ctx) : auto
+    +visitSubscriptExpression(FridayParser::SubscriptExpressionContext * ctx) : auto
+    +visitBoolLiteralExpression(FridayParser::BoolLiteralExpressionContext * ctx) : auto
+    +visitCharLiteralExpression(FridayParser::CharLiteralExpressionContext * ctx) : auto
+    +visitCallExpression(FridayParser::CallExpressionContext * ctx) : auto
+    +visitNullLiteralExpression(FridayParser::NullLiteralExpressionContext * ctx) : auto
+    +visitType(FridayParser::TypeContext * ctx) : auto
+    +visitFunctionType(FridayParser::FunctionTypeContext * ctx) : auto
+    +visitSimpleType(FridayParser::SimpleTypeContext * ctx) : auto
+    +visitPointerType(FridayParser::PointerTypeContext * ctx) : auto
+    +visitArrayType(FridayParser::ArrayTypeContext * ctx) : auto
+    -M_ctx : CompilationContext *
+    -M_typeMap : ant::tree::ParseTreeProperty<Type * >
+    -M_errors : Vector<SemanticError >
+    -M_symbolTables : Stack<ISymbolTable * >
+    -INT : Type *
+    - : Type * *
+    - : Type *
+    -BYTE : Type *
+    - : Type * *
+    - : Type *
+    -VOID : Type *
+    - : Type * *
+    -errorAt(ant::Token * token, String message) : auto
+    -pushScope(ISymbolTable & scope) : auto
+    -popScope() : auto
+    -topScope() : auto
+    -byVisiting() const -> std::function<std::any ( T *) : auto
+  }
+}
+namespace friday.api.typesystem {
+  class TypedEntity {
+    +getType() : auto
+  }
+}
+namespace friday.api.typesystem {
+  class Variable {
+    +Variable(ISymbolTable & declaringScope, String name, Type & type) : void
+    +getQualifiedId() : auto
+    +getFullQualifiedId() : auto
+    +getMangledId() : auto
+    +getDeclaringSymbolTable() : auto
+    +getAttributes() : auto
+    +getType() : auto
+    -M_name : String
+    -M_type : Type *
+    -M_declaringScope : ISymbolTable *
+  }
+}
+Error <|-- friday.core.OperationNotSupportedError
+Type <|-- friday.api.typesystem.PointerType
+ISymbol <|-- friday.api.typesystem.Variable
+SymbolTable <|-- friday.api.typesystem.Scope
+Error <|-- friday.core.NullPointerError
+Type <|-- friday.api.typesystem.Struct
+SymbolTable <|-- friday.api.typesystem.Struct
+Error <|-- friday.api.parser.SemanticError
+Type <|-- friday.api.typesystem.ErrorType
+TypedEntity <|-- friday.api.typesystem.Function
+Type <|-- friday.api.typesystem.FunctionType
+Struct <|-- friday.api.typesystem.Primitive
+FridayParserBaseVisitor <|-- friday.api.typechecker.TypeChecker
+ISymbol <|-- friday.api.typesystem.Struct
+ISymbol <|-- friday.api.typesystem.Namespace
+ISymbol <|-- friday.api.typesystem.Overload
+Error <|-- friday.core.InvalidArgumentError
+TypedEntity <|-- friday.api.typesystem.Variable
+Type <|-- friday.api.typesystem.ArrayType
+ISymbolTable <|-- friday.api.typesystem.SymbolTable
+SymbolTable <|-- friday.api.typesystem.Namespace
+@enduml

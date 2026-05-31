@@ -71,7 +71,7 @@ class Scope implements SymbolTable {
   + getVariable(id: String, defaultValue: Variable): Variable
 }
 
-interface TypedSymbol extends Symbol {
+interface TypedEntity {
   + getType(): Type
 }
 
@@ -117,11 +117,21 @@ class FunctionType implements Type {
   + getReturnType(): Type
 }
 
-class Function implements TypedSymbol {
-  - name: String
+class Overload implements Symbol {
+  - overloads: PrefixTree<Type, Function>
+  - returnType: Type;
+  - name: String;
+  - declaringSymbolTable: SymbolTable
+  ---
+  + addOverload(args: Type[]): void
+  + getOverload(args: Type[], defaultValue: Function): Function;
+  + getOverloads(): Vector<Function>
+}
+
+class Function implements TypedEntity {
+  - owner: Overload
   - signature: FunctionType
   - parametersNames: Vector<String>
-  - declaringSymbolTable: SymbolTable
   ---
   + Function(
     parent: SymbolTable,
@@ -134,13 +144,23 @@ class Function implements TypedSymbol {
   + getParameter(index: int): Pair<String, Type>;
 }
 
-class Variable implements TypedSymbol {
+class Method extends Function {
+  - visibility: VisibilityModifier
+}
+
+
+class Variable implements TypedEntity {
   - name: String
   - type: Type
   - declaringScope: SymbolTable
   ---
   + Variable(parent: SymbolTable, name: String, type: Type)
 }
+
+class Field extends Variable {
+  - visibility: VisibilityModifier
+}
+
 
 class PointerType implements Type {
   - elementType: Type

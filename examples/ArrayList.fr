@@ -1,0 +1,39 @@
+namespace std.collections;
+
+using libc;
+
+struct ArrayList {
+  data: **void;
+  size: int;
+  capacity: int;
+
+  fn create() -> ArrayList => new ArrayList{
+    data: null,
+    size: 0,
+    capacity: 0
+  };
+
+  fn grow(this: *ArrayList) {
+    if this.capacity == 0 {
+      this.capacity = 1;
+    } else {
+      this.capacity *= 2;
+    }
+    this.data = realloc(this.data, this.capacity * sizeof *void);
+  }
+
+  fn push(this: *ArrayList, obj: *void) -> void {
+    if this.size >= this.capacity {
+      this.grow();
+    }
+
+    this.data[this.size] = obj;
+    this.size++;
+  }
+
+  fn destroy(this: *ArrayList) -> void {
+    free(this.data);
+    this.size = 0;
+    this.capacity = 0;
+  }
+}
