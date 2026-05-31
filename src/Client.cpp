@@ -1,7 +1,7 @@
-#include "core/Common.hpp"
-#include "core/IO/Console.hpp"
-#include "core/errors/Error.hpp"
-#include "core/errors/OperationNotSupportedError.hpp"
+#include <Common.hpp>
+#include <Console.hpp>
+#include <Error.hpp>
+#include <OperationNotSupportedError.hpp>
 
 using namespace friday;
 
