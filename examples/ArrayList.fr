@@ -2,8 +2,7 @@ namespace collections;
 
 using libc;
 
-
-public struct ArrayList<T> {
+public struct ArrayList {
   private data: **void;
   private count: int;
   private capacity: int;
@@ -41,7 +40,7 @@ public struct ArrayList<T> {
 }
 
 public fn main() -> void {
-  let a = ArrayList.create();
+  let a: ArrayList = ArrayList.create();
   defer a.destroy();
 
   const x: int = 0;
@@ -52,7 +51,7 @@ public fn main() -> void {
   a.push(&y as *void);
 
   a.pop();
-
+  
   for let i = 0; i < a.size(); i += 1 {
     print a.get(i);
   }

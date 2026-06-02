@@ -3,6 +3,11 @@
 
 namespace friday::inline api::inline typesystem {
 
+  Overload::Overload(ISymbolTable& parent, string name)
+    : M_declaringSymbolTable { &parent }
+    , M_name { move(name) }
+  {}
+
   auto Overload::getFunctions() const -> vector<Function*> {
     return this->M_overloads 
     | views::values 

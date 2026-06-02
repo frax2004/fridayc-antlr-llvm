@@ -14,7 +14,7 @@ namespace friday::inline api::inline typesystem {
     unordered_map<vector<Type*>, Function*> M_overloads;
 
     public:
-    Overload(ISymbolTable& parent, string name, FunctionType& firstSignature);
+    Overload(ISymbolTable& parent, string name);
 
     auto getFunctions() const -> vector<Function*>;
     auto add(vector<Type*> argsTypes, Function* function) -> void;
