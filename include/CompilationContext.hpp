@@ -1,14 +1,14 @@
 #pragma once
 
 #include <Common.hpp>
-#include <FridayParser.h>
+#include <Namespace.hpp>
+#include <TranslationUnit.hpp>
 
-namespace friday::inline core::inline util {
-
-  struct CompilationContext final {
-    ant::tree::ParseTree* ast;
-    llvm::Module* mod;
-    llvm::LLVMContext* ctx;
-    string path;
+namespace friday::inline api::inline pipeline {
+  
+  struct CompilationContext {
+    box<Namespace> global;
+    map<string, box<Namespace>> namespaces;
+    vector<box<TranslationUnit>> units;
   };
 }

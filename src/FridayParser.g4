@@ -14,10 +14,11 @@ options {
   /// Abstract statements
   ///
   //////////////////////////////
-  program: namespaceStatement? topLevelStatement* EOF;
+  program: topLevelStatement* EOF;
 
   topLevelStatement
   : usingStatement
+  | namespaceStatement
   | structStatement
   | functionStatement
   | nativeFunctionStatement
@@ -42,7 +43,7 @@ options {
   namespaceStatement: NAMESPACE IDENTIFIER SEMI;
   usingStatement: USING IDENTIFIER SEMI;
 
-  structStatement: accessModifier = (PRIVATE | PUBLIC)? STRUCT IDENTIFIER LEFT_CURLY 
+  structStatement: accessModifier = (PRIVATE | PUBLIC)? STRUCT structName = IDENTIFIER LEFT_CURLY 
     ((accessModifier = (PRIVATE | PUBLIC)? fieldsNames += IDENTIFIER COL fieldsTypes += type SEMI) | methods += functionStatement)*
   RIGHT_CURLY
   ;

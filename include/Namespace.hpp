@@ -11,10 +11,11 @@ namespace friday::inline api::inline typesystem {
   struct Namespace final : ISymbol, SymbolTable<Variable, Struct, Overload> {
     private:
     Namespace* M_parentNamespace;
+    string M_name;
 
     public:
-    constexpr Namespace() = default;
-    Namespace(Namespace& parent);
+    Namespace(string name);
+    Namespace(Namespace& parent, string name);
 
     auto getFunction(string const& id, Overload* defaultValue = nullptr) -> Overload*;
     auto getStruct(string const& id, Struct* defaultValue = nullptr) -> Struct*;

@@ -2,8 +2,13 @@
 
 
 namespace friday::inline api::inline typesystem {
-  Namespace::Namespace(Namespace& parent)
+  Namespace::Namespace(string name)
+    : M_name { name }
+  {}
+
+  Namespace::Namespace(Namespace& parent, string name)
     : M_parentNamespace{ &parent }
+    , M_name { name }
   {}
 
   auto Namespace::getFunction(string const& id, Overload* defaultValue) -> Overload* {
@@ -31,7 +36,7 @@ namespace friday::inline api::inline typesystem {
   }
 
   auto Namespace::getQualifiedId() const -> string {
-
+    return this->M_name;
   }
 
   auto Namespace::getFullQualifiedId() const -> string {

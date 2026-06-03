@@ -39,6 +39,7 @@ public struct ArrayList {
   }
 }
 
+
 public fn main() -> void {
   let a: ArrayList = ArrayList.create();
   defer a.destroy();
