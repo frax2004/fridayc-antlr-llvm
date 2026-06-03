@@ -1,43 +1,3 @@
-namespace collections;
-
-using libc;
-
-public struct ArrayList {
-  private data: **void;
-  private count: int;
-  private capacity: int;
-
-  public fn get(index: int) -> *void => this.data[index];
-  public fn set(index: int, element: *void) -> void => this.data[index] = element;
-  public fn size() -> int => this.count;
-  public fn max_size() -> int => this.capacity;
-  public fn pop(this: *ArrayList) -> void => this.count -= 1;
-  public fn create() -> ArrayList => new ArrayList{data: null, count: 0, capacity: 0};
-
-  public fn push(this: *ArrayList, obj: *void) -> void {
-    if this.count >= this.capacity {
-      this.grow();
-    }
-
-    this.data[this.count] = obj;
-    this.count++;
-  }
-
-  public fn destroy(this: *ArrayList) -> void {
-    free(this.data);
-    this.count = 0;
-    this.capacity = 0;
-  }
-
-  private fn grow(this: *ArrayList) -> void {
-    if this.capacity == 0 {
-      this.capacity = 1;
-    } else {
-      this.capacity *= 2;
-    }
-    this.data = realloc(this.data, this.capacity * sizeof *void);
-  }
-}
 
 
 public fn main() -> void {
@@ -58,3 +18,47 @@ public fn main() -> void {
   }
 
 }
+
+
+namespace collections;
+
+using libc;
+
+public struct ArrayList {
+  private data: **void;
+  private count: int;
+  private capacity: int;
+
+  public fn get(this: *ArrayList, index: int) -> *void => this.data[index];
+  public fn set(this: *ArrayList, index: int, element: *void) -> void => this.data[index] = element;
+  public fn size(this: *ArrayList) -> int => this.count;
+  public fn max_size(this: *ArrayList) -> int => this.capacity;
+  public fn pop(this: *ArrayList) -> void => this.count -= 1;
+  public fn create() -> ArrayList => new ArrayList{data: null, count: 0, capacity: 0};
+
+  public fn push(this: *ArrayList, obj: *void) -> void {
+    if this.count >= this.capacity {
+      this.grow();
+    }
+
+    this.data[this.count] = obj;
+    this.count++;
+  }
+
+
+  public fn destroy(this: *ArrayList) -> void {
+    free(this.data);
+    this.count = 0;
+    this.capacity = 0;
+  }
+
+  private fn grow(this: *ArrayList) -> void {
+    if this.capacity == 0 {
+      this.capacity = 1;
+    } else {
+      this.capacity *= 2;
+    }
+    this.data = realloc(this.data, this.capacity * sizeof *void);
+  }
+}
+
