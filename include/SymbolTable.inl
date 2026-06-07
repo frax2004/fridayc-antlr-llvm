@@ -8,7 +8,7 @@ namespace friday::inline api::inline typesystem {
   
   template<derived_from<ISymbol>... Ts>
   auto SymbolTable<Ts...>::lookUp(string const& id, ISymbol* defaultValue) -> ISymbol* {
-    if(not SymbolTable::assertInstanceOf<Ts...>(defaultValue)) {
+    if(defaultValue != nullptr and not SymbolTable::assertInstanceOf<Ts...>(defaultValue)) {
       return defaultValue;
     }
     
@@ -21,7 +21,7 @@ namespace friday::inline api::inline typesystem {
 
   template<derived_from<ISymbol>... Ts>
   auto SymbolTable<Ts...>::lookUpIf(string const& id, Predicate<ISymbol*> predicate, ISymbol* defaultValue) -> ISymbol* {
-    if(not SymbolTable::assertInstanceOf<Ts...>(defaultValue)) {
+    if(defaultValue != nullptr and not SymbolTable::assertInstanceOf<Ts...>(defaultValue)) {
       return defaultValue;
     }
     
@@ -31,8 +31,7 @@ namespace friday::inline api::inline typesystem {
     }
     
     if(auto parent = this->getParent(); parent != nullptr) {
-      ISymbol* candidate = parent->lookUp(id, defaultValue);
-      if(predicate(candidate)) return candidate;
+      return parent->lookUpIf(id, predicate, defaultValue);
     }
     
     return defaultValue;
@@ -58,6 +57,7 @@ namespace friday::inline api::inline typesystem {
   
   template<derived_from<ISymbol>... Ts>
   auto SymbolTable<Ts...>::define(ISymbol* symbol) -> bool {
+    if(symbol == nullptr) return false;
     if(not SymbolTable::assertInstanceOf<Ts...>(symbol)) {
       throw InvalidArgumentError{"Invalid symbol type"};
     }

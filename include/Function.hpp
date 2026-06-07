@@ -9,8 +9,8 @@ namespace friday::inline api::inline typesystem {
 
   struct Function : TypedEntity {
     private:
-    Overload* M_owner;
-    FunctionType* M_signature;
+    Overload* M_owner { nullptr };
+    FunctionType* M_signature { nullptr };
     vector<string> M_parameters;
 
     public:

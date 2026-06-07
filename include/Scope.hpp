@@ -6,7 +6,7 @@
 namespace friday::inline api::inline typesystem {
 
   struct Scope final : SymbolTable<Variable> {
-    ISymbolTable* M_parent;
+    ISymbolTable* M_parent { nullptr };
 
     public:
     Scope(ISymbolTable& parent);

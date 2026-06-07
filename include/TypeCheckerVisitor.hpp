@@ -10,7 +10,7 @@
 //   struct TypeChecker : FridayParserBaseVisitor, StaticAnalizer {
     
 //     private:
-//     CompilationContext* M_ctx;
+//     CompilationContext* M_ctx { nullptr };
 //     map<ant::tree::ParseTree*, Type> M_properties { };
 //     vector<SemanticError> M_errors { };
 //     stack<ISymbolTable*> M_symbolTables { };

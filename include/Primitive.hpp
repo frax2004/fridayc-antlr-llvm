@@ -11,6 +11,6 @@ namespace friday::inline api::inline typesystem {
 
     private:
     string M_name;
-    llvm::Type* M_type;
+    llvm::Type* M_type { nullptr };
   };
 }

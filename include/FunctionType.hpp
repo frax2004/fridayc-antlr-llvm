@@ -6,7 +6,7 @@ namespace friday::inline api::inline typesystem {
 
   struct FunctionType final : public Type {
     private:
-    Type* M_returnType;
+    Type* M_returnType { nullptr };
     vector<Type*> M_parameters;
     string M_name;
 

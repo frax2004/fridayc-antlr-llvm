@@ -5,7 +5,7 @@ namespace friday::inline api::inline typesystem {
 
   struct ArrayType final : Type {
     private:
-    Type* M_elementType;
+    Type* M_elementType { nullptr };
     u64 M_length;
     string M_name;
 

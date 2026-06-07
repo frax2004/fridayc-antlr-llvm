@@ -1,6 +1,7 @@
 #pragma once
 #include <TypedEntity.hpp>
 #include <Symbol.hpp>
+#include <Json.hpp>
 
 
 namespace friday::inline api::inline typesystem {
@@ -8,8 +9,8 @@ namespace friday::inline api::inline typesystem {
   struct Variable : TypedEntity, ISymbol {
     private:
     string M_name;
-    Type* M_type;
-    ISymbolTable* M_declaringScope;
+    Type* M_type { nullptr };
+    ISymbolTable* M_declaringScope { nullptr };
 
     public:
     Variable(ISymbolTable& declaringScope, string name, Type& type) noexcept;
@@ -23,3 +24,10 @@ namespace friday::inline api::inline typesystem {
     auto getType() -> Type* override;
   };
 }
+
+template<>
+struct json::stringify<friday::Variable> {
+  auto operator()(friday::Variable const& self) -> string {
+    return format("{{\"name\": \"{}\"}}", self.getQualifiedId());
+  }
+};

@@ -7,13 +7,10 @@ namespace friday::inline api::inline pipeline {
   }
 
   auto StaticAnalyzer::errorAt(ant::Token* token, string message) -> void {
-    println("heree");
     if(not this->M_currentUnit) {
-    println("here324536");
       throw NullPointerError{};
     }
 
-    println("here");
     this->M_errors.push_back(
       SemanticError{
         SourceLocation {
@@ -24,7 +21,6 @@ namespace friday::inline api::inline pipeline {
         message
       }
     );
-    println("here2");
   }
 
   auto StaticAnalyzer::setCurrentUnit(TranslationUnit* unit) -> void {

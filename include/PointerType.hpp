@@ -7,7 +7,7 @@ namespace friday::inline api::inline typesystem {
 
   struct PointerType final : public Type {
     private:
-    Type* M_pointedType;
+    Type* M_pointedType { nullptr };
     string M_name;
     u64 M_dimensions;
 

@@ -50,8 +50,8 @@ namespace friday::inline api::inline pipeline {
   }
 
   auto DiscoveryVisitor::visitStructStatement(FridayParser::StructStatementContext* ctx) -> any {
+    
     auto name = ctx->structName->getText();
-
     auto isStruct = (bool(*)(ISymbol*))&rtti::instanceOf<Struct>;
     if(auto existing = this->M_currentSymbolTable->lookUpIf(name, isStruct)) {
       this->errorAt(

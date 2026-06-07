@@ -1,0 +1,9 @@
+namespace math;
+
+
+
+public native fn pow(x: float, y: float) -> float;
+public native fn sqrt(x: float) -> float;
+public native fn cbrt(x: float) -> float;
+public native fn exp(x: float) -> float;
+

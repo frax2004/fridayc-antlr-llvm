@@ -53,7 +53,7 @@ namespace friday::inline core {
       return vformat(M_fmt, make_format_args(args...));
     }
 
-    const i8* M_fmt;
+    const i8* M_fmt  { nullptr };
   };
 
   constexpr auto operator""_f(const i8* s, u64 length) noexcept -> Formatstring {

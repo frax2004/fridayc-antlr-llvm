@@ -2,6 +2,7 @@
 #include <Symbol.hpp>
 #include <Function.hpp>
 #include <SymbolTable.hpp>
+#include <Json.hpp>
 
 
 namespace friday::inline api::inline typesystem {
@@ -9,7 +10,7 @@ namespace friday::inline api::inline typesystem {
 
   struct Overload final : ISymbol {
     private:
-    ISymbolTable* M_declaringSymbolTable;
+    ISymbolTable* M_declaringSymbolTable { nullptr };
     string M_name;
     unordered_map<vector<Type*>, Function*> M_overloads;
 
@@ -28,3 +29,12 @@ namespace friday::inline api::inline typesystem {
     auto getAttributes() const -> Attributes override;
   };
 }
+
+template<>
+struct json::stringify<friday::Overload> {
+  auto operator()(friday::Overload const& self) -> string {
+    return format("{{\"type\": \"overload\", \"name\": \"{}\"}}", 
+      self.getQualifiedId()
+    );
+  }
+};

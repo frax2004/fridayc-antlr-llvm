@@ -7,12 +7,12 @@ namespace friday::inline api::inline pipeline {
   // will bind namespaces with their used namespaces
   struct NamespaceBindingVisitor : FridayParserBaseVisitor, StaticAnalyzer {
     private:
-    CompilationContext* context;
-  
+    CompilationContext* context { nullptr };
+
     public:
     NamespaceBindingVisitor(CompilationContext& ctx);
   
     auto bind() -> NamespaceBindingVisitor&;
-    
+    auto visitUsingStatement(FridayParser::UsingStatementContext* ctx) -> any override;
   };
 }

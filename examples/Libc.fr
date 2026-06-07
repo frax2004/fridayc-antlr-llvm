@@ -1,0 +1,5 @@
+namespace libc;
+
+public native fn malloc(bytes: int) -> *void;
+public native fn realloc(ptr: *void, bytes: int) -> *void;
+public native fn free(ptr: *void) -> void;

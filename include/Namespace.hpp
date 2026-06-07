@@ -5,12 +5,13 @@
 #include <Struct.hpp>
 #include <Variable.hpp>
 #include <Overload.hpp>
+#include <Json.hpp>
 
 namespace friday::inline api::inline typesystem {
 
   struct Namespace final : ISymbol, SymbolTable<Variable, Struct, Overload> {
     private:
-    Namespace* M_parentNamespace;
+    Namespace* M_parentNamespace { nullptr };
     string M_name;
 
     public:
@@ -29,3 +30,36 @@ namespace friday::inline api::inline typesystem {
     auto getAttributes() const -> Attributes override;
   };
 }
+
+
+template<>
+struct json::stringify<friday::Namespace> {
+  auto operator()(friday::Namespace const& self) -> string {
+    auto name = self.getQualifiedId();
+    auto symbols = self.getSymbols();
+
+    // TODO grammar must implement global variables
+    auto var2str = json::stringify<friday::Variable>{};
+    auto sct2str = json::stringify<friday::Struct>{};
+    auto ovl2str = json::stringify<friday::Overload>{};
+
+    auto sym2str = [&](friday::ISymbol* symbol) {
+      if(auto asVar = friday::rtti::cast<friday::Variable>(symbol)) 
+        return var2str(*asVar);
+      else if(auto asStruct = friday::rtti::cast<friday::Struct>(symbol)) 
+        return sct2str(*asStruct);
+      else if(auto asOverload = friday::rtti::cast<friday::Overload>(symbol)) 
+        return ovl2str(*asOverload);
+      else return "null"s;
+    };
+
+    return format(
+      "{{\"type\": \"namespace\", \"name\": \"{}\", \"symbols\": [{}]}}",
+      name,
+      symbols 
+      | views::transform(sym2str)
+      | views::join_with(", "sv)
+      | ranges::to<string>()
+    );
+  }
+};

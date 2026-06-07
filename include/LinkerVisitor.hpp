@@ -7,7 +7,7 @@ namespace friday::inline api::inline pipeline {
   // will link the object files and produce the executable
   struct LinkerVisitor : FridayParserBaseVisitor, StaticAnalyzer {
     private:
-    CompilationContext* context;
+    CompilationContext* context { nullptr };
   
     public:
     LinkerVisitor(CompilationContext& ctx);
