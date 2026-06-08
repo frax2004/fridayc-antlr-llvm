@@ -9,5 +9,10 @@ namespace friday::inline api::inline typesystem {
   auto ErrorType::getLLVMType(llvm::LLVMContext& ctx) const noexcept -> llvm::Type* {
     return nullptr;
   }
+  
+  auto ErrorType::get() -> Type* {
+    static ErrorType ERROR;
+    return &ERROR;
+  }
 
 }

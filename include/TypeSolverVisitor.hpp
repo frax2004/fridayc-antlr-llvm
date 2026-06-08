@@ -10,6 +10,7 @@ namespace friday::inline api::inline pipeline {
     private:
     CompilationContext* context { nullptr };
     PointerGraph<Struct*> M_dependencyGraph { };
+    map<Struct*, ant::ParserRuleContext*> M_properties { };
 
     public:
     TypeSolverVisitor(CompilationContext& ctx);
@@ -17,5 +18,9 @@ namespace friday::inline api::inline pipeline {
     auto solve() -> TypeSolverVisitor&;
 
     auto visitStructStatement(FridayParser::StructStatementContext* ctx) -> any override;
+    auto visitSimpleType(FridayParser::SimpleTypeContext *ctx) -> any override;
+    auto visitFunctionType(FridayParser::FunctionTypeContext *ctx) -> any override;
+    auto visitPointerType(FridayParser::PointerTypeContext *ctx) -> any override;
+    auto visitArrayType(FridayParser::ArrayTypeContext* ctx) -> any override;
   };
 }

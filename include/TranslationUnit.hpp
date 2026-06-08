@@ -26,10 +26,12 @@ namespace friday::inline api::inline pipeline {
     public:
     TranslationUnit(string_ref path);
     TranslationUnit(TranslationUnit const&) = delete;
-    
 
     public:
     static auto parse(string_ref path) -> box<TranslationUnit>;
+
+    auto lookUp(string const& name, ISymbol* defaultValue = nullptr) -> ISymbol*;
+    auto lookUpIf(string const& name, Predicate<ISymbol*> predicate, ISymbol* defaultValue = nullptr) -> ISymbol*;
   };
 
 }
