@@ -9,12 +9,6 @@ namespace friday::inline api::inline pipeline {
   {}
 
   auto TypeSolverVisitor::solve() -> TypeSolverVisitor& {
-    Console::debug("TypeSolverVisitor::solve()");
-    for(auto& unit : this->context->units) {
-      this->setCurrentUnit(unit.get());
-      this->visit(unit->ast);
-      this->setCurrentUnit(nullptr);
-    }
 
     auto reportDependency = [this](tuple<Struct*, Struct*> pair) {
       auto toToken = [this](Struct* item) { return this->M_properties.at(item); };
@@ -24,7 +18,7 @@ namespace friday::inline api::inline pipeline {
 
       this->errorAt(
         fieldToken->getStart(),
-        "Note: struct \"{}\" depends from struct \"\""_f.format(
+        "Note: struct \"{}\" depends from struct \"{}\""_f.format(
           strct->getQualifiedId(),
           field->getQualifiedId()
         )
@@ -34,18 +28,31 @@ namespace friday::inline api::inline pipeline {
     auto reportCycle = [&](vector<Struct*> const& cycle) {
       this->errorAt(
         this->M_properties[cycle[0]]->getStart(),
-        "In declaration of struct \"{}\", detected cyclic struct dependency."
+        "In declaration of struct \"{}\", detected cyclic struct dependency."_f.format(
+          cycle[0]->getQualifiedId()
+        )
       );
       ranges::for_each(cycle | views::pairwise, reportDependency);
     };
 
-    ranges::for_each(this->M_dependencyGraph.getCycles(), reportCycle);
+
+    for(auto& unit : this->context->units) {
+      this->setCurrentUnit(unit.get());
+      this->M_dependencyGraph = {};
+
+      this->visit(unit->ast);
+
+      ranges::for_each(this->M_dependencyGraph.getCycles(), reportCycle);
+
+      this->setCurrentUnit(nullptr);
+    }
+
+
 
     return *this;
   }
 
   auto TypeSolverVisitor::visitStructStatement(FridayParser::StructStatementContext* ctx) -> any {
-    Console::debug("TypeSolverVisitor::visitStructStatement()");
     auto isStruct = (bool(*)(ISymbol*))&rtti::instanceOf<Struct>;
 
     TranslationUnit* unit = this->getCurrentUnit();
@@ -78,6 +85,7 @@ namespace friday::inline api::inline pipeline {
             ctx->fieldsTypes[i]->getText()
           )
         );
+        ok = false;
       } else {
         asStruct->define(new Variable(*asStruct, field, *T));
         if(auto fieldAsStruct = rtti::cast<Struct>(T)) {
@@ -89,11 +97,12 @@ namespace friday::inline api::inline pipeline {
 
       i++;
     }
+
+    return (Type*)(ok ? rtti::cast<Type>(asStruct) : ErrorType::get());
   }
 
   
   auto TypeSolverVisitor::visitSimpleType(FridayParser::SimpleTypeContext *ctx) -> any {
-    Console::debug("TypeSolverVisitor::visitSimpleType()");
     auto isStruct = (bool(*)(ISymbol*))&rtti::instanceOf<Struct>;
 
     TranslationUnit* unit = this->getCurrentUnit();
@@ -116,8 +125,7 @@ namespace friday::inline api::inline pipeline {
   }
 
   auto TypeSolverVisitor::visitFunctionType(FridayParser::FunctionTypeContext *ctx) -> any {
-    Console::debug("TypeSolverVisitor::visitFunctionType()");
-
+    
     auto toType = [this](FridayParser::TypeContext* type) { return any_cast<Type*>(this->visit(type)); };
 
     Type* retType = any_cast<Type*>(this->visit(ctx->returnType));
@@ -156,7 +164,6 @@ namespace friday::inline api::inline pipeline {
   }
 
   auto TypeSolverVisitor::visitPointerType(FridayParser::PointerTypeContext *ctx) -> any {
-    Console::debug("TypeSolverVisitor::visitPointerType()");
     
     Type* type = any_cast<Type*>(this->visit(ctx->pointedType));
     u64 dimensions = ctx->STAR().size();
@@ -176,7 +183,6 @@ namespace friday::inline api::inline pipeline {
   }
 
   auto TypeSolverVisitor::visitArrayType(FridayParser::ArrayTypeContext* ctx) -> any {
-    Console::debug("TypeSolverVisitor::visitArrayType()");
     Type* type = any_cast<Type*>(this->visit(ctx->elementType));
     u64 length = ctx->LEFT_SQUARE().size();
     

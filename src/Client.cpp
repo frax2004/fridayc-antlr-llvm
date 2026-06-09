@@ -8,10 +8,10 @@ using namespace friday;
 
 auto main(i32 argc, const i8** argv) -> i32 {
 
-  extern void Main(vector<string_ref> args);
+  extern void Main(vector<string> args);
 
   try {
-    Main(vector<string_ref>{ argv + 1, argv + argc});
+    Main(vector<string>{ argv + 1, argv + argc});
   } catch(const Error<>& error) {
 
     Console::error(

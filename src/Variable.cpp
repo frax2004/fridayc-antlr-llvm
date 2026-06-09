@@ -9,7 +9,7 @@ namespace friday::inline api::inline typesystem {
   {}
 
   auto Variable::getQualifiedId() const -> string {
-
+    return this->M_name;
   }
 
   auto Variable::getFullQualifiedId() const -> string {

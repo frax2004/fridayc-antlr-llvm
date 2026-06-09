@@ -18,9 +18,22 @@ public fn main() -> void {
   }
 
 }
-
-
 namespace collections;
+
+
+public struct A {
+  private a: B;
+}
+
+
+public struct B {
+  private a: C;
+}
+
+
+public struct C {
+  private a: *A;
+}
 
 using libc;
 

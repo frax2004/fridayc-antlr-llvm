@@ -5,6 +5,8 @@
 #include <LLVMObjectEmitterVisitor.hpp>
 #include <LinkerVisitor.hpp>
 #include <Json.hpp>
+#include <Primitive.hpp>
+
 
 using namespace friday;
 
@@ -20,12 +22,21 @@ auto measure(Func&& func, string label) -> string {
 
 
 
-auto Main(vector<string_ref> paths) -> void {
+auto Main(vector<string> paths) -> void {
+  llvm::LLVMContext ctx;
+
   auto context = make_unique<CompilationContext>();
   context->global = make_unique<Namespace>("");
+  context->global->define(new Primitive(*context->global, "int", llvm::Type::getInt64Ty(ctx)));
+  context->global->define(new Primitive(*context->global, "byte", llvm::Type::getInt8Ty(ctx)));
+  context->global->define(new Primitive(*context->global, "bool", llvm::Type::getInt1Ty(ctx)));
+  context->global->define(new Primitive(*context->global, "float", llvm::Type::getDoubleTy(ctx)));
+  context->global->define(new Primitive(*context->global, "void", llvm::Type::getVoidTy(ctx)));
 
-  auto parse = [](string_ref path) {
-    return async(launch::async, TranslationUnit::parse, path);
+  auto parse = [&context](string path) {
+    return async(launch::async, [&context, path]() {
+      return TranslationUnit::parse(*context, path);
+    });
   };
 
   auto futures = paths
@@ -61,7 +72,7 @@ auto Main(vector<string_ref> paths) -> void {
   auto typeSolverErrors = TypeSolverVisitor{*context}.solve().errors();
 
   if(not typeSolverErrors.empty()) {
-    ranges::for_each(namespaceBindingErrors, SemanticError::report);
+    ranges::for_each(typeSolverErrors, SemanticError::report);
     return;
   }
 

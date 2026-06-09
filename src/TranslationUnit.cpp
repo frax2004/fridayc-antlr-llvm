@@ -2,8 +2,9 @@
 #include <CompilationContext.hpp>
 
 namespace friday::inline api::inline pipeline {
-  TranslationUnit::TranslationUnit(string_ref path)
+  TranslationUnit::TranslationUnit(CompilationContext& ctx, string path)
     : path { string(path) }
+    , globalContext { &ctx }
     , inputStream { this->path }
     , input { this->inputStream }
     , lexer { &this->input }
@@ -13,8 +14,8 @@ namespace friday::inline api::inline pipeline {
   {}
 
   
-  auto TranslationUnit::parse(string_ref path) -> box<TranslationUnit> {
-    return make_unique<TranslationUnit>(path);
+  auto TranslationUnit::parse(CompilationContext& ctx, string path) -> box<TranslationUnit> {
+    return make_unique<TranslationUnit>(ctx, path);
   }
 
   auto TranslationUnit::lookUp(string const& name, ISymbol* defaultValue) -> ISymbol* {
