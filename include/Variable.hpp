@@ -21,13 +21,17 @@ namespace friday::inline api::inline typesystem {
     auto getDeclaringSymbolTable() -> ISymbolTable* override;
 
     auto getAttributes() const -> Attributes override;
-    auto getType() -> Type* override;
+    auto getType() const -> Type* override;
   };
 }
 
 template<>
 struct json::stringify<friday::Variable> {
   auto operator()(friday::Variable const& self) -> string {
-    return format("{{\"name\": \"{}\"}}", self.getQualifiedId());
+    return format(
+      "{{\"kind\": \"variable\", \"name\": \"{}\", \"type\": \"{}\"}}",
+      self.getQualifiedId(),
+      self.getType()->getName()
+    );
   }
 };

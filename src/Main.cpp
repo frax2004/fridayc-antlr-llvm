@@ -11,7 +11,6 @@
 using namespace friday;
 
 
-
 template<class Func>
 auto measure(Func&& func, string label) -> string {
   auto begin = chrono::high_resolution_clock::now();
@@ -47,7 +46,7 @@ auto Main(vector<string> paths) -> void {
   | views::transform(future<box<TranslationUnit>>::get)
   | ranges::to<vector>();
 
-  auto discoveryErrors = DiscoveryVisitor{*context}.discover().errors();
+  auto discoveryErrors = DiscoveryVisitor{*context}.analyze().errors();
 
   if(not discoveryErrors.empty()) {
     ranges::for_each(discoveryErrors, SemanticError::report);
@@ -62,21 +61,38 @@ auto Main(vector<string> paths) -> void {
   namespaces.push_back(json::stringify<Namespace>{}(*context->global));
   namespaces.append_range(context->namespaces | toJSONString);
 
-  auto namespaceBindingErrors = NamespaceBindingVisitor{*context}.bind().errors();
+  auto namespaceBindingErrors = NamespaceBindingVisitor{*context}.analyze().errors();
 
   if(not namespaceBindingErrors.empty()) {
     ranges::for_each(namespaceBindingErrors, SemanticError::report);
     return;
   }
 
-  auto typeSolverErrors = TypeSolverVisitor{*context}.solve().errors();
+  auto typeSolverErrors = TypeSolverVisitor{*context}.analyze().errors();
 
   if(not typeSolverErrors.empty()) {
     ranges::for_each(typeSolverErrors, SemanticError::report);
     return;
   }
 
+  auto toString = json::stringify<Namespace>{};
 
+  auto table = "[{}, {}]"_f.format(
+    toString(*context->global),
+    context->namespaces
+    | views::values
+    | views::transform(box<Namespace>::operator*)
+    | views::transform(toString)
+    | views::join_with(", "s)
+    | ranges::to<string>()
+  );
+
+
+  FILE* output = fopen("table.json", "w+");
+  println(output, "{}", table);
+  fclose(output);
+
+  
   // auto tcv = TypeCheckerVisitor{*context};
   // LLVMObjectEmitterVisitor{*context}.emit();
   // LinkerVisitor{*context}.link();

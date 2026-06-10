@@ -6,21 +6,17 @@ namespace friday::inline api::inline pipeline {
   static constexpr auto STRUCT_REDECLARATION = "Redeclaration of struct '{}', which was previously already defined."_f;
 
   DiscoveryVisitor::DiscoveryVisitor(CompilationContext& ctx)
-    : context { &ctx }
+    : StaticAnalyzer { ctx }
   {}
   
-  auto DiscoveryVisitor::discover() -> DiscoveryVisitor& {
-    for(auto& unit : this->context->units) {
-      this->setCurrentUnit(unit.get());
-      this->M_currentSymbolTable = this->context->global.get();
+  auto DiscoveryVisitor::beginUnit(TranslationUnit& unit) -> void {
+    this->M_currentSymbolTable = this->getCompilationContext()
+    .global
+    .get();
+  }
 
-      this->visit(unit->ast);
-
-      this->M_currentSymbolTable = nullptr;
-      this->setCurrentUnit(nullptr);
-    }
-
-    return *this;
+  auto DiscoveryVisitor::endUnit(TranslationUnit& unit) -> void {
+    this->M_currentSymbolTable = nullptr;
   }
 
 
@@ -37,9 +33,9 @@ namespace friday::inline api::inline pipeline {
     }
 
     string identifier = token->getText();
-    if(auto it = this->context->namespaces.find(identifier); it != this->context->namespaces.end()) {
+    if(auto it = this->getCompilationContext().namespaces.find(identifier); it != this->getCompilationContext().namespaces.end()) {
       unit->ownedNamespace = it->second.get();
-    } else unit->ownedNamespace = this->context->namespaces.emplace(
+    } else unit->ownedNamespace = this->getCompilationContext().namespaces.emplace(
       identifier, 
       make_unique<Namespace>(identifier)
     ).first->second.get();

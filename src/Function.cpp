@@ -30,7 +30,7 @@ namespace friday::inline api::inline typesystem {
     );
   }
 
-  auto Function::getType() -> Type* {
+  auto Function::getType() const -> Type* {
     return this->M_signature;
   }
 

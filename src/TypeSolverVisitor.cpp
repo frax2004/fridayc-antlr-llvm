@@ -5,11 +5,14 @@
 
 namespace friday::inline api::inline pipeline {
   TypeSolverVisitor::TypeSolverVisitor(CompilationContext& ctx)
-    : context { &ctx }
+    : StaticAnalyzer { ctx }
   {}
 
-  auto TypeSolverVisitor::solve() -> TypeSolverVisitor& {
+  auto TypeSolverVisitor::beginUnit(TranslationUnit& unit) -> void {
+    this->M_dependencyGraph = {};
+  }
 
+  auto TypeSolverVisitor::endUnit(TranslationUnit& unit) -> void {
     auto reportDependency = [this](tuple<Struct*, Struct*> pair) {
       auto toToken = [this](Struct* item) { return this->M_properties.at(item); };
 
@@ -35,21 +38,7 @@ namespace friday::inline api::inline pipeline {
       ranges::for_each(cycle | views::pairwise, reportDependency);
     };
 
-
-    for(auto& unit : this->context->units) {
-      this->setCurrentUnit(unit.get());
-      this->M_dependencyGraph = {};
-
-      this->visit(unit->ast);
-
-      ranges::for_each(this->M_dependencyGraph.getCycles(), reportCycle);
-
-      this->setCurrentUnit(nullptr);
-    }
-
-
-
-    return *this;
+    ranges::for_each(this->M_dependencyGraph.getCycles(), reportCycle);
   }
 
   auto TypeSolverVisitor::visitStructStatement(FridayParser::StructStatementContext* ctx) -> any {

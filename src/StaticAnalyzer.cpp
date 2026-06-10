@@ -1,9 +1,31 @@
 #include <StaticAnalyzer.hpp>
 #include <NullPointerError.hpp>
 
+
+
 namespace friday::inline api::inline pipeline {
+  StaticAnalyzer::StaticAnalyzer(CompilationContext& ctx)
+    : context { &ctx }
+  {}
+
   auto StaticAnalyzer::errors() -> vector<SemanticError> {
     return this->M_errors;
+  }
+  
+  auto StaticAnalyzer::getCompilationContext() -> CompilationContext& {
+    return *this->context;
+  }
+
+  auto StaticAnalyzer::analyze() -> StaticAnalyzer& {
+    for(auto& unit: this->context->units) {
+      this->setCurrentUnit(unit.get());
+      this->beginUnit(*unit);
+      this->visit(unit->ast);
+      this->endUnit(*unit);
+      this->setCurrentUnit(nullptr);
+    }
+
+    return *this;
   }
 
   auto StaticAnalyzer::errorAt(ant::Token* token, string message) -> void {

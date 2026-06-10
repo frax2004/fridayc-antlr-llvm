@@ -1,16 +1,27 @@
 #pragma once
 #include <SemanticError.hpp>
 #include <TranslationUnit.hpp>
+#include <CompilationContext.hpp>
+#include <FridayParserBaseVisitor.h>
 
 namespace friday::inline api::inline pipeline {
-  struct StaticAnalyzer {
+  struct StaticAnalyzer : public FridayParserBaseVisitor {
     private:
+    CompilationContext* context { nullptr };
     vector<SemanticError> M_errors { };
     TranslationUnit* M_currentUnit { nullptr };
 
     public:
-    auto errors() -> vector<SemanticError>;
+    StaticAnalyzer(CompilationContext& ctx);
 
+    public:
+    auto errors() -> vector<SemanticError>;
+    auto analyze() -> StaticAnalyzer&;
+    
+    virtual auto beginUnit(TranslationUnit& unit) -> void = 0;
+    virtual auto endUnit(TranslationUnit& unit) -> void = 0;
+    auto getCompilationContext() -> CompilationContext&;
+    
     protected:
     auto setCurrentUnit(TranslationUnit* unit) -> void;
     auto getCurrentUnit() -> TranslationUnit*;

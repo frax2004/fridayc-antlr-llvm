@@ -3,9 +3,9 @@
 #include <Error.hpp>
 
 namespace friday::inline core {
-  
-  struct InvalidArgumentError final : public Error<> {
-    constexpr inline InvalidArgumentError(string info) noexcept;
+
+  struct NotImplementedError final : public Error<> {
+    constexpr inline NotImplementedError(string info) noexcept;
     constexpr inline auto what() const noexcept -> string override;
 
     private:
@@ -14,4 +14,4 @@ namespace friday::inline core {
 }
 
 
-#include <InvalidArgumentError.inl>
+#include <NotImplementedError.inl>

@@ -1,5 +1,5 @@
 #include <Struct.hpp>
-#include <OperationNotSupportedError.hpp>
+#include <NotImplementedError.hpp>
 
 namespace friday::inline api::inline typesystem {
 
@@ -57,11 +57,11 @@ namespace friday::inline api::inline typesystem {
   }
 
   auto Struct::getFullQualifiedId() const -> string {
-
+    throw NotImplementedError{"Struct::getFullQualifiedId()"};
   }
 
   auto Struct::getMangledId() const -> string {
-
+    throw NotImplementedError{"Struct::getMangledId()"};
   }
 
   auto Struct::getDeclaringSymbolTable() -> ISymbolTable* {
@@ -69,7 +69,7 @@ namespace friday::inline api::inline typesystem {
   }
 
   auto Struct::getAttributes() const -> Attributes {
-    return {};
+    throw NotImplementedError{"Struct::getAttributes()"};
   }
 
   auto Struct::getParent() -> ISymbolTable* {

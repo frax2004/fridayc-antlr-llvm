@@ -1,9 +1,10 @@
 #pragma once
 
+#include <Type.hpp>
+
 namespace friday::inline api::inline typesystem {
-  struct Type;
 
   struct TypedEntity {
-    virtual auto getType() -> Type* = 0;
+    virtual auto getType() const -> Type* = 0;
   };
 }

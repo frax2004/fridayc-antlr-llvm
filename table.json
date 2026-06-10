@@ -1,0 +1,75 @@
+[
+  {
+    "kind": "namespace",
+    "name": "",
+    "symbols": [
+      {
+        "kind": "struct",
+        "name": "bool",
+        "symbols": []
+      },
+      {
+        "kind": "struct",
+        "name": "byte",
+        "symbols": []
+      },
+      {
+        "kind": "struct",
+        "name": "float",
+        "symbols": []
+      },
+      {
+        "kind": "struct",
+        "name": "int",
+        "symbols": []
+      },
+      {
+        "kind": "overload",
+        "name": "main"
+      },
+      {
+        "kind": "struct",
+        "name": "void",
+        "symbols": []
+      }
+    ]
+  },
+  {
+    "kind": "namespace",
+    "name": "math",
+    "symbols": [
+      {
+        "kind": "struct",
+        "name": "Vector2",
+        "symbols": [
+          {
+            "kind": "variable",
+            "name": "x",
+            "type": "float"
+          },
+          {
+            "kind": "variable",
+            "name": "y",
+            "type": "float"
+          }
+        ]
+      },
+      {
+        "kind": "overload",
+        "name": "cbrt"
+      },
+      {
+        "kind": "overload",
+        "name": "exp"
+      },
+      {
+        "kind": "overload",
+        "name": "pow"
+      },
+      {
+        "kind": "overload",
+        "name": "sqrt"
+      }
+    ]
+  }
+]

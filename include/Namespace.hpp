@@ -54,7 +54,7 @@ struct json::stringify<friday::Namespace> {
     };
 
     return format(
-      "{{\"type\": \"namespace\", \"name\": \"{}\", \"symbols\": [{}]}}",
+      "{{\"kind\": \"namespace\", \"name\": \"{}\", \"symbols\": [{}]}}",
       name,
       symbols 
       | views::transform(sym2str)

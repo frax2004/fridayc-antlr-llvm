@@ -2,6 +2,6 @@
 
 namespace friday::inline api::inline pipeline {
   LLVMObjectEmitterVisitor::LLVMObjectEmitterVisitor(CompilationContext& ctx)
-    : context { &ctx }
+    : StaticAnalyzer { ctx }
   {}
 }

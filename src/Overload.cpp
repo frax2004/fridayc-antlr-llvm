@@ -1,4 +1,6 @@
 #include <Overload.hpp>
+#include <NotImplementedError.hpp>
+#include <OperationNotSupportedError.hpp>
 
 
 namespace friday::inline api::inline typesystem {
@@ -40,7 +42,7 @@ namespace friday::inline api::inline typesystem {
   }
 
   auto Overload::getMangledId() const -> string {
-
+    throw OperationNotSupportedError{"Overload::getMangledId()"};
   }
 
   auto Overload::getDeclaringSymbolTable() -> ISymbolTable* {
@@ -48,7 +50,7 @@ namespace friday::inline api::inline typesystem {
   }
 
   auto Overload::getAttributes() const -> Attributes {
-    return {};
+    throw NotImplementedError{"Overload::getAttributes()"};
   }
 
 }

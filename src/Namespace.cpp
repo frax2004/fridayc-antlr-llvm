@@ -1,5 +1,5 @@
 #include <Namespace.hpp>
-
+#include <NotImplementedError.hpp>
 
 namespace friday::inline api::inline typesystem {
   Namespace::Namespace(string name)
@@ -40,11 +40,11 @@ namespace friday::inline api::inline typesystem {
   }
 
   auto Namespace::getFullQualifiedId() const -> string {
-
+    throw NotImplementedError{"Namespace::getFullQualifiedId()"};
   }
 
   auto Namespace::getMangledId() const -> string {
-
+    throw NotImplementedError{"Namespace::getMangledId()"};
   }
 
   auto Namespace::getDeclaringSymbolTable() -> ISymbolTable* {
@@ -52,7 +52,7 @@ namespace friday::inline api::inline typesystem {
   }
 
   auto Namespace::getAttributes() const -> Attributes {
-    return {};
+    throw NotImplementedError{"Namespace::getAttributes()"};
   }
 
   auto Namespace::getParent() -> ISymbolTable* {

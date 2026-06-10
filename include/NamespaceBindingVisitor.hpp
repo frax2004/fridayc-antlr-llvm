@@ -1,18 +1,15 @@
 #pragma once
-#include <FridayParserBaseVisitor.h>
-#include <CompilationContext.hpp>
 #include <StaticAnalyzer.hpp>
 
 namespace friday::inline api::inline pipeline {
   // will bind namespaces with their used namespaces
-  struct NamespaceBindingVisitor : FridayParserBaseVisitor, StaticAnalyzer {
-    private:
-    CompilationContext* context { nullptr };
-
+  struct NamespaceBindingVisitor : StaticAnalyzer {
     public:
     NamespaceBindingVisitor(CompilationContext& ctx);
   
-    auto bind() -> NamespaceBindingVisitor&;
+    auto beginUnit(TranslationUnit& unit) -> void override;
+    auto endUnit(TranslationUnit& unit) -> void override;
+
     auto visitUsingStatement(FridayParser::UsingStatementContext* ctx) -> any override;
   };
 }

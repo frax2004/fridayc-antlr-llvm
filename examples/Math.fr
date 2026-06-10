@@ -1,6 +1,15 @@
-namespace math;
 
-using collections;
+public fn main() -> void {
+  const v = new Vector2{
+    x: 2.0,
+    y: 4.0
+  };
+
+  print v.x;
+  print v.y;
+}
+
+namespace math;
 
 public native fn pow(x: float, y: float) -> float;
 public native fn sqrt(x: float) -> float;
@@ -11,6 +20,4 @@ public native fn exp(x: float) -> float;
 public struct Vector2 {
   public x: float;
   public y: float;
-
 }
-

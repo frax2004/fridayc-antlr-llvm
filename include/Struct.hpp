@@ -50,7 +50,7 @@ struct json::stringify<friday::Struct> {
     };
 
     return format(
-      "{{\"type\": \"struct\", \"name\": \"{}\", \"symbols\": [{}]}}",
+      "{{\"kind\": \"struct\", \"name\": \"{}\", \"symbols\": [{}]}}",
       name,
       symbols 
       | views::transform(sym2str)

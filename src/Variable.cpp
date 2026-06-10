@@ -1,5 +1,6 @@
 #include <Variable.hpp>
 #include <Type.hpp>
+#include <NotImplementedError.hpp>
 
 namespace friday::inline api::inline typesystem {
   Variable::Variable(ISymbolTable& declaringScope, string name, Type& type) noexcept
@@ -13,11 +14,11 @@ namespace friday::inline api::inline typesystem {
   }
 
   auto Variable::getFullQualifiedId() const -> string {
-
+    throw NotImplementedError{"Variable::getFullQualifiedId()"};
   }
 
   auto Variable::getMangledId() const -> string {
-
+    throw NotImplementedError{"Variable::getMangledId()"};
   }
 
   auto Variable::getDeclaringSymbolTable() -> ISymbolTable* {
@@ -25,10 +26,10 @@ namespace friday::inline api::inline typesystem {
   }
 
   auto Variable::getAttributes() const -> Attributes {
-    return {};
+    throw NotImplementedError{"Variable::getAttributes()"};
   }
 
-  auto Variable::getType() -> Type* {
+  auto Variable::getType() const -> Type* {
     return this->M_type;
   }
 

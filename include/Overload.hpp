@@ -33,7 +33,7 @@ namespace friday::inline api::inline typesystem {
 template<>
 struct json::stringify<friday::Overload> {
   auto operator()(friday::Overload const& self) -> string {
-    return format("{{\"type\": \"overload\", \"name\": \"{}\"}}", 
+    return format("{{\"kind\": \"overload\", \"name\": \"{}\"}}", 
       self.getQualifiedId()
     );
   }
