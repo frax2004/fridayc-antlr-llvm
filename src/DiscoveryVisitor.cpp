@@ -75,6 +75,13 @@ namespace friday::inline api::inline pipeline {
     if(not this->M_currentSymbolTable->isDefined(name)) {
       this->M_currentSymbolTable->define(new Overload(*this->M_currentSymbolTable, name));
     }
+
+    this->getCompilationContext()
+    .annotations[ctx->getStart()] = FuncAnnotation{
+      .scope = this->M_currentSymbolTable
+    };
+
+
     return {};
   }
 
@@ -84,6 +91,13 @@ namespace friday::inline api::inline pipeline {
     if(not this->M_currentSymbolTable->isDefined(name)) {
       this->M_currentSymbolTable->define(new Overload(*this->M_currentSymbolTable, name));
     }
+
+    this->getCompilationContext()
+    .annotations[ctx->getStart()] = FuncAnnotation{
+      .scope = this->M_currentSymbolTable
+    };
+
+
     return {};
   }
 }

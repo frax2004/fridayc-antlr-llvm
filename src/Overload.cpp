@@ -20,13 +20,13 @@ namespace friday::inline api::inline typesystem {
     this->M_overloads.try_emplace(move(argsTypes), function);
   }
 
-  auto Overload::tryMatch(vector<Type*> argsTypes) -> Function* {
+  auto Overload::tryMatch(vector<Type*> const& argsTypes) -> Function* {
     if(auto it = this->M_overloads.find(argsTypes); it != this->M_overloads.end()) {
       return it->second;
     } else return nullptr;
   }
 
-  auto Overload::hasMatch(vector<Type*> argsTypes) -> bool {
+  auto Overload::hasMatch(vector<Type*> const& argsTypes) const -> bool {
     return this->M_overloads.contains(argsTypes);
   }
 

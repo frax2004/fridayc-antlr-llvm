@@ -1,6 +1,7 @@
 #pragma once
 #include <StaticAnalyzer.hpp>
 
+
 namespace friday::inline api::inline pipeline {
   // will solve the overload signatures
   struct OverloadSolverVisitor : StaticAnalyzer {
@@ -9,7 +10,9 @@ namespace friday::inline api::inline pipeline {
 
     auto beginUnit(TranslationUnit& unit) -> void override;
     auto endUnit(TranslationUnit& unit) -> void override;
-
     
+    auto visitFunctionStatement(FridayParser::FunctionStatementContext* ctx) -> any override;
+    auto visitNativeFunctionStatement(FridayParser::NativeFunctionStatementContext* ctx) -> any override;
+  
   };
 }

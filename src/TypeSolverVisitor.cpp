@@ -2,6 +2,7 @@
 #include <ErrorType.hpp>
 #include <PointerType.hpp>
 #include <ArrayType.hpp>
+#include <OperationNotSupportedError.hpp>
 
 namespace friday::inline api::inline pipeline {
   TypeSolverVisitor::TypeSolverVisitor(CompilationContext& ctx)
@@ -48,7 +49,7 @@ namespace friday::inline api::inline pipeline {
     string structName = ctx->structName->getText();
 
     Struct* asStruct = rtti::cast<Struct>(unit->lookUpIf(structName, isStruct));
-    if(asStruct == nullptr) throw runtime_error("Internal error.");
+    if(asStruct == nullptr) throw OperationNotSupportedError("Internal error.");
 
     auto toType = [this](FridayParser::TypeContext* type) { return any_cast<Type*>(this->visit(type)); };
     auto fieldsNames = ctx->fieldsNames | views::transform(ant::Token::getText);
@@ -87,10 +88,11 @@ namespace friday::inline api::inline pipeline {
       i++;
     }
 
+    this->visitChildren(ctx); // need to visit the entire ast
+
     return (Type*)(ok ? rtti::cast<Type>(asStruct) : ErrorType::get());
   }
 
-  
   auto TypeSolverVisitor::visitSimpleType(FridayParser::SimpleTypeContext *ctx) -> any {
     auto isStruct = (bool(*)(ISymbol*))&rtti::instanceOf<Struct>;
 
@@ -102,6 +104,7 @@ namespace friday::inline api::inline pipeline {
 
     if(auto asStruct = rtti::cast<Struct>(unit->lookUpIf(id, isStruct))) {
       T = rtti::cast<Type>(asStruct);
+      this->getCompilationContext().annotations.setMetadata(ctx->getStart(), TypeAnnotation{.type = T});
     } else {
       auto toSuggestion = [](string const& message) {
         return format(" Did you mean '{}'?", message);
@@ -114,7 +117,7 @@ namespace friday::inline api::inline pipeline {
   }
 
   auto TypeSolverVisitor::visitFunctionType(FridayParser::FunctionTypeContext *ctx) -> any {
-    
+
     auto toType = [this](FridayParser::TypeContext* type) { return any_cast<Type*>(this->visit(type)); };
 
     Type* retType = any_cast<Type*>(this->visit(ctx->returnType));
@@ -138,6 +141,8 @@ namespace friday::inline api::inline pipeline {
       i++;
     }
 
+
+    Type* type = ErrorType::get();
     if(retType == ErrorType::get()) {
       ok = false;
       this->errorAt(
@@ -147,9 +152,14 @@ namespace friday::inline api::inline pipeline {
           ctx->returnType->getText()
         )
       );
+    } 
+    
+    if(ok) {
+      type = FunctionType::get(*retType, move(paramsTypes));
+      this->getCompilationContext().annotations.setMetadata(ctx->getStart(), TypeAnnotation{type});
     }
 
-    return (Type*)(ok ? FunctionType::get(*retType, move(paramsTypes)) : ErrorType::get());
+    return (Type*)type;
   }
 
   auto TypeSolverVisitor::visitPointerType(FridayParser::PointerTypeContext *ctx) -> any {
@@ -166,7 +176,10 @@ namespace friday::inline api::inline pipeline {
           ctx->pointedType->getText()
         )
       );
-    } else type = PointerType::get(*type, dimensions);
+    } else {
+      type = PointerType::get(*type, dimensions);
+      this->getCompilationContext().annotations.setMetadata(ctx->getStart(), TypeAnnotation{type});
+    }
 
     return (Type*)type;
   }
@@ -184,7 +197,10 @@ namespace friday::inline api::inline pipeline {
           ctx->elementType->getText()
         )
       );
-    } else type = ArrayType::get(*type, length);
+    } else {
+      type = ArrayType::get(*type, length);
+      this->getCompilationContext().annotations.setMetadata(ctx->getStart(), TypeAnnotation{type});
+    }
 
     return (Type*)type;
   }

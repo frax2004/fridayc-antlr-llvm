@@ -19,8 +19,8 @@ namespace friday::inline api::inline typesystem {
 
     auto getFunctions() const -> vector<Function*>;
     auto add(vector<Type*> argsTypes, Function* function) -> void;
-    auto tryMatch(vector<Type*> argsTypes) -> Function*;
-    auto hasMatch(vector<Type*> argsTypes) -> bool;
+    auto tryMatch(vector<Type*> const& argsTypes) -> Function*;
+    auto hasMatch(vector<Type*> const& argsTypes) const -> bool;
 
     auto getQualifiedId() const -> string override;
     auto getFullQualifiedId() const -> string override;
@@ -33,8 +33,17 @@ namespace friday::inline api::inline typesystem {
 template<>
 struct json::stringify<friday::Overload> {
   auto operator()(friday::Overload const& self) -> string {
-    return format("{{\"kind\": \"overload\", \"name\": \"{}\"}}", 
-      self.getQualifiedId()
+    return format("{{\"kind\": \"overload\", \"name\": \"{}\", \"signatures\": [{}]}}", 
+      self.getQualifiedId(),
+      self.getFunctions()
+      | views::transform([](friday::Function* func) {
+        return format(
+          "\"{}\"", 
+          func->getType()->getName()
+        );
+      })
+      | views::join_with(", "s)
+      | ranges::to<string>()
     );
   }
 };

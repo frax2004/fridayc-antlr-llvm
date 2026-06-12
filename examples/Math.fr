@@ -1,20 +1,14 @@
-
-public fn main() -> void {
-  const v = new Vector2{
-    x: 2.0,
-    y: 4.0
-  };
-
-  print v.x;
-  print v.y;
-}
-
 namespace math;
 
 public native fn pow(x: float, y: float) -> float;
 public native fn sqrt(x: float) -> float;
 public native fn cbrt(x: float) -> float;
 public native fn exp(x: float) -> float;
+
+public fn add(x: int, y: int) -> int => x + y;
+public fn add(x: float, y: int) -> float => x + y;
+public fn add(x: int, y: float) -> float => x + y;
+public fn add(x: float, y: float) -> float => x + y;
 
 
 public struct Vector2 {

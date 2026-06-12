@@ -1,6 +1,7 @@
 #include <DiscoveryVisitor.hpp>
 #include <NamespaceBindingVisitor.hpp>
 #include <TypeSolverVisitor.hpp>
+#include <OverloadSolverVisitor.hpp>
 #include <TypeCheckerVisitor.hpp>
 #include <LLVMObjectEmitterVisitor.hpp>
 #include <LinkerVisitor.hpp>
@@ -75,6 +76,19 @@ auto Main(vector<string> paths) -> void {
     return;
   }
 
+  auto overloadSolverErrors = OverloadSolverVisitor{*context}.analyze().errors();
+
+  if(not overloadSolverErrors.empty()) {
+    ranges::for_each(overloadSolverErrors, SemanticError::report);
+    return;
+  }
+
+
+  // auto tcv = TypeCheckerVisitor{*context};
+  // LLVMObjectEmitterVisitor{*context}.emit();
+  // LinkerVisitor{*context}.link();
+
+
   auto toString = json::stringify<Namespace>{};
 
   auto table = "[{}, {}]"_f.format(
@@ -92,9 +106,5 @@ auto Main(vector<string> paths) -> void {
   println(output, "{}", table);
   fclose(output);
 
-  
-  // auto tcv = TypeCheckerVisitor{*context};
-  // LLVMObjectEmitterVisitor{*context}.emit();
-  // LinkerVisitor{*context}.link();
 
 }
