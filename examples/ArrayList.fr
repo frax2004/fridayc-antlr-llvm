@@ -12,7 +12,7 @@ public fn main() -> void {
   a.push(&y as *void);
 
   a.pop();
-  
+
   for let i = 0; i < a.size(); i += 1 {
     print a.get(i);
   }

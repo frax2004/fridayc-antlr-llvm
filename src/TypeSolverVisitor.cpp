@@ -5,10 +5,38 @@
 #include <OperationNotSupportedError.hpp>
 
 namespace friday::inline api::inline pipeline {
+
+  TypeSolverVisitor::TypeGuard::TypeGuard(TypeSolverVisitor& guarded)
+    : guarded { &guarded }
+  {
+    this->guarded->typeVisitorsDepth++;
+  }
+
+  TypeSolverVisitor::TypeGuard::~TypeGuard() {
+    this->guarded->typeVisitorsDepth--;
+  }
+
   TypeSolverVisitor::TypeSolverVisitor(CompilationContext& ctx)
     : StaticAnalyzer { ctx }
   {}
 
+  auto TypeSolverVisitor::canRegisterType() const -> bool {
+    return this->typeVisitorsDepth == 1;
+  }
+
+  auto TypeSolverVisitor::registerType(ant::Token* token, Type* type) -> void {
+    if(not this->canRegisterType()) return;
+
+    this->getCompilationContext()
+    .annotations
+    .setMetadata(
+      token, 
+      TypeAnnotation{
+        .type = type
+      }
+    );
+  }
+  
   auto TypeSolverVisitor::beginUnit(TranslationUnit& unit) -> void {
     this->M_dependencyGraph = {};
   }
@@ -88,12 +116,14 @@ namespace friday::inline api::inline pipeline {
       i++;
     }
 
-    this->visitChildren(ctx); // need to visit the entire ast
+    for(auto method : ctx->methods) this->visit(method); // to register all types
 
     return (Type*)(ok ? rtti::cast<Type>(asStruct) : ErrorType::get());
   }
 
   auto TypeSolverVisitor::visitSimpleType(FridayParser::SimpleTypeContext *ctx) -> any {
+    TypeGuard guard{*this};
+
     auto isStruct = (bool(*)(ISymbol*))&rtti::instanceOf<Struct>;
 
     TranslationUnit* unit = this->getCurrentUnit();
@@ -104,7 +134,7 @@ namespace friday::inline api::inline pipeline {
 
     if(auto asStruct = rtti::cast<Struct>(unit->lookUpIf(id, isStruct))) {
       T = rtti::cast<Type>(asStruct);
-      this->getCompilationContext().annotations.setMetadata(ctx->getStart(), TypeAnnotation{.type = T});
+      this->registerType(ctx->getStart(), T);
     } else {
       auto toSuggestion = [](string const& message) {
         return format(" Did you mean '{}'?", message);
@@ -117,8 +147,15 @@ namespace friday::inline api::inline pipeline {
   }
 
   auto TypeSolverVisitor::visitFunctionType(FridayParser::FunctionTypeContext *ctx) -> any {
+    TypeGuard guard{*this};
 
-    auto toType = [this](FridayParser::TypeContext* type) { return any_cast<Type*>(this->visit(type)); };
+    auto toType = [this](FridayParser::TypeContext* type) { 
+      return any_cast<Type*>(this->visit(type)); 
+    };
+
+    auto isErrorType = [](Type* type) {
+      return type == ErrorType::get();
+    };
 
     Type* retType = any_cast<Type*>(this->visit(ctx->returnType));
     vector<Type*> paramsTypes = ctx->paramsTypes
@@ -126,19 +163,16 @@ namespace friday::inline api::inline pipeline {
     | ranges::to<vector>();
 
     bool ok = true;
-    for(u64 i = 0; auto T : paramsTypes) {
-      if(T == ErrorType::get()) {
-        ok = false;
-        this->errorAt(
-          ctx->paramsTypes[i]->getStart(),
-          "The function-type '{}' has an invalid parameter-type '{}' for the {}-th parameter"_f.format(
-            ctx->getText(),
-            ctx->paramsTypes[i]->getText(),
-            i+1
-          )
-        );
-      }
-      i++;
+    for(auto [i, T] : paramsTypes | views::transform(isErrorType) | views::enumerate) {
+      ok = false;
+      this->errorAt(
+        ctx->paramsTypes[i]->getStart(),
+        "The function-type '{}' has an invalid parameter-type '{}' for the {}-th parameter"_f.format(
+          ctx->getText(),
+          ctx->paramsTypes[i]->getText(),
+          i+1
+        )
+      );
     }
 
 
@@ -156,14 +190,15 @@ namespace friday::inline api::inline pipeline {
     
     if(ok) {
       type = FunctionType::get(*retType, move(paramsTypes));
-      this->getCompilationContext().annotations.setMetadata(ctx->getStart(), TypeAnnotation{type});
+      this->registerType(ctx->getStart(), type);
     }
 
     return (Type*)type;
   }
 
   auto TypeSolverVisitor::visitPointerType(FridayParser::PointerTypeContext *ctx) -> any {
-    
+    TypeGuard guard{*this};
+
     Type* type = any_cast<Type*>(this->visit(ctx->pointedType));
     u64 dimensions = ctx->STAR().size();
 
@@ -178,16 +213,18 @@ namespace friday::inline api::inline pipeline {
       );
     } else {
       type = PointerType::get(*type, dimensions);
-      this->getCompilationContext().annotations.setMetadata(ctx->getStart(), TypeAnnotation{type});
+      this->registerType(ctx->getStart(), type);
     }
 
     return (Type*)type;
   }
 
   auto TypeSolverVisitor::visitArrayType(FridayParser::ArrayTypeContext* ctx) -> any {
+    TypeGuard guard{*this};
+
     Type* type = any_cast<Type*>(this->visit(ctx->elementType));
     u64 length = ctx->LEFT_SQUARE().size();
-    
+
     if(type == ErrorType::get()) {
       this->errorAt(
         ctx->elementType->getStart(), 
@@ -199,7 +236,7 @@ namespace friday::inline api::inline pipeline {
       );
     } else {
       type = ArrayType::get(*type, length);
-      this->getCompilationContext().annotations.setMetadata(ctx->getStart(), TypeAnnotation{type});
+      this->registerType(ctx->getStart(), type);
     }
 
     return (Type*)type;
