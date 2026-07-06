@@ -5,6 +5,11 @@ options {
   language = Cpp;
 }
 
+@parser::postinclude {
+#include "Type.hpp"
+#include "SymbolTable.hpp"
+
+}
 
 ///////////////////////////////////////////////////
 /// STATEMENTS
@@ -34,7 +39,7 @@ options {
   /// Top level statements
   ///
   //////////////////////////////
-  nativeFunctionStatement
+  nativeFunctionStatement returns [friday::ISymbolTable* definingScope]
   : accessModifier = (PRIVATE | PUBLIC)? NATIVE FN name = IDENTIFIER LEFT_PAREN (
     paramsNames += IDENTIFIER COL paramsTypes += type (COMMA paramsNames += IDENTIFIER COL paramsTypes += type)* 
   )? RIGHT_PAREN ARROW returnType = type SEMI
@@ -43,15 +48,16 @@ options {
   namespaceStatement: NAMESPACE IDENTIFIER SEMI;
   usingStatement: USING IDENTIFIER SEMI;
 
-  structStatement: accessModifier = (PRIVATE | PUBLIC)? STRUCT structName = IDENTIFIER LEFT_CURLY 
+  structStatement returns [friday::ISymbolTable* definigScope]
+  : accessModifier = (PRIVATE | PUBLIC)? STRUCT structName = IDENTIFIER LEFT_CURLY 
     ((accessModifier = (PRIVATE | PUBLIC)? fieldsNames += IDENTIFIER COL fieldsTypes += type SEMI) | methods += functionStatement)*
   RIGHT_CURLY
   ;
 
-  functionStatement
+  functionStatement returns [friday::ISymbolTable* definingScope]
   : accessModifier = (PRIVATE | PUBLIC)? FN name = IDENTIFIER LEFT_PAREN (
     paramsNames += IDENTIFIER COL paramsTypes += type (COMMA paramsNames += IDENTIFIER COL paramsTypes += type)* 
-  )? RIGHT_PAREN ARROW returnType = type functionScope
+  )? RIGHT_PAREN ARROW returnType = type block = functionScope
   ;
   //////////////////////////////
   //////////////////////////////
@@ -129,7 +135,7 @@ options {
 
 ///////////////////////////////////////////////////
 /// EXPRESSIONS
-expression
+expression returns [friday::Type* exprType]
 : id = IDENTIFIER # IdentifierExpression
 | literal = INT_LIT # IntLiteralExpression
 | literal = CHAR_LIT # CharLiteralExpression
@@ -143,9 +149,9 @@ expression
 | func = expression LEFT_PAREN (args += expression (COMMA args += expression)*)? RIGHT_PAREN # CallExpression
 | array = expression LEFT_SQUARE index = expression RIGHT_SQUARE # SubscriptExpression
 | object = expression DOT member = IDENTIFIER # MemberAccessExpression
-| <assoc=right> unaryOperator = (PLUS | MINUS | NOT | TILDE | STAR | AMPERSAND) expression # UnaryPrefixExpression
-| <assoc=right> unaryOperator = (SIZEOF | ALIGNOF) (expression | type) # UnaryPrefixExpression
-| <assoc=right> expr = expression AS type # ExplicitCastExpression
+| <assoc = right> unaryOperator = (PLUS | MINUS | NOT | TILDE | STAR | AMPERSAND) expression # UnaryPrefixExpression
+| <assoc = right> unaryOperator = (SIZEOF | ALIGNOF) (expression | type) # UnaryPrefixExpression
+| <assoc = right> expr = expression AS type # ExplicitCastExpression
 | left = expression binaryOperator = (STAR | SLASH | MODULO) right = expression # BinaryExpression
 | left = expression binaryOperator = (PLUS | MINUS) right = expression # BinaryExpression
 | left = expression binaryOperator = (LSHIFT | RSHIFT) right = expression # BinaryExpression
@@ -160,18 +166,23 @@ expression
 ;
 
 
-type
+type returns [friday::Type* instance]
 : simpleType
 | pointerType
 | arrayType
 | functionType
 ;
 
-functionType
+functionType returns [friday::Type* instance]
 : FN LEFT_PAREN (paramsTypes += type (COMMA paramsTypes += type)*)? RIGHT_PAREN ARROW returnType = type
 ;
 
-simpleType: IDENTIFIER;
-pointerType: STAR+ pointedType = type;
-arrayType: (LEFT_SQUARE RIGHT_SQUARE)+ elementType = type;
+simpleType returns [friday::Type* instance]
+: IDENTIFIER;
+
+pointerType returns [friday::Type* instance]
+: STAR+ pointedType = type;
+
+arrayType returns [friday::Type* instance]
+: (LEFT_SQUARE RIGHT_SQUARE)+ elementType = type;
 ///////////////////////////////////////////////////

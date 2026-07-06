@@ -10,9 +10,7 @@ namespace friday::inline api::inline pipeline {
   {}
   
   auto DiscoveryVisitor::beginUnit(TranslationUnit& unit) -> void {
-    this->M_currentSymbolTable = this->getCompilationContext()
-    .global
-    .get();
+    this->M_currentSymbolTable = this->getCompilationContext().global.get();
   }
 
   auto DiscoveryVisitor::endUnit(TranslationUnit& unit) -> void {
@@ -59,7 +57,8 @@ namespace friday::inline api::inline pipeline {
 
     Struct* strct = new Struct(*(Namespace*)this->M_currentSymbolTable, name);
     this->M_currentSymbolTable->define(strct);
-    
+    ctx->definigScope = this->M_currentSymbolTable;
+
     auto previous = this->M_currentSymbolTable;
     this->M_currentSymbolTable = strct;
 
@@ -76,11 +75,7 @@ namespace friday::inline api::inline pipeline {
       this->M_currentSymbolTable->define(new Overload(*this->M_currentSymbolTable, name));
     }
 
-    this->getCompilationContext()
-    .annotations[ctx->getStart()] = FuncAnnotation{
-      .scope = this->M_currentSymbolTable
-    };
-
+    ctx->definingScope = this->M_currentSymbolTable;
 
     return {};
   }
@@ -92,11 +87,7 @@ namespace friday::inline api::inline pipeline {
       this->M_currentSymbolTable->define(new Overload(*this->M_currentSymbolTable, name));
     }
 
-    this->getCompilationContext()
-    .annotations[ctx->getStart()] = FuncAnnotation{
-      .scope = this->M_currentSymbolTable
-    };
-
+    ctx->definingScope = this->M_currentSymbolTable;
 
     return {};
   }

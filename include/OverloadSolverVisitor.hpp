@@ -22,7 +22,7 @@ namespace friday::inline api::inline pipeline {
       FridayParser::TypeContext* returnType,
       vector<ant::Token*> const& paramsNames,
       u64 accessModifier,
-      bool isNative
+      FridayParser::FunctionScopeContext* scope
     ) -> any;
 
   };

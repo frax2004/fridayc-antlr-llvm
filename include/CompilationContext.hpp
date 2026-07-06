@@ -3,7 +3,6 @@
 #include <Common.hpp>
 #include <Namespace.hpp>
 #include <TranslationUnit.hpp>
-#include <Annotation.hpp>
 
 namespace friday::inline api::inline pipeline {
   
@@ -11,6 +10,5 @@ namespace friday::inline api::inline pipeline {
     box<Namespace> global;
     map<string, box<Namespace>> namespaces;
     vector<box<TranslationUnit>> units;
-    DefaultAnnotationTree annotations;
   };
 }

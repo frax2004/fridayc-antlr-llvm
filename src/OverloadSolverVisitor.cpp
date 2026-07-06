@@ -19,7 +19,7 @@ namespace friday::inline api::inline pipeline {
     FridayParser::TypeContext* returnType, 
     vector<ant::Token*> const& paramsNames, 
     u64 accessModifier, 
-    bool isNative
+    FridayParser::FunctionScopeContext* scope
   ) -> any {
 
     auto isOverload = [](ISymbol* symbol) { 
@@ -50,8 +50,8 @@ namespace friday::inline api::inline pipeline {
       }
     };
 
-    auto getScope = [](FuncAnnotation const& metadata) -> ISymbolTable* {
-      return metadata.scope;
+    auto getOwner = [](FuncAnnotation const& metadata) -> ISymbolTable* {
+      return metadata.owner;
     };
 
 
@@ -61,7 +61,7 @@ namespace friday::inline api::inline pipeline {
     ISymbolTable* owner = this->getCompilationContext()
     .annotations
     .getMetadata<FuncAnnotation>(funcToken)
-    .transform(getScope)
+    .transform(getOwner)
     .value_or(this->getCompilationContext().global.get());
  
     Overload* asOverload = rtti::cast<Overload>(owner->lookUpIf(overloadName, isOverload));
@@ -127,10 +127,11 @@ namespace friday::inline api::inline pipeline {
     this->getCompilationContext().annotations.setMetadata(
       funcToken, 
       FuncAnnotation{
+        .owner = owner,
         .type = function->getType(),
         .visibility = toVisibility(accessModifier),
         .isStatic = true,
-        .isNative = isNative,
+        .scope = scope,
       }
     );
 
@@ -146,7 +147,7 @@ namespace friday::inline api::inline pipeline {
       ctx->returnType,
       ctx->paramsNames,
       ctx->accessModifier->getType(),
-      false
+      ctx->block
     );
   }
 
@@ -158,7 +159,7 @@ namespace friday::inline api::inline pipeline {
       ctx->returnType,
       ctx->paramsNames,
       ctx->accessModifier->getType(),
-      true
+      nullptr
     );
   }
 

@@ -1,60 +1,40 @@
-// #include <TypeCheckerVisitor.hpp>
-// #include <OperationNotSupportedError.hpp>
+#include "TypeCheckerVisitor.hpp"
+#include <OperationNotSupportedError.hpp>
 
-// namespace friday::inline api::inline pipeline {
+namespace friday::inline api::inline pipeline {
 
-//   TypeChecker::TypeChecker(CompilationContext& ctx) noexcept
-//     : M_ctx { &ctx }
-//   {}
-  
-//   auto TypeChecker::check() -> vector<SemanticError> {
-//     Namespace GLOBAL{};
+  auto TypeChecker::push(ISymbolTable& scope) -> void {
+    this->M_symbolTables.push(&scope);
+  }
 
-//     this->INT = Type::getIntType(GLOBAL, this->M_ctx->mod->getContext());
-//     this->FLOAT = Type::getFloatType(GLOBAL, this->M_ctx->mod->getContext());
-//     this->BYTE = Type::getByteType(GLOBAL, this->M_ctx->mod->getContext());
-//     this->BOOL = Type::getBoolType(GLOBAL, this->M_ctx->mod->getContext());
-//     this->VOID = Type::getVoidType(GLOBAL, this->M_ctx->mod->getContext());
-//     this->ERROR = Type::getErrorType();
+  auto TypeChecker::pop() -> ISymbolTable* {
+    ISymbolTable* x = this->M_symbolTables.top();
+    this->M_symbolTables.pop();
+    return x;
+  }
 
-//     GLOBAL.define(rtti::cast<Struct>(this->INT));
-//     GLOBAL.define(rtti::cast<Struct>(this->FLOAT));
-//     GLOBAL.define(rtti::cast<Struct>(this->BYTE));
-//     GLOBAL.define(rtti::cast<Struct>(this->BOOL));
-//     GLOBAL.define(rtti::cast<Struct>(this->VOID));
+  auto TypeChecker::top() -> ISymbolTable* {
+    return this->M_symbolTables.top();
+  }
 
-//     this->pushScope(GLOBAL);
-//     auto result = this->visit(this->M_ctx->ast);
-//     this->popScope();
-    
-//     return this->M_errors;
-//   }
+  auto TypeChecker::BYTE() -> Type* {
+    return this->getCurrentUnit()->globalContext->global->getStruct("byte");
+  }
 
-//   auto TypeChecker::pushScope(ISymbolTable& scope) -> void {
-//     this->M_symbolTables.push(&scope);
-//   }
+  auto TypeChecker::INT() -> Type* {
+    return this->getCurrentUnit()->globalContext->global->getStruct("int");
+  }
 
-//   auto TypeChecker::popScope() -> ISymbolTable* {
-//     ISymbolTable* first = this->topScope();
-//     this->M_symbolTables.pop();
-//     return first;
-//   }
+  auto TypeChecker::BOOL() -> Type* {
+    return this->getCurrentUnit()->globalContext->global->getStruct("bool");
+  }
 
-//   auto TypeChecker::topScope() -> ISymbolTable* {
-//     return this->M_symbolTables.top();
-//   }
+  auto TypeChecker::VOID() -> Type* {
+    return this->getCurrentUnit()->globalContext->global->getStruct("void");
+  }
 
-//   auto TypeChecker::errorAt(ant::Token* token, string message) -> void {
-//     this->M_errors.push_back(
-//       SemanticError{
-//         SourceLocation {
-//           this->M_ctx->path,
-//           token->getLine(),
-//           token->getCharPositionInLine()+1
-//         },
-//         move(message) 
-//       }
-//     );
-//   }
+  auto TypeChecker::FLOAT() -> Type* {
+    return this->getCurrentUnit()->globalContext->global->getStruct("float");
+  }
 
-// }
+}

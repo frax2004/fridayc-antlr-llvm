@@ -1,80 +1,61 @@
-// #pragma once
+#pragma once
 
-// #include <SemanticError.hpp>
-// #include <FridayParserBaseVisitor.h>
-// #include <CompilationContext.hpp>
-// #include <StaticAnalyzer.hpp>
+#include <SemanticError.hpp>
+#include <StaticAnalyzer.hpp>
 
-// namespace friday::inline api::inline pipeline {
+namespace friday::inline api::inline pipeline {
 
-//   struct TypeChecker : FridayParserBaseVisitor, StaticAnalizer {
-    
-//     private:
-//     CompilationContext* M_ctx { nullptr };
-//     map<ant::tree::ParseTree*, Type> M_properties { };
-//     vector<SemanticError> M_errors { };
-//     stack<ISymbolTable*> M_symbolTables { };
+  struct TypeChecker : StaticAnalyzer {
+    private:
+    stack<ISymbolTable*> M_symbolTables { };
 
-//     public:
-//     TypeChecker(CompilationContext& ctx) noexcept;
+    public:
+    TypeChecker(CompilationContext& ctx) noexcept;
 
-//     auto check() -> vector<SemanticError>;
+    public:
+    auto visitDeclarationStatement(FridayParser::DeclarationStatementContext *ctx) -> any override;
+    auto visitIfStatement(FridayParser::IfStatementContext *ctx) -> any override;
+    auto visitForStatement(FridayParser::ForStatementContext *ctx) -> any override;
+    auto visitWhileStatement(FridayParser::WhileStatementContext *ctx) -> any override;
+    auto visitExpressionStatement(FridayParser::ExpressionStatementContext *ctx) -> any override;
+    auto visitDeferStatement(FridayParser::DeferStatementContext *ctx) -> any override;
+    auto visitPrintStatement(FridayParser::PrintStatementContext *ctx) -> any override;
+    auto visitScope(FridayParser::ScopeContext *ctx) -> any override;
+    auto visitReturnStatement(FridayParser::ReturnStatementContext *ctx) -> any override;
+    auto visitInlineScope(FridayParser::InlineScopeContext *ctx) -> any override;
 
-//     auto visitProgram(FridayParser::ProgramContext *ctx) -> any;
-//     auto visitNativeFunctionStatement(FridayParser::NativeFunctionStatementContext *ctx) -> any;
-//     auto visitNamespaceStatement(FridayParser::NamespaceStatementContext *ctx) -> any;
-//     auto visitUsingStatement(FridayParser::UsingStatementContext *ctx) -> any;
-//     auto visitStructStatement(FridayParser::StructStatementContext *ctx) -> any;
-//     auto visitFunctionStatement(FridayParser::FunctionStatementContext *ctx) -> any;
-//     auto visitDeclarationStatement(FridayParser::DeclarationStatementContext *ctx) -> any;
-//     auto visitIfStatement(FridayParser::IfStatementContext *ctx) -> any;
-//     auto visitForStatement(FridayParser::ForStatementContext *ctx) -> any;
-//     auto visitWhileStatement(FridayParser::WhileStatementContext *ctx) -> any;
-//     auto visitExpressionStatement(FridayParser::ExpressionStatementContext *ctx) -> any;
-//     auto visitDeferStatement(FridayParser::DeferStatementContext *ctx) -> any;
-//     auto visitPrintStatement(FridayParser::PrintStatementContext *ctx) -> any;
-//     auto visitScope(FridayParser::ScopeContext *ctx) -> any;
-//     auto visitReturnStatement(FridayParser::ReturnStatementContext *ctx) -> any;
-//     auto visitInlineScope(FridayParser::InlineScopeContext *ctx) -> any;
+    auto visitMemberAccessExpression(FridayParser::MemberAccessExpressionContext *ctx) -> any override;
+    auto visitArrayLiteralExpression(FridayParser::ArrayLiteralExpressionContext *ctx) -> any override;
+    auto visitExplicitCastExpression(FridayParser::ExplicitCastExpressionContext *ctx) -> any override;
+    auto visitNewExpression(FridayParser::NewExpressionContext *ctx) -> any override;
+    auto visitUnaryPostfixExpression(FridayParser::UnaryPostfixExpressionContext *ctx) -> any override;
+    auto visitNullLiteralExpression(FridayParser::NullLiteralExpressionContext *ctx) -> any override;
+    auto visitFloatLiteralExpression(FridayParser::FloatLiteralExpressionContext *ctx) -> any override;
+    auto visitIntLiteralExpression(FridayParser::IntLiteralExpressionContext *ctx) -> any override;
+    auto visitIdentifierExpression(FridayParser::IdentifierExpressionContext *ctx) -> any override;
+    auto visitStringLiteralExpression(FridayParser::StringLiteralExpressionContext *ctx) -> any override;
+    auto visitBinaryExpression(FridayParser::BinaryExpressionContext *ctx) -> any override;
+    auto visitGroupingExpression(FridayParser::GroupingExpressionContext *ctx) -> any override;
+    auto visitUnaryPrefixExpression(FridayParser::UnaryPrefixExpressionContext *ctx) -> any override;
+    auto visitSubscriptExpression(FridayParser::SubscriptExpressionContext *ctx) -> any override;
+    auto visitBoolLiteralExpression(FridayParser::BoolLiteralExpressionContext *ctx) -> any override;
+    auto visitCharLiteralExpression(FridayParser::CharLiteralExpressionContext *ctx) -> any override;
+    auto visitCallExpression(FridayParser::CallExpressionContext *ctx) -> any override;
 
+    private:
+    auto push(ISymbolTable& scope) -> void;
+    auto pop() -> ISymbolTable*;
+    auto top() -> ISymbolTable*;
 
+    auto BYTE() -> Type*;
+    auto INT() -> Type*;
+    auto BOOL() -> Type*;
+    auto VOID() -> Type*;
+    auto FLOAT() -> Type*;
 
-//     auto visitMemberAccessExpression(FridayParser::MemberAccessExpressionContext *ctx) -> any;
-//     auto visitUnaryPostfixExpression(FridayParser::UnaryPostfixExpressionContext *ctx) -> any;
-//     auto visitstringLiteralExpression(FridayParser::stringLiteralExpressionContext *ctx) -> any;
-//     auto visitFloatLiteralExpression(FridayParser::FloatLiteralExpressionContext *ctx) -> any;
-//     auto visitNewExpression(FridayParser::NewExpressionContext *ctx) -> any;
-//     auto visitArrayLiteralExpression(FridayParser::ArrayLiteralExpressionContext *ctx) -> any;
-//     auto visitExplicitCastExpression(FridayParser::ExplicitCastExpressionContext *ctx) -> any;
-//     auto visitIntLiteralExpression(FridayParser::IntLiteralExpressionContext *ctx) -> any;
-//     auto visitIdentifierExpression(FridayParser::IdentifierExpressionContext *ctx) -> any;
-//     auto visitBinaryExpression(FridayParser::BinaryExpressionContext *ctx) -> any;
-//     auto visitGroupingExpression(FridayParser::GroupingExpressionContext *ctx) -> any;
-//     auto visitUnaryPrefixExpression(FridayParser::UnaryPrefixExpressionContext *ctx) -> any;
-//     auto visitSubscriptExpression(FridayParser::SubscriptExpressionContext *ctx) -> any;
-//     auto visitBoolLiteralExpression(FridayParser::BoolLiteralExpressionContext *ctx) -> any;
-//     auto visitCharLiteralExpression(FridayParser::CharLiteralExpressionContext *ctx) -> any;
-//     auto visitCallExpression(FridayParser::CallExpressionContext *ctx) -> any;
-//     auto visitNullLiteralExpression(FridayParser::NullLiteralExpressionContext *ctx) -> any;
-
-
-
-//     auto visitType(FridayParser::TypeContext *ctx) -> any;
-//     auto visitFunctionType(FridayParser::FunctionTypeContext *ctx) -> any;
-//     auto visitSimpleType(FridayParser::SimpleTypeContext *ctx) -> any;
-//     auto visitPointerType(FridayParser::PointerTypeContext *ctx) -> any;
-//     auto visitArrayType(FridayParser::ArrayTypeContext *ctx) -> any;
-
-//     private:
-//     auto errorAt(ant::Token* token, string message) -> void;
-//     auto pushScope(ISymbolTable& scope) -> void;
-//     auto popScope() -> ISymbolTable*;
-//     auto topScope() -> ISymbolTable*;
-
-//     template<class T>
-//     auto byVisiting() const noexcept -> function<any (T*)>;
-//   };
-// }
-
-
-// #include <TypeCheckerVisitor.inl>
+    template<class T>
+    auto byVisiting() -> function<any (T*)> {
+      return [this](T* ctx) { return this->visit(ctx); };
+    }
+  };
+}

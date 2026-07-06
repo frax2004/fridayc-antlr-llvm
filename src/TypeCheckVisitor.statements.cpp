@@ -1,34 +1,61 @@
 // #include <TypeCheckerVisitor.hpp>
 // #include <OperationNotSupportedError.hpp>
+// #include <ErrorType.hpp>
+
 
 // namespace friday::inline api::inline pipeline {
-
 //   constexpr static auto RETURN_TYPE_MISMATCH = "Expression of type '{}' does not match the function return type '{}'. Implicit casts are not permitted, if this is the problem, try adding an explicit cast."_f;
 //   constexpr static auto EXPRESSION_NOT_CONVERTIBLE = "Expression of type '{}' is not convertible to {}. Implicit cast are not permitted, if this is the problem, try adding an explicit cast."_f;
 //   constexpr static auto ENTITY_REDECLARATION = "Redeclaration of name '{}' previously already defined as a different entity."_f;
 //   constexpr static auto PARAM_REDECLARATION = "In function declaration, redeclaration of parameter #{} named '{}' of type '{}' previously already defined."_f;
 //   constexpr static auto INVALID_PARAM_TYPE = "In function declaration, parameter #{} named '{}' has an invalid type '{}'."_f;
 
-//   auto TypeChecker::visitProgram(FridayParser::ProgramContext *ctx) -> any {
-//     Console::debug("ProgramContext: {}"_f.format(ctx->getText()));
+//   auto TypeChecker::visitDeclarationStatement(FridayParser::DeclarationStatementContext *ctx) -> any {
+//     Console::debug("DeclarationStatementContext: {}"_f.format(ctx->getText()));
 
-//     SymbolTable globalScope = SymbolTable::builtins(*this->M_unit->getModule());
     
-//     this->beginScope(globalScope);
-//     any result = this->visitChildren(ctx);
-//     this->endScope();
 
-//     return move(result);
+//     return ErrorType::get();
+//   }
+
+//   auto TypeChecker::visitIfStatement(FridayParser::IfStatementContext *ctx) -> any {
+//     Console::debug("IfStatementContext: {}"_f.format(ctx->getText()));
+
+//     return ErrorType::get();
+//   }
+
+//   auto TypeChecker::visitForStatement(FridayParser::ForStatementContext *ctx) -> any {
+//     Console::debug("ForStatementContext: {}"_f.format(ctx->getText()));
+
+//     return ErrorType::get();
+//   }
+
+//   auto TypeChecker::visitWhileStatement(FridayParser::WhileStatementContext *ctx) -> any {
+//     Console::debug("WhileStatementContext: {}"_f.format(ctx->getText()));
+
+//     return ErrorType::get();
+//   }
+
+//   auto TypeChecker::visitExpressionStatement(FridayParser::ExpressionStatementContext *ctx) -> any {
+//     Console::debug("ExpressionStatementContext: {}"_f.format(ctx->getText()));
+
+//     return ErrorType::get();
+//   }
+
+//   auto TypeChecker::visitDeferStatement(FridayParser::DeferStatementContext *ctx) -> any {
+//     Console::debug("DeferStatementContext: {}"_f.format(ctx->getText()));
+
+//     return ErrorType::get();
 //   }
 
 //   auto TypeChecker::visitReturnStatement(FridayParser::ReturnStatementContext *ctx) -> any {
-//     Type* actual = any_cast<Type*>(this->visit(ctx->expr()));
-//     if(actual == Struct::getErrorType() or actual != this->M_currentFunctionReturnType) {
+//     Type* actual = any_cast<Type*>(this->visit(ctx->expression()));
+//     if(actual == ErrorType::get() or actual != this->M_currentFunctionReturnType) {
 //       this->errorAt(
-//         ctx->expr()->getStart(),
+//         ctx->expression()->getStart(),
 //         RETURN_TYPE_MISMATCH.format(actual->getName(), this->M_currentFunctionReturnType->getName())
 //       );
-//       return (Type*)Struct::getErrorType();
+//       return (Type*)ErrorType::get();
 //     } else return (Type*)this->M_currentScope->resolve("void")->as<Struct>();
 //   }
 
@@ -43,7 +70,7 @@
 //         ctx->expr()->getStart(),
 //         EXPRESSION_NOT_CONVERTIBLE.format(actual->getName(), expected->getName())
 //       );
-//       return (Type*)Struct::getErrorType();
+//       return (Type*)ErrorType::get();
 //     } else return (Type*)this->M_currentScope->resolve("void")->as<Struct>();
 //   }
 
@@ -58,30 +85,30 @@
 //     auto statements = ctx->statement()
 //     | views::transform(byVisiting)
 //     | views::transform(toType);
-    
+
 //     SymbolTable scope { this->M_currentScope };
 //     this->beginScope(scope);
 
 //     bool ok = true;
 //     for(auto statement : statements) {
-//       if(statement == Struct::getErrorType()) {
+//       if(statement == ErrorType::get()) {
 //         ok = false;
 //       }
 //     }
 //     this->endScope();
 
-//     return (Type*)(ok ? (Type*)this->M_currentScope->resolve("void")->as<Struct>() : (Type*)Struct::getErrorType());
+//     return (Type*)(ok ? (Type*)this->M_currentScope->resolve("void")->as<Struct>() : (Type*)ErrorType::get());
 //   }
 
 //   auto TypeChecker::visitInlineScope(FridayParser::InlineScopeContext *ctx) -> any {
 //     Console::debug("InlineScopeContext: {}"_f.format(ctx->getText()));
 //     Type* T = any_cast<Type*>(this->visit(ctx->expr()));
-//     if(T == Struct::getErrorType() or T != this->M_currentFunctionReturnType) {
+//     if(T == ErrorType::get() or T != this->M_currentFunctionReturnType) {
 //       this->errorAt(
 //         ctx->expr()->getStart(),
 //         RETURN_TYPE_MISMATCH.format(T->getName(), this->M_currentFunctionReturnType->getName())
 //       );
-//       return (Type*)Struct::getErrorType();
+//       return (Type*)ErrorType::get();
 //     } else return (Type*)this->M_currentScope->resolve("void")->as<Struct>();
 //   }
 
@@ -133,7 +160,7 @@
 //         this->errorAt(ctx->name, PARAM_REDECLARATION.format(i+1, paramName, paramType->getName()));
 //       }
 
-//       if(paramType == (Type*)Struct::getErrorType()) {
+//       if(paramType == (Type*)ErrorType::get()) {
 //         paramOk = false;
 //         this->errorAt(ctx->name, INVALID_PARAM_TYPE.format(i+1, paramName, paramType->getName()));
 //       }
@@ -142,7 +169,7 @@
 //       else ok = false;
 //     }
 
-//     if(returnType == (Type*)Struct::getErrorType()) {
+//     if(returnType == (Type*)ErrorType::get()) {
 //       ok = false;
 //       this->errorAt(
 //         ctx->returnType->getStart(),
@@ -160,7 +187,7 @@
 
 //     this->endScope();
 
-//     if(blockType == (Type*)Struct::getErrorType()) {
+//     if(blockType == (Type*)ErrorType::get()) {
 //       ok = false;
 //     }
 
@@ -175,7 +202,7 @@
 //       );
 //     }
 
-//     return (Type*)(ok ? (Type*)this->M_currentScope->resolve("void")->as<Struct>() : (Type*)Struct::getErrorType());
+//     return (Type*)(ok ? (Type*)this->M_currentScope->resolve("void")->as<Struct>() : (Type*)ErrorType::get());
 //   }
 
 // }
