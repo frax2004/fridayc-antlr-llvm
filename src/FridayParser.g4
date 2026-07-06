@@ -166,23 +166,23 @@ expression returns [friday::Type* exprType]
 ;
 
 
-type returns [friday::Type* instance]
+type returns [friday::Type* typeId]
 : simpleType
 | pointerType
 | arrayType
 | functionType
 ;
 
-functionType returns [friday::Type* instance]
+functionType returns [friday::Type* typeId]
 : FN LEFT_PAREN (paramsTypes += type (COMMA paramsTypes += type)*)? RIGHT_PAREN ARROW returnType = type
 ;
 
-simpleType returns [friday::Type* instance]
+simpleType returns [friday::Type* typeId]
 : IDENTIFIER;
 
-pointerType returns [friday::Type* instance]
+pointerType returns [friday::Type* typeId]
 : STAR+ pointedType = type;
 
-arrayType returns [friday::Type* instance]
+arrayType returns [friday::Type* typeId]
 : (LEFT_SQUARE RIGHT_SQUARE)+ elementType = type;
 ///////////////////////////////////////////////////
