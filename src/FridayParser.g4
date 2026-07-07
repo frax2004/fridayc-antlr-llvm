@@ -95,22 +95,41 @@ options {
   ;
 
   declarationStatement
-  : declarator = (LET | CONST) id = IDENTIFIER (COL type)? ASSIGN initializer = expression SEMI;
+  : declarator = (LET | CONST) id = IDENTIFIER (COL type)? ASSIGN initializer = expression SEMI
+  ;
 
   ifStatement
-  : IF expression statement (ELIF expression statement)*? (ELSE statement)?;
+  : IF expression statement (ELIF expression statement)*? (ELSE statement)?
+  ;
   
   forStatement
-  : FOR statement expression SEMI expression statement;
+  : FOR statement expression SEMI expression statement
+  ;
 
   whileStatement
-  : WHILE expression statement;
+  : WHILE expression statement
+  ;
 
-  expressionStatement: expression SEMI;
-  deferStatement: DEFER deferrableStatement;
-  printStatement: PRINT expression SEMI;
-  scope: LEFT_CURLY (statement*) RIGHT_CURLY;
-  returnStatement: RETURN (expression?) SEMI;
+  expressionStatement
+  : expression SEMI
+  ;
+  
+  deferStatement
+  : DEFER deferrableStatement
+  ;
+  
+  printStatement
+  : PRINT expression SEMI
+  ;
+  
+  scope
+  : LEFT_CURLY (statement*) RIGHT_CURLY
+  ;
+  
+  returnStatement
+  : RETURN (expression?) SEMI
+  ;
+  
   //////////////////////////////
   //////////////////////////////
   //////////////////////////////
@@ -122,8 +141,14 @@ options {
   /// Scope helpers
   ///
   //////////////////////////////
-  inlineScope: FAT_ARROW expression SEMI;
-  functionScope: scope | inlineScope;
+  inlineScope
+  : FAT_ARROW expression SEMI
+  ;
+  
+  functionScope
+  : scope | inlineScope
+  ;
+  
   //////////////////////////////
   //////////////////////////////
   //////////////////////////////
@@ -178,11 +203,14 @@ functionType returns [friday::Type* typeId]
 ;
 
 simpleType returns [friday::Type* typeId]
-: IDENTIFIER;
+: IDENTIFIER
+;
 
 pointerType returns [friday::Type* typeId]
-: STAR+ pointedType = type;
+: STAR+ pointedType = type
+;
 
 arrayType returns [friday::Type* typeId]
-: (LEFT_SQUARE RIGHT_SQUARE)+ elementType = type;
+: (LEFT_SQUARE RIGHT_SQUARE)+ elementType = type
+;
 ///////////////////////////////////////////////////

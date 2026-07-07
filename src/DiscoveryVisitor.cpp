@@ -9,6 +9,10 @@ namespace friday::inline api::inline pipeline {
     : StaticAnalyzer { ctx }
   {}
   
+  auto DiscoveryVisitor::current() -> ISymbolTable& {
+    return *this->M_currentSymbolTable;
+  }
+  
   auto DiscoveryVisitor::beginUnit(TranslationUnit& unit) -> void {
     this->M_currentSymbolTable = this->getCompilationContext().global.get();
   }
@@ -16,7 +20,6 @@ namespace friday::inline api::inline pipeline {
   auto DiscoveryVisitor::endUnit(TranslationUnit& unit) -> void {
     this->M_currentSymbolTable = nullptr;
   }
-
 
   auto DiscoveryVisitor::visitNamespaceStatement(FridayParser::NamespaceStatementContext* ctx) -> any {
     auto unit = this->getCurrentUnit();
@@ -31,9 +34,11 @@ namespace friday::inline api::inline pipeline {
     }
 
     string identifier = token->getText();
-    if(auto it = this->getCompilationContext().namespaces.find(identifier); it != this->getCompilationContext().namespaces.end()) {
+    auto& namespaces = this->getCompilationContext().namespaces;
+    
+    if(auto it = namespaces.find(identifier); it != namespaces.end()) {
       unit->ownedNamespace = it->second.get();
-    } else unit->ownedNamespace = this->getCompilationContext().namespaces.emplace(
+    } else unit->ownedNamespace = namespaces.emplace(
       identifier, 
       make_unique<Namespace>(identifier)
     ).first->second.get();
@@ -47,7 +52,7 @@ namespace friday::inline api::inline pipeline {
     
     auto name = ctx->structName->getText();
     auto isStruct = (bool(*)(ISymbol*))&rtti::instanceOf<Struct>;
-    if(auto existing = this->M_currentSymbolTable->lookUpIf(name, isStruct)) {
+    if(auto existing = this->current().lookUpIf(name, isStruct)) {
       this->errorAt(
         ctx->structName,
         STRUCT_REDECLARATION.format(name)
@@ -56,7 +61,7 @@ namespace friday::inline api::inline pipeline {
     }
 
     Struct* strct = new Struct(*(Namespace*)this->M_currentSymbolTable, name);
-    this->M_currentSymbolTable->define(strct);
+    this->current().define(strct);
     ctx->definigScope = this->M_currentSymbolTable;
 
     auto previous = this->M_currentSymbolTable;
@@ -71,8 +76,8 @@ namespace friday::inline api::inline pipeline {
   auto DiscoveryVisitor::visitFunctionStatement(FridayParser::FunctionStatementContext* ctx) -> any {
     auto name = ctx->name->getText();
 
-    if(not this->M_currentSymbolTable->isDefined(name)) {
-      this->M_currentSymbolTable->define(new Overload(*this->M_currentSymbolTable, name));
+    if(not this->current().isDefined(name)) {
+      this->current().define(new Overload(*this->M_currentSymbolTable, name));
     }
 
     ctx->definingScope = this->M_currentSymbolTable;
@@ -83,8 +88,8 @@ namespace friday::inline api::inline pipeline {
   auto DiscoveryVisitor::visitNativeFunctionStatement(FridayParser::NativeFunctionStatementContext* ctx) -> any {
     auto name = ctx->name->getText();
 
-    if(not this->M_currentSymbolTable->isDefined(name)) {
-      this->M_currentSymbolTable->define(new Overload(*this->M_currentSymbolTable, name));
+    if(not this->current().isDefined(name)) {
+      this->current().define(new Overload(*this->M_currentSymbolTable, name));
     }
 
     ctx->definingScope = this->M_currentSymbolTable;

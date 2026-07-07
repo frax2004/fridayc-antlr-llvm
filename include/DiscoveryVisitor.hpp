@@ -17,5 +17,8 @@ namespace friday::inline api::inline pipeline {
     auto visitStructStatement(FridayParser::StructStatementContext* ctx) -> any override;
     auto visitFunctionStatement(FridayParser::FunctionStatementContext* ctx) -> any override;
     auto visitNativeFunctionStatement(FridayParser::NativeFunctionStatementContext* ctx) -> any override;
+
+    private:
+    auto current() -> ISymbolTable&;
   };
 }
