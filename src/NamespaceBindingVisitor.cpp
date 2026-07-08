@@ -17,8 +17,10 @@ namespace friday::inline api::inline pipeline {
     auto token = ctx->IDENTIFIER()->getSymbol();
     auto name = token->getText();
 
-    auto it = this->getCompilationContext().namespaces.find(name);
-    if(it == this->getCompilationContext().namespaces.end()) {
+    auto& namespaces = this->getCompilationContext().namespaces; 
+    auto it = namespaces.find(name);
+    
+    if(it == namespaces.end()) {
       this->errorAt(
         token,
         USE_OF_UNDECLARED_NAMESPACE.format(name)

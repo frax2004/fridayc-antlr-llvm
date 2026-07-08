@@ -84,7 +84,7 @@ auto Main(vector<string> paths) -> void {
   }
 
 
-  auto typeCheckerErrors = TypeCheckerVisitor{*context}.analyze().errors();
+  // auto typeCheckerErrors = TypeCheckerVisitor{*context}.analyze().errors();
 
 
   // LLVMObjectEmitterVisitor{*context}.emit();

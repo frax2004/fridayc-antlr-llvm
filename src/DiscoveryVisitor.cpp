@@ -49,9 +49,9 @@ namespace friday::inline api::inline pipeline {
   }
 
   auto DiscoveryVisitor::visitStructStatement(FridayParser::StructStatementContext* ctx) -> any {
-    
     auto name = ctx->structName->getText();
     auto isStruct = (bool(*)(ISymbol*))&rtti::instanceOf<Struct>;
+
     if(auto existing = this->current().lookUpIf(name, isStruct)) {
       this->errorAt(
         ctx->structName,
@@ -62,9 +62,9 @@ namespace friday::inline api::inline pipeline {
 
     Struct* strct = new Struct(*(Namespace*)this->M_currentSymbolTable, name);
     this->current().define(strct);
-    ctx->definigScope = this->M_currentSymbolTable;
+    ctx->definigScope = &this->current();
 
-    auto previous = this->M_currentSymbolTable;
+    auto previous = &this->current();
     this->M_currentSymbolTable = strct;
 
     this->visitChildren(ctx);
@@ -77,10 +77,10 @@ namespace friday::inline api::inline pipeline {
     auto name = ctx->name->getText();
 
     if(not this->current().isDefined(name)) {
-      this->current().define(new Overload(*this->M_currentSymbolTable, name));
+      this->current().define(new Overload(this->current(), name));
     }
 
-    ctx->definingScope = this->M_currentSymbolTable;
+    ctx->definingScope = &this->current();
 
     return {};
   }
@@ -92,7 +92,7 @@ namespace friday::inline api::inline pipeline {
       this->current().define(new Overload(*this->M_currentSymbolTable, name));
     }
 
-    ctx->definingScope = this->M_currentSymbolTable;
+    ctx->definingScope = &this->current();
 
     return {};
   }

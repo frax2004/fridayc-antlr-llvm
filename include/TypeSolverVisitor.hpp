@@ -7,21 +7,8 @@ namespace friday::inline api::inline pipeline {
   struct TypeSolverVisitor : StaticAnalyzer {
 
     private:
-    struct TypeGuard {
-      private:
-      TypeSolverVisitor* guarded;
-
-      public:
-      TypeGuard(TypeSolverVisitor& guarded);
-      ~TypeGuard();
-    };
-
-    friend struct TypeGuard;
-
-    private:
     PointerGraph<Struct*> M_dependencyGraph { };
     map<Struct*, ant::ParserRuleContext*> M_properties { };
-    u64 typeVisitorsDepth { 0 };
 
     public:
     TypeSolverVisitor(CompilationContext& ctx);
@@ -29,15 +16,10 @@ namespace friday::inline api::inline pipeline {
     auto beginUnit(TranslationUnit& unit) -> void override;
     auto endUnit(TranslationUnit& unit) -> void override;
 
-
     auto visitStructStatement(FridayParser::StructStatementContext* ctx) -> any override;
     auto visitSimpleType(FridayParser::SimpleTypeContext *ctx) -> any override;
     auto visitFunctionType(FridayParser::FunctionTypeContext *ctx) -> any override;
     auto visitPointerType(FridayParser::PointerTypeContext *ctx) -> any override;
     auto visitArrayType(FridayParser::ArrayTypeContext* ctx) -> any override;
-
-    private:
-    auto canRegisterType() const -> bool;
-    auto registerType(ant::Token* token, Type* type) -> void;
   };
 }

@@ -8,6 +8,7 @@ options {
 @parser::postinclude {
 #include "Type.hpp"
 #include "SymbolTable.hpp"
+#include "VisibilityModifier.hpp"
 
 }
 
@@ -39,7 +40,7 @@ options {
   /// Top level statements
   ///
   //////////////////////////////
-  nativeFunctionStatement returns [friday::ISymbolTable* definingScope]
+  nativeFunctionStatement returns [friday::ISymbolTable* definingScope = nullptr, friday::Type* typeId = nullptr, friday::VisibilityModifier visibility = friday::VisibilityModifier::PUBLIC, bool isStatic = false, FridayParser::FunctionScopeContext* initialBlock = nullptr]
   : accessModifier = (PRIVATE | PUBLIC)? NATIVE FN name = IDENTIFIER LEFT_PAREN (
     paramsNames += IDENTIFIER COL paramsTypes += type (COMMA paramsNames += IDENTIFIER COL paramsTypes += type)* 
   )? RIGHT_PAREN ARROW returnType = type SEMI
@@ -48,13 +49,13 @@ options {
   namespaceStatement: NAMESPACE IDENTIFIER SEMI;
   usingStatement: USING IDENTIFIER SEMI;
 
-  structStatement returns [friday::ISymbolTable* definigScope]
+  structStatement returns [friday::ISymbolTable* definigScope = nullptr]
   : accessModifier = (PRIVATE | PUBLIC)? STRUCT structName = IDENTIFIER LEFT_CURLY 
     ((accessModifier = (PRIVATE | PUBLIC)? fieldsNames += IDENTIFIER COL fieldsTypes += type SEMI) | methods += functionStatement)*
   RIGHT_CURLY
   ;
 
-  functionStatement returns [friday::ISymbolTable* definingScope]
+  functionStatement returns [friday::ISymbolTable* definingScope = nullptr, friday::Type* typeId = nullptr, friday::VisibilityModifier visibility = friday::VisibilityModifier::PUBLIC, bool isStatic = false, FridayParser::FunctionScopeContext* initialBlock = nullptr]
   : accessModifier = (PRIVATE | PUBLIC)? FN name = IDENTIFIER LEFT_PAREN (
     paramsNames += IDENTIFIER COL paramsTypes += type (COMMA paramsNames += IDENTIFIER COL paramsTypes += type)* 
   )? RIGHT_PAREN ARROW returnType = type block = functionScope
@@ -160,7 +161,7 @@ options {
 
 ///////////////////////////////////////////////////
 /// EXPRESSIONS
-expression returns [friday::Type* exprType]
+expression returns [friday::Type* exprType = nullptr]
 : id = IDENTIFIER # IdentifierExpression
 | literal = INT_LIT # IntLiteralExpression
 | literal = CHAR_LIT # CharLiteralExpression
@@ -191,26 +192,11 @@ expression returns [friday::Type* exprType]
 ;
 
 
-type returns [friday::Type* typeId]
-: simpleType
-| pointerType
-| arrayType
-| functionType
+type returns [friday::Type* typeId = nullptr]
+: IDENTIFIER # SimpleType
+| STAR+ pointedType = type # PointerType
+| (LEFT_SQUARE RIGHT_SQUARE)+ elementType = type # ArrayType
+| FN LEFT_PAREN (paramsTypes += type (COMMA paramsTypes += type)*)? RIGHT_PAREN ARROW returnType = type # FunctionType
 ;
 
-functionType returns [friday::Type* typeId]
-: FN LEFT_PAREN (paramsTypes += type (COMMA paramsTypes += type)*)? RIGHT_PAREN ARROW returnType = type
-;
-
-simpleType returns [friday::Type* typeId]
-: IDENTIFIER
-;
-
-pointerType returns [friday::Type* typeId]
-: STAR+ pointedType = type
-;
-
-arrayType returns [friday::Type* typeId]
-: (LEFT_SQUARE RIGHT_SQUARE)+ elementType = type
-;
 ///////////////////////////////////////////////////
