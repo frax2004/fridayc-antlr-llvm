@@ -1,1 +1,190 @@
-[{"kind": "namespace", "name": "", "symbols": [{"kind": "struct", "name": "bool", "symbols": []}, {"kind": "struct", "name": "byte", "symbols": []}, {"kind": "struct", "name": "float", "symbols": []}, {"kind": "struct", "name": "int", "symbols": []}, {"kind": "overload", "name": "main", "signatures": ["void()"]}, {"kind": "struct", "name": "void", "symbols": []}]}, {"kind": "namespace", "name": "libc", "symbols": [{"kind": "overload", "name": "free", "signatures": ["void(*void)"]}, {"kind": "overload", "name": "malloc", "signatures": ["*void(int)"]}, {"kind": "overload", "name": "realloc", "signatures": ["*void(*void, int)"]}]}, {"kind": "namespace", "name": "std", "symbols": [{"kind": "struct", "name": "A", "symbols": [{"kind": "variable", "name": "a", "type": "B"}]}, {"kind": "struct", "name": "ArrayList", "symbols": [{"kind": "variable", "name": "capacity", "type": "int"}, {"kind": "variable", "name": "count", "type": "int"}, {"kind": "overload", "name": "create", "signatures": ["ArrayList()"]}, {"kind": "variable", "name": "data", "type": "**void"}, {"kind": "overload", "name": "destroy", "signatures": ["void(*ArrayList)"]}, {"kind": "overload", "name": "get", "signatures": ["*void(*ArrayList, int)"]}, {"kind": "overload", "name": "grow", "signatures": ["void(*ArrayList)"]}, {"kind": "overload", "name": "max_size", "signatures": ["int(*ArrayList)"]}, {"kind": "overload", "name": "pop", "signatures": ["void(*ArrayList)"]}, {"kind": "overload", "name": "push", "signatures": ["void(*ArrayList, *void)"]}, {"kind": "overload", "name": "set", "signatures": ["void(*ArrayList, int, *void)"]}, {"kind": "overload", "name": "size", "signatures": ["int(*ArrayList)"]}]}, {"kind": "struct", "name": "B", "symbols": [{"kind": "variable", "name": "a", "type": "C"}]}, {"kind": "struct", "name": "C", "symbols": [{"kind": "variable", "name": "a", "type": "*A"}]}]}]
+[
+  {
+    "kind": "namespace",
+    "name": "",
+    "symbols": [
+      {
+        "kind": "struct",
+        "name": "bool",
+        "symbols": []
+      },
+      {
+        "kind": "struct",
+        "name": "byte",
+        "symbols": []
+      },
+      {
+        "kind": "struct",
+        "name": "float",
+        "symbols": []
+      },
+      {
+        "kind": "struct",
+        "name": "int",
+        "symbols": []
+      },
+      {
+        "kind": "overload",
+        "name": "main",
+        "signatures": [
+          "void()"
+        ]
+      },
+      {
+        "kind": "struct",
+        "name": "void",
+        "symbols": []
+      }
+    ]
+  },
+  {
+    "kind": "namespace",
+    "name": "collections",
+    "symbols": [
+      {
+        "kind": "struct",
+        "name": "A",
+        "symbols": [
+          {
+            "kind": "variable",
+            "name": "a",
+            "type": "B"
+          }
+        ]
+      },
+      {
+        "kind": "struct",
+        "name": "ArrayList",
+        "symbols": [
+          {
+            "kind": "variable",
+            "name": "capacity",
+            "type": "int"
+          },
+          {
+            "kind": "variable",
+            "name": "count",
+            "type": "int"
+          },
+          {
+            "kind": "overload",
+            "name": "create",
+            "signatures": [
+              "ArrayList()"
+            ]
+          },
+          {
+            "kind": "variable",
+            "name": "data",
+            "type": "**void"
+          },
+          {
+            "kind": "overload",
+            "name": "destroy",
+            "signatures": [
+              "void(*ArrayList)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "get",
+            "signatures": [
+              "*void(*ArrayList, int)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "grow",
+            "signatures": [
+              "void(*ArrayList)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "max_size",
+            "signatures": [
+              "int(*ArrayList)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "pop",
+            "signatures": [
+              "void(*ArrayList)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "push",
+            "signatures": [
+              "void(*ArrayList, *void)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "set",
+            "signatures": [
+              "void(*ArrayList, int, *void)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "size",
+            "signatures": [
+              "int(*ArrayList)"
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "struct",
+        "name": "B",
+        "symbols": [
+          {
+            "kind": "variable",
+            "name": "a",
+            "type": "C"
+          }
+        ]
+      },
+      {
+        "kind": "struct",
+        "name": "C",
+        "symbols": [
+          {
+            "kind": "variable",
+            "name": "a",
+            "type": "*A"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "kind": "namespace",
+    "name": "libc",
+    "symbols": [
+      {
+        "kind": "overload",
+        "name": "free",
+        "signatures": [
+          "void(*void)"
+        ]
+      },
+      {
+        "kind": "overload",
+        "name": "malloc",
+        "signatures": [
+          "*void(int)"
+        ]
+      },
+      {
+        "kind": "overload",
+        "name": "realloc",
+        "signatures": [
+          "*void(*void, int)"
+        ]
+      }
+    ]
+  }
+]

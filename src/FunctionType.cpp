@@ -8,7 +8,7 @@ namespace friday::inline api::inline typesystem {
           "{}({})", 
           returnType.getName(), 
           paramsTypes
-          | views::transform(Type::getName)
+          | views::transform(&Type::getName)
           | views::join_with(", "s)
           | ranges::to<string>()
         )

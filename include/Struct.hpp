@@ -18,8 +18,8 @@ namespace friday::inline api::inline typesystem {
     public:
     Struct(Namespace& parent, string name) noexcept;
 
-    auto getField(string const& name, Variable* defaultValue = nullptr) noexcept -> Variable*;
-    auto getMethod(string const& name, Overload* defaultValue = nullptr) noexcept -> Overload*;
+    auto getField(string const& name, weak<Variable> defaultValue = {}) noexcept -> weak<Variable>;
+    auto getMethod(string const& name, weak<Overload> defaultValue = {}) noexcept -> weak<Overload>;
     auto getName() const noexcept -> string const& override;
     auto getLLVMType(llvm::LLVMContext& ctx) const noexcept -> llvm::Type* override;
     auto getQualifiedId() const -> string override;
@@ -53,6 +53,8 @@ struct json::stringify<friday::Struct> {
       "{{\"kind\": \"struct\", \"name\": \"{}\", \"symbols\": [{}]}}",
       name,
       symbols 
+      | views::filter([](weak<friday::ISymbol> ref) { return not ref.expired(); })
+      | views::transform([](weak<friday::ISymbol> ref) { return ref.lock().get(); })
       | views::transform(sym2str)
       | views::join_with(", "sv)
       | ranges::to<string>()

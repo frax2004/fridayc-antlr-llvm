@@ -16,7 +16,7 @@ namespace friday::inline api::inline pipeline {
   auto DiscoveryVisitor::beginUnit(TranslationUnit& unit) -> void {
     this->M_currentSymbolTable = this->getCompilationContext().global.get();
   }
-
+  
   auto DiscoveryVisitor::endUnit(TranslationUnit& unit) -> void {
     this->M_currentSymbolTable = nullptr;
   }
@@ -25,10 +25,10 @@ namespace friday::inline api::inline pipeline {
     auto unit = this->getCurrentUnit();
     auto token = ctx->IDENTIFIER()->getSymbol();
 
-    if(unit->ownedNamespace != nullptr) {
+    if(not unit->ownedNamespace.expired()) {
       this->errorAt(
         token, 
-        NAMESPACE_REDECLARATION.format(unit->ownedNamespace->getQualifiedId())
+        NAMESPACE_REDECLARATION.format(unit->ownedNamespace.lock()->getQualifiedId())
       );
       return {};
     }
@@ -37,22 +37,27 @@ namespace friday::inline api::inline pipeline {
     auto& namespaces = this->getCompilationContext().namespaces;
     
     if(auto it = namespaces.find(identifier); it != namespaces.end()) {
-      unit->ownedNamespace = it->second.get();
-    } else unit->ownedNamespace = namespaces.emplace(
-      identifier, 
-      make_unique<Namespace>(identifier)
-    ).first->second.get();
+      unit->ownedNamespace = it->second;
+    } else {
+      auto [iter, ok] = namespaces.emplace(
+        identifier, 
+        make_shared<Namespace>(identifier)
+      );
 
-    this->M_currentSymbolTable = unit->ownedNamespace;
+      unit->ownedNamespace = iter->second;
+      ctx->namespaceDecl = iter->second;
+    }
+
+    this->M_currentSymbolTable = unit->ownedNamespace.lock().get();
 
     return {};
   }
 
   auto DiscoveryVisitor::visitStructStatement(FridayParser::StructStatementContext* ctx) -> any {
     auto name = ctx->structName->getText();
-    auto isStruct = (bool(*)(ISymbol*))&rtti::instanceOf<Struct>;
+    auto isStruct = static_cast<bool(*)(ISymbol*)>(&rtti::instanceOf<Struct>);
 
-    if(auto existing = this->current().lookUpIf(name, isStruct)) {
+    if(not this->current().lookUpIf(name, isStruct, {}).expired()) {
       this->errorAt(
         ctx->structName,
         STRUCT_REDECLARATION.format(name)
@@ -60,12 +65,13 @@ namespace friday::inline api::inline pipeline {
       return {};
     }
 
-    Struct* strct = new Struct(*(Namespace*)this->M_currentSymbolTable, name);
+    auto nsp = dynamic_cast<Namespace*>(this->M_currentSymbolTable);
+    rc<Struct> strct = make_shared<Struct>(*nsp, name);
     this->current().define(strct);
-    ctx->definigScope = &this->current();
+    ctx->structDecl = strct;
 
     auto previous = &this->current();
-    this->M_currentSymbolTable = strct;
+    this->M_currentSymbolTable = strct.get();
 
     this->visitChildren(ctx);
 
@@ -75,24 +81,28 @@ namespace friday::inline api::inline pipeline {
 
   auto DiscoveryVisitor::visitFunctionStatement(FridayParser::FunctionStatementContext* ctx) -> any {
     auto name = ctx->name->getText();
+    auto isOverload = static_cast<bool(*)(ISymbol*)>(&rtti::instanceOf<Overload>);
 
-    if(not this->current().isDefined(name)) {
-      this->current().define(new Overload(this->current(), name));
-    }
-
-    ctx->definingScope = &this->current();
+    weak<ISymbol> candidate = this->M_currentSymbolTable->lookUpIf(name, isOverload, {});
+    if(candidate.expired()) {
+      rc<Overload> overload = make_shared<Overload>(this->current(), name);
+      ctx->overload = overload;
+      this->current().define(overload);
+    } else ctx->overload = dynamic_pointer_cast<Overload>(candidate.lock());
 
     return {};
   }
 
   auto DiscoveryVisitor::visitNativeFunctionStatement(FridayParser::NativeFunctionStatementContext* ctx) -> any {
     auto name = ctx->name->getText();
+    auto isOverload = static_cast<bool(*)(ISymbol*)>(&rtti::instanceOf<Overload>);
 
-    if(not this->current().isDefined(name)) {
-      this->current().define(new Overload(*this->M_currentSymbolTable, name));
-    }
-
-    ctx->definingScope = &this->current();
+    weak<ISymbol> candidate = this->current().lookUpIf(name, isOverload, {});
+    if(candidate.expired()) {
+      rc<Overload> overload = make_shared<Overload>(this->current(), name);
+      ctx->overload = overload;
+      this->current().define(overload);
+    } else ctx->overload = dynamic_pointer_cast<Overload>(candidate.lock());
 
     return {};
   }

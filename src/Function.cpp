@@ -31,7 +31,7 @@ namespace friday::inline api::inline typesystem {
   }
 
   auto Function::getType() const -> Type* {
-    return this->M_signature;
+    return rtti::cast<Type>(this->M_signature);
   }
 
 }

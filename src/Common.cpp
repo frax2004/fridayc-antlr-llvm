@@ -1,7 +1,7 @@
 #include <Common.hpp>
 
 
-namespace friday::inline core::rtti {
+namespace friday::inline core::inline rtti {
 #if defined(__GNUC__) || defined(__clang__)
 #include <cxxabi.h>
   string demangle(const char* name) noexcept {

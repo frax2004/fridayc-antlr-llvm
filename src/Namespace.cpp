@@ -11,28 +11,31 @@ namespace friday::inline api::inline typesystem {
     , M_name { name }
   {}
 
-  auto Namespace::getFunction(string const& id, Overload* defaultValue) -> Overload* {
+  auto Namespace::getFunction(string const& id, weak<Overload> defaultValue) -> weak<Overload> {
     constexpr auto isOverload = [](ISymbol* symbol) {
       return dynamic_cast<Overload*>(symbol) != nullptr;
     };
 
-    return (Overload*)lookUpIf(id, isOverload, defaultValue);
+    weak<ISymbol> candidate = lookUpIf(id, isOverload, defaultValue);
+    return not candidate.expired() ? dynamic_pointer_cast<Overload>(candidate.lock()) : defaultValue;
   }
 
-  auto Namespace::getStruct(string const& id, Struct* defaultValue) -> Struct* {
+  auto Namespace::getStruct(string const& id, weak<Struct> defaultValue) -> weak<Struct> {
     constexpr auto isStruct = [](ISymbol* symbol) {
       return dynamic_cast<Struct*>(symbol) != nullptr;
     };
 
-    return (Struct*)lookUpIf(id, isStruct, defaultValue);
+    weak<ISymbol> candidate = lookUpIf(id, isStruct, defaultValue);
+    return not candidate.expired() ? dynamic_pointer_cast<Struct>(candidate.lock()) : defaultValue;
   }
 
-  auto Namespace::getVariable(string const& id, Variable* defaultValue) -> Variable* {
+  auto Namespace::getVariable(string const& id, weak<Variable> defaultValue) -> weak<Variable> {
     constexpr auto isVariable = [](ISymbol* symbol) {
       return dynamic_cast<Variable*>(symbol) != nullptr;
     };
 
-    return (Variable*)lookUpIf(id, isVariable, defaultValue);
+    weak<ISymbol> candidate = lookUpIf(id, isVariable, defaultValue);
+    return not candidate.expired() ? dynamic_pointer_cast<Variable>(candidate.lock()) : defaultValue;
   }
 
   auto Namespace::getQualifiedId() const -> string {
@@ -56,6 +59,6 @@ namespace friday::inline api::inline typesystem {
   }
 
   auto Namespace::getParent() -> ISymbolTable* {
-    return this->M_parentNamespace;
+    return rtti::cast<ISymbolTable>(this->M_parentNamespace);
   }  
 }

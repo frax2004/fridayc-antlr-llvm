@@ -1,6 +1,6 @@
 #include <OverloadSolverVisitor.hpp>
-#include <ErrorType.hpp>
 #include <OperationNotSupportedError.hpp>
+
 
 namespace friday::inline api::inline pipeline {
 
@@ -13,16 +13,9 @@ namespace friday::inline api::inline pipeline {
   auto OverloadSolverVisitor::endUnit(TranslationUnit& unit) -> void {}
 
   auto OverloadSolverVisitor::visitFunctionStatement(FridayParser::FunctionStatementContext* ctx) -> any {
-    auto isOverload = [](ISymbol* symbol) { 
-      return rtti::instanceOf<Overload>(symbol); 
-    };
 
     auto isErrorType = [](Type* other) { 
       return other == ErrorType::get(); 
-    };
-
-    auto toMetadata = [this](FridayParser::TypeContext* ctx) {
-      return ctx->typeId != nullptr ? ctx->typeId : ErrorType::get();
     };
 
     auto tup2pair = [](tuple<string, Type*> const& tup) {
@@ -31,24 +24,19 @@ namespace friday::inline api::inline pipeline {
 
     auto toVisibility = [](u64 vis) {
       switch(vis) {
-        case FridayScanner::PUBLIC: return VisibilityModifier::PUBLIC;
-        case FridayScanner::PRIVATE: return VisibilityModifier::PRIVATE;
+        case FridayParser::PUBLIC: return VisibilityModifier::PUBLIC;
+        case FridayParser::PRIVATE: return VisibilityModifier::PRIVATE;
         default: throw InvalidArgumentError{"Invalid visibility modifier"};
       }
     };
     
     string overloadName = ctx->name->getText();
-    TranslationUnit* unit = this->getCurrentUnit();
- 
-    Overload* asOverload = rtti::cast<Overload>(ctx->definingScope->lookUpIf(overloadName, isOverload));
-
-    if(asOverload == nullptr) throw OperationNotSupportedError("Internal error.");
 
     auto paramsTypes = ctx->paramsTypes
-    | views::transform(toMetadata)
+    | views::transform(&FridayParser::TypeContext::typeId)
     | ranges::to<vector>();
 
-    auto retType = toMetadata(ctx->returnType);
+    auto retType = ctx->returnType->typeId;
     bool ok = true;
 
     for(auto [i, type] : paramsTypes | views::filter(isErrorType) | views::enumerate) {
@@ -73,6 +61,9 @@ namespace friday::inline api::inline pipeline {
       );
     }
 
+    if(ctx->overload.expired()) throw OperationNotSupportedError("Internal error.");
+    rc<Overload> asOverload = ctx->overload.lock();
+
     if(asOverload->hasMatch(paramsTypes)) {
       ok = false;
       this->errorAt(
@@ -87,34 +78,23 @@ namespace friday::inline api::inline pipeline {
 
     auto parameters = views::zip(
       ctx->paramsNames 
-      | views::transform(ant::Token::getText), 
+      | views::transform(&ant::Token::getText), 
       paramsTypes
     )
     | views::transform(tup2pair)
     | ranges::to<vector>();
 
-    auto function = new Function(*asOverload, overloadName, *retType, parameters);
+    rc<Function> function = make_shared<Function>(*asOverload, overloadName, *retType, parameters);
     asOverload->add(paramsTypes, function);
 
-    ctx->typeId = function->getType();
-    ctx->visibility = toVisibility(ctx->accessModifier->getType());
-    ctx->isStatic = true;
-    ctx->initialBlock = ctx->block;
+    ctx->functionDecl = function;
 
     return {};
   }
 
   auto OverloadSolverVisitor::visitNativeFunctionStatement(FridayParser::NativeFunctionStatementContext* ctx) -> any {
-    auto isOverload = [](ISymbol* symbol) { 
-      return rtti::instanceOf<Overload>(symbol); 
-    };
-
     auto isErrorType = [](Type* other) { 
       return other == ErrorType::get(); 
-    };
-
-    auto toMetadata = [this](FridayParser::TypeContext* ctx) {
-      return ctx->typeId != nullptr ? ctx->typeId : ErrorType::get();
     };
 
     auto tup2pair = [](tuple<string, Type*> const& tup) {
@@ -123,24 +103,19 @@ namespace friday::inline api::inline pipeline {
 
     auto toVisibility = [](u64 vis) {
       switch(vis) {
-        case FridayScanner::PUBLIC: return VisibilityModifier::PUBLIC;
-        case FridayScanner::PRIVATE: return VisibilityModifier::PRIVATE;
+        case FridayParser::PUBLIC: return VisibilityModifier::PUBLIC;
+        case FridayParser::PRIVATE: return VisibilityModifier::PRIVATE;
         default: throw InvalidArgumentError{"Invalid visibility modifier"};
       }
     };
-    
-    string overloadName = ctx->name->getText();
-    TranslationUnit* unit = this->getCurrentUnit();
- 
-    Overload* asOverload = rtti::cast<Overload>(ctx->definingScope->lookUpIf(overloadName, isOverload));
 
-    if(asOverload == nullptr) throw OperationNotSupportedError("Internal error.");
+    string overloadName = ctx->name->getText();
 
     auto paramsTypes = ctx->paramsTypes
-    | views::transform(toMetadata)
+    | views::transform(&FridayParser::TypeContext::typeId)
     | ranges::to<vector>();
 
-    auto retType = toMetadata(ctx->returnType);
+    auto retType = ctx->returnType->typeId;
     bool ok = true;
 
     for(auto [i, type] : paramsTypes | views::filter(isErrorType) | views::enumerate) {
@@ -165,6 +140,9 @@ namespace friday::inline api::inline pipeline {
       );
     }
 
+    if(ctx->overload.expired()) throw OperationNotSupportedError("Internal error.");
+    rc<Overload> asOverload = ctx->overload.lock();
+
     if(asOverload->hasMatch(paramsTypes)) {
       ok = false;
       this->errorAt(
@@ -179,22 +157,18 @@ namespace friday::inline api::inline pipeline {
 
     auto parameters = views::zip(
       ctx->paramsNames 
-      | views::transform(ant::Token::getText), 
+      | views::transform(&ant::Token::getText), 
       paramsTypes
     )
     | views::transform(tup2pair)
     | ranges::to<vector>();
 
-    auto function = new Function(*asOverload, overloadName, *retType, parameters);
+    rc<Function> function = make_shared<Function>(*asOverload, overloadName, *retType, parameters);
     asOverload->add(paramsTypes, function);
-    
-    ctx->typeId = function->getType();
-    ctx->visibility = toVisibility(ctx->accessModifier->getType());
-    ctx->isStatic = true;
-    ctx->initialBlock = nullptr;
+
+    ctx->functionDecl = function;
 
     return {};
-
   }
 
 }

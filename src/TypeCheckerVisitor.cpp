@@ -18,23 +18,23 @@ namespace friday::inline api::inline pipeline {
   }
 
   auto TypeChecker::BYTE() -> Type* {
-    return this->getCurrentUnit()->globalContext->global->getStruct("byte");
+    return rtti::cast<Type>(this->getCurrentUnit()->globalContext->global->getStruct("byte").lock().get());
   }
 
   auto TypeChecker::INT() -> Type* {
-    return this->getCurrentUnit()->globalContext->global->getStruct("int");
+    return rtti::cast<Type>(this->getCurrentUnit()->globalContext->global->getStruct("int").lock().get());
   }
 
   auto TypeChecker::BOOL() -> Type* {
-    return this->getCurrentUnit()->globalContext->global->getStruct("bool");
+    return rtti::cast<Type>(this->getCurrentUnit()->globalContext->global->getStruct("bool").lock().get());
   }
 
   auto TypeChecker::VOID() -> Type* {
-    return this->getCurrentUnit()->globalContext->global->getStruct("void");
+    return rtti::cast<Type>(this->getCurrentUnit()->globalContext->global->getStruct("void").lock().get());
   }
 
   auto TypeChecker::FLOAT() -> Type* {
-    return this->getCurrentUnit()->globalContext->global->getStruct("float");
+    return rtti::cast<Type>(this->getCurrentUnit()->globalContext->global->getStruct("float").lock().get());
   }
 
 }

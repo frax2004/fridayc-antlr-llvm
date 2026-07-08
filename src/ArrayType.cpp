@@ -12,7 +12,7 @@ namespace friday::inline api::inline typesystem {
     static map<string, ArrayType> S_arrayTypes = {};
 
     ArrayType array { elementType, length };
-    return &S_arrayTypes.try_emplace(array.getName(), array).first->second;
+    return rtti::cast<Type>(&S_arrayTypes.try_emplace(array.getName(), array).first->second);
   }
 
   auto ArrayType::getElementType() const noexcept -> Type* {

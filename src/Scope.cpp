@@ -5,12 +5,13 @@ namespace friday::inline api::inline typesystem {
     : M_parent { &parent }
   {}
 
-  auto Scope::getVariable(string const& id, Variable* defaultValue) -> Variable* {
+  auto Scope::getVariable(string const& id, weak<Variable> defaultValue) -> weak<Variable> {
     constexpr auto isVariable = [](ISymbol* symbol) {
       return dynamic_cast<Variable*>(symbol) != nullptr;
     };
 
-    return (Variable*)lookUpIf(id, isVariable, defaultValue);
+    weak<ISymbol> candidate = lookUpIf(id, isVariable, defaultValue);
+    return not candidate.expired() ? dynamic_pointer_cast<Variable>(candidate.lock()) : defaultValue;
   }
 
   auto Scope::getParent() -> ISymbolTable* {

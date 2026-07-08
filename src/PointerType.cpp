@@ -29,13 +29,13 @@ namespace friday::inline api::inline typesystem {
 
     Type* elementTypeRef = &elementType;
 
-    if(auto asPointer = dynamic_cast<PointerType*>(elementTypeRef)) {
+    if(auto asPointer = rtti::cast<PointerType>(elementTypeRef)) {
       elementTypeRef = asPointer->getPointedType();
       dimensions += asPointer->getDimensions();
     }
 
     PointerType type { *elementTypeRef, dimensions };
-    return &S_PointerTypes.try_emplace(type.getName(), type).first->second;
+    return rtti::cast<Type>(&S_PointerTypes.try_emplace(type.getName(), type).first->second);
   }
 
 }

@@ -13,7 +13,6 @@ namespace friday::inline api::inline pipeline {
   auto NamespaceBindingVisitor::endUnit(TranslationUnit& unit) -> void { }
 
   auto NamespaceBindingVisitor::visitUsingStatement(FridayParser::UsingStatementContext* ctx) -> any {
-
     auto token = ctx->IDENTIFIER()->getSymbol();
     auto name = token->getText();
 
@@ -28,7 +27,7 @@ namespace friday::inline api::inline pipeline {
       return {};
     }
 
-    this->getCurrentUnit()->usedNamespaces.try_emplace(name, it->second.get());
+    this->getCurrentUnit()->usedNamespaces.try_emplace(name, it->second);
     
     return {};
   }

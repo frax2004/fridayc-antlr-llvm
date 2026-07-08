@@ -25,13 +25,13 @@ auto measure(Func&& func, string label) -> string {
 auto Main(vector<string> paths) -> void {
   llvm::LLVMContext ctx;
 
-  auto context = make_unique<CompilationContext>();
-  context->global = make_unique<Namespace>("");
-  context->global->define(new Primitive(*context->global, "int", llvm::Type::getInt64Ty(ctx)));
-  context->global->define(new Primitive(*context->global, "byte", llvm::Type::getInt8Ty(ctx)));
-  context->global->define(new Primitive(*context->global, "bool", llvm::Type::getInt1Ty(ctx)));
-  context->global->define(new Primitive(*context->global, "float", llvm::Type::getDoubleTy(ctx)));
-  context->global->define(new Primitive(*context->global, "void", llvm::Type::getVoidTy(ctx)));
+  auto context = make_shared<CompilationContext>();
+  context->global = make_shared<Namespace>("");
+  context->global->define(make_shared<Primitive>(*context->global, "int", llvm::Type::getInt64Ty(ctx)));
+  context->global->define(make_shared<Primitive>(*context->global, "byte", llvm::Type::getInt8Ty(ctx)));
+  context->global->define(make_shared<Primitive>(*context->global, "bool", llvm::Type::getInt1Ty(ctx)));
+  context->global->define(make_shared<Primitive>(*context->global, "float", llvm::Type::getDoubleTy(ctx)));
+  context->global->define(make_shared<Primitive>(*context->global, "void", llvm::Type::getVoidTy(ctx)));
 
   auto parse = [&context](string path) {
     return async(launch::async, [&context, path]() {
@@ -44,18 +44,18 @@ auto Main(vector<string> paths) -> void {
   | ranges::to<vector>();
 
   context->units = futures
-  | views::transform(future<box<TranslationUnit>>::get)
+  | views::transform(&future<rc<TranslationUnit>>::get)
   | ranges::to<vector>();
 
   auto discoveryErrors = DiscoveryVisitor{*context}.analyze().errors();
-
+  
   if(not discoveryErrors.empty()) {
-    ranges::for_each(discoveryErrors, SemanticError::report);
+    ranges::for_each(discoveryErrors, &SemanticError::report);
     return;
   }
 
   auto toJSONString = views::values 
-  | views::transform(box<Namespace>::operator*)
+  | views::transform(&rc<Namespace>::operator*)
   | views::transform(json::stringify<Namespace>{});
 
   auto namespaces = vector<string>{};
@@ -63,23 +63,23 @@ auto Main(vector<string> paths) -> void {
   namespaces.append_range(context->namespaces | toJSONString);
 
   auto namespaceBindingErrors = NamespaceBindingVisitor{*context}.analyze().errors();
-
+  
   if(not namespaceBindingErrors.empty()) {
-    ranges::for_each(namespaceBindingErrors, SemanticError::report);
+    ranges::for_each(namespaceBindingErrors, &SemanticError::report);
     return;
   }
 
   auto typeSolverErrors = TypeSolverVisitor{*context}.analyze().errors();
-
+  
   if(not typeSolverErrors.empty()) {
-    ranges::for_each(typeSolverErrors, SemanticError::report);
+    ranges::for_each(typeSolverErrors, &SemanticError::report);
     return;
   }
 
   auto overloadSolverErrors = OverloadSolverVisitor{*context}.analyze().errors();
-
+  
   if(not overloadSolverErrors.empty()) {
-    ranges::for_each(overloadSolverErrors, SemanticError::report);
+    ranges::for_each(overloadSolverErrors, &SemanticError::report);
     return;
   }
 
@@ -97,7 +97,7 @@ auto Main(vector<string> paths) -> void {
     toString(*context->global),
     context->namespaces
     | views::values
-    | views::transform(box<Namespace>::operator*)
+    | views::transform(&rc<Namespace>::operator*)
     | views::transform(toString)
     | views::join_with(", "s)
     | ranges::to<string>()

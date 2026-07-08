@@ -44,44 +44,44 @@ namespace friday::inline api::inline pipeline {
   }
 
   auto TypeSolverVisitor::visitStructStatement(FridayParser::StructStatementContext* ctx) -> any {
-    auto isStruct = (bool(*)(ISymbol*))&rtti::instanceOf<Struct>;
+    auto isStruct = static_cast<bool(*)(ISymbol*)>(&rtti::instanceOf<Struct>);
 
     TranslationUnit* unit = this->getCurrentUnit();
     string structName = ctx->structName->getText();
+    
+    if(ctx->structDecl.expired()) throw OperationNotSupportedError("Internal error.");
+    rc<Struct> asStruct = ctx->structDecl.lock();
 
-    Struct* asStruct = rtti::cast<Struct>(unit->lookUpIf(structName, isStruct));
-    if(asStruct == nullptr) throw OperationNotSupportedError("Internal error.");
-
-    auto toType = [this](FridayParser::TypeContext* type) { return any_cast<Type*>(this->visit(type)); };
-    auto fieldsNames = ctx->fieldsNames | views::transform(ant::Token::getText);
-    auto fieldsTypes = ctx->fieldsTypes | views::transform(toType);
+    auto fieldsNames = ctx->fieldsNames | views::transform(&ant::Token::getText);
+    auto fieldsTypes = ctx->fieldsTypes | views::transform([this](auto typeCtx) { return this->toType(typeCtx); });
 
     bool ok = true;
-    for(u64 i = 0; auto [field, T] : views::zip(fieldsNames, fieldsTypes)) {
-      if(asStruct->isDefined(field)) {
+    for(u64 i = 0; auto [fieldName, fieldType] : views::zip(fieldsNames, fieldsTypes)) {
+      if(asStruct->isDefined(fieldName)) {
         this->errorAt(
           ctx->fieldsNames[i],
           "In definition of struct \"{}\", redeclaration of entity \"{}\" already defined in the current scope."_f.format(
             structName,
-            field
+            fieldName
           )
         );
         ok = false;
-      } else if(T == nullptr or T == ErrorType::get()) {
+      } else if(fieldType == nullptr or fieldType == ErrorType::get()) {
         this->errorAt(
           ctx->fieldsTypes[i]->getStart(),
           "In definition of struct \"{}\", field named \"{}\" as an invalid error type \"{}\""_f.format(
             structName,
-            field,
+            fieldName,
             ctx->fieldsTypes[i]->getText()
           )
         );
         ok = false;
       } else {
-        asStruct->define(new Variable(*asStruct, field, *T));
-        if(auto fieldAsStruct = rtti::cast<Struct>(T)) {
-          this->M_dependencyGraph.addEdge(asStruct, fieldAsStruct);
-          this->M_properties.insert(make_pair(asStruct, ctx));
+        rc<Variable> field = make_shared<Variable>(*asStruct, fieldName, *fieldType);
+        asStruct->define(field);
+        if(auto fieldAsStruct = rtti::cast<Struct>(fieldType)) {
+          this->M_dependencyGraph.addEdge(asStruct.get(), fieldAsStruct);
+          this->M_properties.insert(make_pair(asStruct.get(), ctx));
           this->M_properties.insert(make_pair(fieldAsStruct, ctx->fieldsTypes[i]));
         }
       }
@@ -91,21 +91,22 @@ namespace friday::inline api::inline pipeline {
 
     for(auto method : ctx->methods) this->visit(method); // to register all types
 
-    return (Type*)(ok ? rtti::cast<Type>(asStruct) : ErrorType::get());
+    return {};
   }
 
   auto TypeSolverVisitor::visitSimpleType(FridayParser::SimpleTypeContext *ctx) -> any {
 
-    auto isStruct = (bool(*)(ISymbol*))&rtti::instanceOf<Struct>;
+    auto isStruct = static_cast<bool(*)(ISymbol*)>(&rtti::instanceOf<Struct>);
 
     TranslationUnit* unit = this->getCurrentUnit();
     ant::Token* token = ctx->IDENTIFIER()->getSymbol();
     string id = token->getText();
-
     Type* T = ErrorType::get();
 
-    if(auto asStruct = rtti::cast<Struct>(unit->lookUpIf(id, isStruct))) {
-      T = rtti::cast<Type>(asStruct);
+    weak<ISymbol> candidate = unit->lookUpIf(id, isStruct, {});
+
+    if(not candidate.expired()) {
+      T = rtti::cast<Type>(candidate.lock().get());
       ctx->typeId = T;
     } else {
       auto toSuggestion = [](string const& message) {
@@ -115,14 +116,10 @@ namespace friday::inline api::inline pipeline {
       this->errorAt(token, "There is no type named '{}' in the current scope."_f.format(id));
     }
 
-    return (Type*)T;
+    return {};
   }
 
   auto TypeSolverVisitor::visitFunctionType(FridayParser::FunctionTypeContext *ctx) -> any {
-
-    auto toType = [this](FridayParser::TypeContext* type) { 
-      return any_cast<Type*>(this->visit(type)); 
-    };
 
     auto isErrorType = [](Type* type) {
       return type == ErrorType::get();
@@ -130,11 +127,11 @@ namespace friday::inline api::inline pipeline {
 
     Type* retType = any_cast<Type*>(this->visit(ctx->returnType));
     vector<Type*> paramsTypes = ctx->paramsTypes
-    | views::transform(toType)
+    | views::transform([this](auto typeCtx) { return this->toType(typeCtx); })
     | ranges::to<vector>();
 
     bool ok = true;
-    for(auto [i, T] : paramsTypes | views::transform(isErrorType) | views::enumerate) {
+    for(auto [i, T] : paramsTypes | views::filter(isErrorType) | views::enumerate) {
       ok = false;
       this->errorAt(
         ctx->paramsTypes[i]->getStart(),
@@ -147,7 +144,6 @@ namespace friday::inline api::inline pipeline {
     }
 
 
-    Type* type = ErrorType::get();
     if(retType == ErrorType::get()) {
       ok = false;
       this->errorAt(
@@ -160,16 +156,15 @@ namespace friday::inline api::inline pipeline {
     } 
     
     if(ok) {
-      type = FunctionType::get(*retType, move(paramsTypes));
-      ctx->typeId = type;
+      ctx->typeId = FunctionType::get(*retType, move(paramsTypes));
     }
 
-    return (Type*)type;
+    return {};
   }
 
   auto TypeSolverVisitor::visitPointerType(FridayParser::PointerTypeContext *ctx) -> any {
 
-    Type* type = any_cast<Type*>(this->visit(ctx->pointedType));
+    Type* type = this->toType(ctx->pointedType);
     u64 dimensions = ctx->STAR().size();
 
     if(type == ErrorType::get()) {
@@ -186,12 +181,12 @@ namespace friday::inline api::inline pipeline {
       ctx->typeId = type;
     }
 
-    return (Type*)type;
+    return {};
   }
 
   auto TypeSolverVisitor::visitArrayType(FridayParser::ArrayTypeContext* ctx) -> any {
 
-    Type* type = any_cast<Type*>(this->visit(ctx->elementType));
+    Type* type = this->toType(ctx->elementType);
     u64 length = ctx->LEFT_SQUARE().size();
 
     if(type == ErrorType::get()) {
@@ -208,7 +203,7 @@ namespace friday::inline api::inline pipeline {
       ctx->typeId = type;
     }
 
-    return (Type*)type;
+    return {};
   }
 
 }

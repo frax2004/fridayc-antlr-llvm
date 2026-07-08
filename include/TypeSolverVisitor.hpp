@@ -21,5 +21,8 @@ namespace friday::inline api::inline pipeline {
     auto visitFunctionType(FridayParser::FunctionTypeContext *ctx) -> any override;
     auto visitPointerType(FridayParser::PointerTypeContext *ctx) -> any override;
     auto visitArrayType(FridayParser::ArrayTypeContext* ctx) -> any override;
+  
+    private:
+    auto toType(FridayParser::TypeContext* type) { this->visit(type); return type->typeId; };
   };
 }

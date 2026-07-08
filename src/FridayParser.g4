@@ -5,11 +5,9 @@ options {
   language = Cpp;
 }
 
-@parser::postinclude {
-#include "Type.hpp"
-#include "SymbolTable.hpp"
-#include "VisibilityModifier.hpp"
 
+@parser::postinclude {
+#include "Namespace.hpp"
 }
 
 ///////////////////////////////////////////////////
@@ -20,7 +18,9 @@ options {
   /// Abstract statements
   ///
   //////////////////////////////
-  program: topLevelStatement* EOF;
+  translationUnit
+  : topLevelStatement*? EOF
+  ;
 
   topLevelStatement
   : usingStatement
@@ -40,25 +40,38 @@ options {
   /// Top level statements
   ///
   //////////////////////////////
-  nativeFunctionStatement returns [friday::ISymbolTable* definingScope = nullptr, friday::Type* typeId = nullptr, friday::VisibilityModifier visibility = friday::VisibilityModifier::PUBLIC, bool isStatic = false, FridayParser::FunctionScopeContext* initialBlock = nullptr]
+  namespaceStatement returns [weak<Namespace> namespaceDecl]
+  : NAMESPACE IDENTIFIER SEMI
+  ;
+
+  usingStatement
+  : USING IDENTIFIER SEMI
+  ;
+
+  nativeFunctionStatement returns [weak<Function> functionDecl, weak<Overload> overload]
   : accessModifier = (PRIVATE | PUBLIC)? NATIVE FN name = IDENTIFIER LEFT_PAREN (
-    paramsNames += IDENTIFIER COL paramsTypes += type (COMMA paramsNames += IDENTIFIER COL paramsTypes += type)* 
-  )? RIGHT_PAREN ARROW returnType = type SEMI
+      paramsNames += IDENTIFIER 
+      COL 
+      paramsTypes += type 
+      (COMMA paramsNames += IDENTIFIER COL paramsTypes += type)* 
+    )? RIGHT_PAREN ARROW returnType = type SEMI
   ;
 
-  namespaceStatement: NAMESPACE IDENTIFIER SEMI;
-  usingStatement: USING IDENTIFIER SEMI;
-
-  structStatement returns [friday::ISymbolTable* definigScope = nullptr]
-  : accessModifier = (PRIVATE | PUBLIC)? STRUCT structName = IDENTIFIER LEFT_CURLY 
-    ((accessModifier = (PRIVATE | PUBLIC)? fieldsNames += IDENTIFIER COL fieldsTypes += type SEMI) | methods += functionStatement)*
-  RIGHT_CURLY
-  ;
-
-  functionStatement returns [friday::ISymbolTable* definingScope = nullptr, friday::Type* typeId = nullptr, friday::VisibilityModifier visibility = friday::VisibilityModifier::PUBLIC, bool isStatic = false, FridayParser::FunctionScopeContext* initialBlock = nullptr]
+  functionStatement returns [weak<Function> functionDecl, weak<Overload> overload]
   : accessModifier = (PRIVATE | PUBLIC)? FN name = IDENTIFIER LEFT_PAREN (
-    paramsNames += IDENTIFIER COL paramsTypes += type (COMMA paramsNames += IDENTIFIER COL paramsTypes += type)* 
-  )? RIGHT_PAREN ARROW returnType = type block = functionScope
+      paramsNames += IDENTIFIER 
+      COL 
+      paramsTypes += type 
+      (COMMA paramsNames += IDENTIFIER COL paramsTypes += type)* 
+    )? RIGHT_PAREN ARROW returnType = type block = functionScope
+  ;
+
+  structStatement returns [weak<Struct> structDecl]
+  : accessModifier = (PRIVATE | PUBLIC)? STRUCT structName = IDENTIFIER LEFT_CURLY (
+      (accessModifier = (PRIVATE | PUBLIC)? fieldsNames += IDENTIFIER COL fieldsTypes += type SEMI) 
+      | methods += functionStatement
+    )*
+    RIGHT_CURLY
   ;
   //////////////////////////////
   //////////////////////////////
@@ -161,7 +174,7 @@ options {
 
 ///////////////////////////////////////////////////
 /// EXPRESSIONS
-expression returns [friday::Type* exprType = nullptr]
+expression returns [Type* typeId = ErrorType::get()]
 : id = IDENTIFIER # IdentifierExpression
 | literal = INT_LIT # IntLiteralExpression
 | literal = CHAR_LIT # CharLiteralExpression
@@ -192,7 +205,7 @@ expression returns [friday::Type* exprType = nullptr]
 ;
 
 
-type returns [friday::Type* typeId = nullptr]
+type returns [Type* typeId = ErrorType::get()]
 : IDENTIFIER # SimpleType
 | STAR+ pointedType = type # PointerType
 | (LEFT_SQUARE RIGHT_SQUARE)+ elementType = type # ArrayType

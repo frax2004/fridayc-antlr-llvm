@@ -6,6 +6,7 @@
 #include <Variable.hpp>
 #include <Overload.hpp>
 #include <Json.hpp>
+#include <ErrorType.hpp>
 
 namespace friday::inline api::inline typesystem {
 
@@ -18,9 +19,9 @@ namespace friday::inline api::inline typesystem {
     Namespace(string name);
     Namespace(Namespace& parent, string name);
 
-    auto getFunction(string const& id, Overload* defaultValue = nullptr) -> Overload*;
-    auto getStruct(string const& id, Struct* defaultValue = nullptr) -> Struct*;
-    auto getVariable(string const& id, Variable* defaultValue = nullptr) -> Variable*;
+    auto getFunction(string const& id, weak<Overload> defaultValue = {}) -> weak<Overload>;
+    auto getStruct(string const& id, weak<Struct> defaultValue = {}) -> weak<Struct>;
+    auto getVariable(string const& id, weak<Variable> defaultValue = {}) -> weak<Variable>;
 
     auto getQualifiedId() const -> string override;
     auto getFullQualifiedId() const -> string override;
@@ -57,6 +58,8 @@ struct json::stringify<friday::Namespace> {
       "{{\"kind\": \"namespace\", \"name\": \"{}\", \"symbols\": [{}]}}",
       name,
       symbols 
+      | views::filter([](weak<friday::ISymbol> ref) { return not ref.expired(); })
+      | views::transform([](weak<friday::ISymbol> ref) { return ref.lock().get(); })
       | views::transform(sym2str)
       | views::join_with(", "sv)
       | ranges::to<string>()

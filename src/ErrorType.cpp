@@ -12,7 +12,7 @@ namespace friday::inline api::inline typesystem {
   
   auto ErrorType::get() -> Type* {
     static ErrorType ERROR;
-    return &ERROR;
+    return rtti::cast<Type>(&ERROR);
   }
 
 }

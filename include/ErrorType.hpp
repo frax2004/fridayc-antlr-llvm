@@ -1,3 +1,5 @@
+#pragma once
+
 #include <Type.hpp>
 
 namespace friday::inline api::inline typesystem {

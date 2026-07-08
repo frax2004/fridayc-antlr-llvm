@@ -7,19 +7,18 @@
 
 namespace friday::inline api::inline typesystem {
 
-
-  struct Overload final : ISymbol {
+  struct Overload final : ISymbol, TypedEntity {
     private:
     ISymbolTable* M_declaringSymbolTable { nullptr };
     string M_name;
-    unordered_map<vector<Type*>, Function*> M_overloads;
+    unordered_map<vector<Type*>, rc<Function>> M_overloads;
 
     public:
     Overload(ISymbolTable& parent, string name);
 
-    auto getFunctions() const -> vector<Function*>;
-    auto add(vector<Type*> argsTypes, Function* function) -> void;
-    auto tryMatch(vector<Type*> const& argsTypes) -> Function*;
+    auto getFunctions() const -> vector<weak<Function>>;
+    auto add(vector<Type*> argsTypes, rc<Function> function) -> void;
+    auto tryMatch(vector<Type*> const& argsTypes) -> weak<Function>;
     auto hasMatch(vector<Type*> const& argsTypes) const -> bool;
 
     auto getQualifiedId() const -> string override;
@@ -27,6 +26,7 @@ namespace friday::inline api::inline typesystem {
     auto getMangledId() const -> string override;
     auto getDeclaringSymbolTable() -> ISymbolTable* override;
     auto getAttributes() const -> Attributes override;
+    auto getType() const -> Type* override;
   };
 }
 
@@ -36,6 +36,8 @@ struct json::stringify<friday::Overload> {
     return format("{{\"kind\": \"overload\", \"name\": \"{}\", \"signatures\": [{}]}}", 
       self.getQualifiedId(),
       self.getFunctions()
+      | views::filter([](weak<friday::Function> ref) { return not ref.expired(); })
+      | views::transform([](weak<friday::Function> ref) { return ref.lock().get(); })
       | views::transform([](friday::Function* func) {
         return format(
           "\"{}\"", 

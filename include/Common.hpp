@@ -41,12 +41,16 @@ template<class T>
 using Predicate = function<bool(T)>;
 
 template<class T>
-using box = unique_ptr<T>;
+using rc = shared_ptr<T>;
+
+template<class T>
+using weak = weak_ptr<T>;
+
 
 using string_ref = string_view;
 
-
 namespace friday::inline core {
+
   struct Formatstring final {
     template<class ... Args>
     constexpr auto format(Args &&... args) const noexcept -> string {

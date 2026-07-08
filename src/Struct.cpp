@@ -1,5 +1,6 @@
 #include <Struct.hpp>
 #include <NotImplementedError.hpp>
+#include <Namespace.hpp>
 
 namespace friday::inline api::inline typesystem {
 
@@ -8,20 +9,22 @@ namespace friday::inline api::inline typesystem {
     , M_name { move(name) }
   {}
 
-  auto Struct::getField(string const& name, Variable* defaultValue) noexcept -> Variable* {
+  auto Struct::getField(string const& name, weak<Variable> defaultValue) noexcept -> weak<Variable> {
     constexpr auto isVariable = [](ISymbol* symbol) {
       return dynamic_cast<Variable*>(symbol) != nullptr;
     };
 
-    return (Variable*)lookUpIf(name, isVariable, defaultValue);
+    weak<ISymbol> candidate = lookUpIf(name, isVariable, defaultValue);
+    return not candidate.expired() ? dynamic_pointer_cast<Variable>(candidate.lock()) : defaultValue;
   }
 
-  auto Struct::getMethod(string const& name, Overload* defaultValue) noexcept -> Overload* {
+  auto Struct::getMethod(string const& name, weak<Overload> defaultValue) noexcept -> weak<Overload> {
     constexpr auto isMethod = [](ISymbol* symbol) {
       return dynamic_cast<Overload*>(symbol) != nullptr;
     };
 
-    return (Overload*)lookUpIf(name, isMethod, defaultValue);
+    weak<ISymbol> candidate = lookUpIf(name, isMethod, defaultValue);
+    return not candidate.expired() ? dynamic_pointer_cast<Overload>(candidate.lock()) : defaultValue;
   }
 
   auto Struct::getName() const noexcept -> string const& {
@@ -44,9 +47,11 @@ namespace friday::inline api::inline typesystem {
     return llvm::StructType::get(
       ctx,
       this->getSymbols()
+      | views::filter([](weak<ISymbol> ref) { return not ref.expired(); })
+      | views::transform([](weak<ISymbol> ref) { return ref.lock().get(); })
       | views::filter(isVariable)
       | views::transform(toVariable)
-      | views::transform(Variable::getType)
+      | views::transform(&Variable::getType)
       | views::transform(toLLVMType)
       | ranges::to<vector>()
     );
@@ -65,7 +70,7 @@ namespace friday::inline api::inline typesystem {
   }
 
   auto Struct::getDeclaringSymbolTable() -> ISymbolTable* {
-    return (ISymbolTable*)this->M_declaryingNamespace;
+    return rtti::cast<ISymbolTable>(this->M_declaryingNamespace);
   }
 
   auto Struct::getAttributes() const -> Attributes {
@@ -73,6 +78,6 @@ namespace friday::inline api::inline typesystem {
   }
 
   auto Struct::getParent() -> ISymbolTable* {
-    return (ISymbolTable*)this->M_declaryingNamespace;
+    return rtti::cast<ISymbolTable>(this->M_declaryingNamespace);
   }
 }
