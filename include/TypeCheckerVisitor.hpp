@@ -5,13 +5,13 @@
 
 namespace friday::inline api::inline pipeline {
 
-  struct TypeChecker : StaticAnalyzer {
+  struct TypeCheckerVisitor : StaticAnalyzer {
     private:
     stack<ISymbolTable*> M_symbolTables { };
 
     public:
-    TypeChecker(CompilationContext& ctx) noexcept;
-
+    TypeCheckerVisitor(CompilationContext& ctx) noexcept;
+    
     public:
     auto visitDeclarationStatement(FridayParser::DeclarationStatementContext *ctx) -> any override;
     auto visitIfStatement(FridayParser::IfStatementContext *ctx) -> any override;
@@ -23,7 +23,7 @@ namespace friday::inline api::inline pipeline {
     auto visitScope(FridayParser::ScopeContext *ctx) -> any override;
     auto visitReturnStatement(FridayParser::ReturnStatementContext *ctx) -> any override;
     auto visitInlineScope(FridayParser::InlineScopeContext *ctx) -> any override;
-
+    
     auto visitMemberAccessExpression(FridayParser::MemberAccessExpressionContext *ctx) -> any override;
     auto visitArrayLiteralExpression(FridayParser::ArrayLiteralExpressionContext *ctx) -> any override;
     auto visitExplicitCastExpression(FridayParser::ExplicitCastExpressionContext *ctx) -> any override;
@@ -41,6 +41,9 @@ namespace friday::inline api::inline pipeline {
     auto visitBoolLiteralExpression(FridayParser::BoolLiteralExpressionContext *ctx) -> any override;
     auto visitCharLiteralExpression(FridayParser::CharLiteralExpressionContext *ctx) -> any override;
     auto visitCallExpression(FridayParser::CallExpressionContext *ctx) -> any override;
+    
+    virtual auto beginUnit(TranslationUnit& unit) -> void final override;
+    virtual auto endUnit(TranslationUnit& unit) -> void final override;
 
     private:
     auto push(ISymbolTable& scope) -> void;
@@ -57,5 +60,7 @@ namespace friday::inline api::inline pipeline {
     auto byVisiting() -> function<any (T*)> {
       return [this](T* ctx) { return this->visit(ctx); };
     }
+
+    auto findBinaryOperator(string operatorName, Type* lhs, Type* rhs) -> weak<Function>;
   };
 }

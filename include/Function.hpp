@@ -18,6 +18,7 @@ namespace friday::inline api::inline typesystem {
 
     auto getParameterName(u64 index) const -> string const&;
     auto getParameter(u64 index) const -> pair<string, Type*>;
+    auto getReturnType() const -> Type*;
 
     auto getType() const -> Type* override;
   };

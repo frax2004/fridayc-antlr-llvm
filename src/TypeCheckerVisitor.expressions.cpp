@@ -1,263 +1,272 @@
-// #include <TypeCheckerVisitor.hpp>
-// #include <OperationNotSupportedError.hpp>
-// #include <ErrorType.hpp>
-// #include <PointerType.hpp>
-// #include <ArrayType.hpp>
+#include <TypeCheckerVisitor.hpp>
+#include <OperationNotSupportedError.hpp>
+#include <ErrorType.hpp>
+#include <PointerType.hpp>
+#include <ArrayType.hpp>
 
-// namespace friday::inline api::inline pipeline {
-//   auto TypeChecker::visitCallExpression(FridayParser::CallExpressionContext *ctx) -> any {
-//     Console::debug("CallExpressionContext: {}"_f.format(ctx->getText()));
+namespace friday::inline api::inline pipeline {
+  auto TypeCheckerVisitor::visitCallExpression(FridayParser::CallExpressionContext *ctx) -> any {
+    Console::debug("CallExpressionContext: {}"_f.format(ctx->getText()));
+    this->visitChildren(ctx);
 
-//     constexpr auto toType = (Type*(*)(any const&))&any_cast<Type*>;
-//     auto candidate = toType(this->visit(ctx->func));
+    auto candidate = ctx->func->typeId;
 
-//     if(candidate == ErrorType::get() or not rtti::instanceOf<FunctionType>(candidate)) {
-//       this->errorAt(
-//         ctx->getStart(),
-//         "The underlined expression '{}' of type '{}' is not a function and cannot be called."_f.format(
-//           candidate->getName(),
-//           ctx->func->getText()
-//         )
-//       );
-//       return ErrorType::get();
-//     }
+    if(candidate == ErrorType::get() or not rtti::instanceOf<FunctionType>(candidate)) {
+      this->errorAt(
+        ctx->getStart(),
+        "The underlined expression '{}' of type '{}' is not a function and cannot be called."_f.format(
+          ctx->func->getText(),
+          candidate->getName()
+        )
+      );
+      return {};
+    }
 
-//     auto funcType = (FunctionType*)candidate;
+    auto funcType = rtti::cast<FunctionType>(candidate);
 
-//     auto argsTypes = ctx->args
-//     | views::transform(this->byVisiting<FridayParser::ExpressionContext>())
-//     | views::transform(toType)
-//     | ranges::to<vector>();
+    auto argsTypes = ctx->args
+    | views::transform(&FridayParser::ExpressionContext::typeId)
+    | ranges::to<vector>();
 
-//     bool ok = true;
-//     if(funcType->getParametersCount() != argsTypes.size()) {
-//       ok = false;
-//       this->errorAt(
-//         ctx->RIGHT_PAREN()->getSymbol(),
-//         "In function call '{}' of type '{}' : the function expects {} arguments but {} were given."_f.format(
-//           ctx->func->getText(),
-//           funcType->getName(),
-//           funcType->getParametersCount(),
-//           argsTypes.size()
-//         )
-//       );
-//     }
+    bool ok = true;
+    if(funcType->getParametersCount() != argsTypes.size()) {
+      ok = false;
+      this->errorAt(
+        ctx->RIGHT_PAREN()->getSymbol(),
+        "In function call '{}' of type '{}' : the function expects {} arguments but {} were given."_f.format(
+          ctx->func->getText(),
+          funcType->getName(),
+          funcType->getParametersCount(),
+          argsTypes.size()
+        )
+      );
+    }
 
-//     for(u64 i = 0; i < min(argsTypes.size(), funcType->getParametersCount()); i++) {
-//       Type* T = argsTypes[i];
+    for(u64 i = 0; i < min(argsTypes.size(), funcType->getParametersCount()); i++) {
+      Type* T = argsTypes[i];
 
-//       if(T != funcType->getParameterType(i)) {
-//         ok = false;
-//         this->errorAt(
-//           ctx->args[i]->getStart(),
-//           "In function call '{}' of type '{}' : argument type mismatch. Expected '{}', got '{}'"_f.format(
-//             ctx->getText(),
-//             funcType->getName(),
-//             funcType->getParameterType(i)->getName(),
-//             T->getName()
-//           )
-//         );
-//       }
-//     }
-  
-//     return (Type*)(ok ? funcType->getReturnType() : ErrorType::get());
-//   }
+      if(T != funcType->getParameterType(i)) {
+        ok = false;
+        this->errorAt(
+          ctx->args[i]->getStart(),
+          "In function call '{}' of type '{}' : argument type mismatch. Expected '{}', got '{}'"_f.format(
+            ctx->getText(),
+            funcType->getName(),
+            funcType->getParameterType(i)->getName(),
+            T->getName()
+          )
+        );
+      }
+    }
 
-//   auto TypeChecker::visitIdentifierExpression(FridayParser::IdentifierExpressionContext *ctx) -> any {
-//     Console::debug("IdentifierExpressionContext: {}"_f.format(ctx->getText()));
+    if(ok) ctx->typeId = funcType->getReturnType();
+
+    return {};
+  }
+
+  auto TypeCheckerVisitor::visitIdentifierExpression(FridayParser::IdentifierExpressionContext *ctx) -> any {
+    Console::debug("IdentifierExpressionContext: {}"_f.format(ctx->getText()));
+
+    auto isVariableOrFunction = [](ISymbol* symbol) -> bool {
+      return rtti::instanceOf<Variable>(symbol) or rtti::instanceOf<Overload>(symbol);
+    };
     
-//     auto isVariableOrFunction = [](ISymbol* symbol) -> bool {
-//       return rtti::instanceOf<Variable>(symbol) or rtti::instanceOf<Overload>(symbol);
-//     };
+    string id = ctx->IDENTIFIER()->getText();
+    weak<ISymbol> symbol = this->top()->lookUpIf(id, isVariableOrFunction, {});
+
+    if(symbol.expired()) {
+      auto toSuggestion = [](string const& message) {
+        return format(" Did you mean '{}'?", message);
+      };
+
+      // string suggestion = this->top()->mostSimilar(id, isVariableOrFunction, 3);
+      // .transform(toSuggestion)
+      string suggestion = "";
+
+      this->errorAt(
+        ctx->getStart(),
+        "There is no object named '{}' in the current scope.{}"_f.format(
+          id,
+          suggestion
+        )
+      );
+    } else ctx->typeId = dynamic_pointer_cast<TypedEntity>(symbol.lock())->getType();
     
-//     string id = ctx->IDENTIFIER()->getText();
-//     ISymbol* symbol = this->top()->lookUpIf(id, isVariableOrFunction);
+    return {};
+  }
 
-//     bool ok = true;
-//     if(symbol == nullptr) {
-//       ok = false;
+  auto TypeCheckerVisitor::visitCharLiteralExpression(FridayParser::CharLiteralExpressionContext *ctx) -> any {
+    Console::debug("CharLiteralExpressionContext: {}"_f.format(ctx->getText()));
+    ctx->typeId = this->BYTE();
+    return {};
+  }
 
-//       auto toSuggestion = [](string const& message) {
-//         return format(" Did you mean '{}'?", message);
-//       };
+  auto TypeCheckerVisitor::visitStringLiteralExpression(FridayParser::StringLiteralExpressionContext *ctx) -> any {
+    Console::debug("stringLiteralExpressionContext: {}"_f.format(ctx->getText()));
+    ctx->typeId = PointerType::get(*this->BYTE(), 1);
+    return {};
+  }
 
-//       string suggestion = this->top()->mostSimilar(id, isVariableOrFunction, 3)
-//       .transform(toSuggestion)
-//       .value_or("");
+  auto TypeCheckerVisitor::visitBoolLiteralExpression(FridayParser::BoolLiteralExpressionContext *ctx) -> any {
+    Console::debug("BoolLiteralExpressionContext: {}"_f.format(ctx->getText()));
+    ctx->typeId = this->BOOL();
+    return {};
+  }
 
-//       this->errorAt(
-//         ctx->getStart(),
-//         "There is no variable or function named '{}' in the current scope.{}"_f.format(
-//           id,
-//           suggestion
-//         )
-//       );
-//     }
+  auto TypeCheckerVisitor::visitFloatLiteralExpression(FridayParser::FloatLiteralExpressionContext *ctx) -> any {
+    Console::debug("FloatLiteralExpressionContext: {}"_f.format(ctx->getText()));
+    ctx->typeId = this->FLOAT();
+    return {};
+  }
 
-//     return (Type*)(ok ? ((TypedEntity*)symbol)->getType() : ErrorType::get());
-//   }
+  auto TypeCheckerVisitor::visitIntLiteralExpression(FridayParser::IntLiteralExpressionContext *ctx) -> any {
+    Console::debug("IntLiteralExpressionContext: {}"_f.format(ctx->getText()));
+    ctx->typeId = this->INT();
+    return {};
+  }
 
-//   auto TypeChecker::visitCharLiteralExpression(FridayParser::CharLiteralExpressionContext *ctx) -> any {
-//     Console::debug("CharLiteralExpressionContext: {}"_f.format(ctx->getText()));
-//     return (Type*)this->BYTE();
-//   }
+  auto TypeCheckerVisitor::visitGroupingExpression(FridayParser::GroupingExpressionContext *ctx) -> any {
+    Console::debug("GroupingExpressionContext: {}"_f.format(ctx->getText()));
+    this->visitChildren(ctx);
+    ctx->typeId = ctx->typeId;
+    return {};
+  }
 
-//   auto TypeChecker::visitStringLiteralExpression(FridayParser::StringLiteralExpressionContext *ctx) -> any {
-//     Console::debug("stringLiteralExpressionContext: {}"_f.format(ctx->getText()));
-//     return (Type*)PointerType::get(*this->BYTE(), 1);
-//   }
+  auto TypeCheckerVisitor::visitSubscriptExpression(FridayParser::SubscriptExpressionContext *ctx) -> any {
+    Console::debug("SubscriptExpressionContext: {}"_f.format(ctx->getText()));
+    this->visitChildren(ctx);
 
-//   auto TypeChecker::visitBoolLiteralExpression(FridayParser::BoolLiteralExpressionContext *ctx) -> any {
-//     Console::debug("BoolLiteralExpressionContext: {}"_f.format(ctx->getText()));
-//     return (Type*)this->BOOL();
-//   }
+    Type* arrayType = ctx->array->typeId;
+    Type* indexType = ctx->index->typeId;
 
-//   auto TypeChecker::visitFloatLiteralExpression(FridayParser::FloatLiteralExpressionContext *ctx) -> any {
-//     Console::debug("FloatLiteralExpressionContext: {}"_f.format(ctx->getText()));
-//     return (Type*)this->FLOAT();
-//   }
+    ArrayType* asArrayType = rtti::cast<ArrayType>(arrayType);
 
-//   auto TypeChecker::visitIntLiteralExpression(FridayParser::IntLiteralExpressionContext *ctx) -> any {
-//     Console::debug("IntLiteralExpressionContext: {}"_f.format(ctx->getText()));
-//     return (Type*)this->INT();
-//   }
+    bool ok = true;
+    if(
+      asArrayType == nullptr
+      or rtti::cast<Type>(asArrayType) == ErrorType::get()  
+      or asArrayType->getElementType() == this->VOID()
+    ) {
+      ok = false;
+      this->errorAt(
+        ctx->array->getStart(),
+        "Array expression '{}' of type '{}' is not a valid array or pointer that can be dereferenced."_f.format(
+          ctx->array->getText(),
+          arrayType->getName()
+        )
+      );
+    }
 
-//   auto TypeChecker::visitGroupingExpression(FridayParser::GroupingExpressionContext *ctx) -> any {
-//     Console::debug("GroupingExpressionContext: {}"_f.format(ctx->getText()));
-//     return (Type*)any_cast<Type*>(this->visit(ctx->expression()));
-//   }
+    if(indexType != this->INT()) {
+      ok = false;
+      this->errorAt(
+        ctx->index->getStart(),
+        "Array subcript index expression '{}' of type '{}' is not convertible to int. Implicit cast are not permitted, if this is the problem, try adding an explicit cast."_f.format(
+          ctx->index->getText(),
+          indexType->getName()
+        )
+      );
+    }
 
-//   auto TypeChecker::visitSubscriptExpression(FridayParser::SubscriptExpressionContext *ctx) -> any {
-//     Console::debug("SubscriptExpressionContext: {}"_f.format(ctx->getText()));
+    if(ok) ctx->typeId = asArrayType->getElementType();
+    return {};
+  }
 
-//     Type* arrayType = any_cast<Type*>(this->visit(ctx->array));
-//     Type* indexType = any_cast<Type*>(this->visit(ctx->index));
+  auto TypeCheckerVisitor::visitBinaryExpression(FridayParser::BinaryExpressionContext *ctx) -> any {
+    Console::debug("BinaryExpressionContext: {}"_f.format(ctx->getText()));
+    this->visitChildren(ctx);
 
-//     ArrayType* asArrayType = rtti::cast<ArrayType>(arrayType);
+    Type* lhsType = ctx->left->typeId;
+    Type* rhsType = ctx->right->typeId;
 
-//     bool ok = true;
-//     if(
-//       asArrayType == nullptr
-//       or (Type*)asArrayType == ErrorType::get()  
-//       or asArrayType->getElementType() == this->VOID()
-//     ) {
-//       ok = false;
-//       this->errorAt(
-//         ctx->array->getStart(),
-//         "Array expression '{}' of type '{}' is not a valid array or pointer that can be dereferenced."_f.format(
-//           ctx->array->getText(),
-//           arrayType->getName()
-//         )
-//       );
-//     }
+    string operatorName = "operator{}"_f.format(ctx->binaryOperator->getText());
+    weak<Function> function = this->findBinaryOperator(operatorName, lhsType, rhsType);
 
-//     if(indexType != this->INT()) {
-//       ok = false;
-//       this->errorAt(
-//         ctx->index->getStart(),
-//         "Array subcript index expression '{}' of type '{}' is not convertible to int. Implicit cast are not permitted, if this is the problem, try adding an explicit cast."_f.format(
-//           ctx->index->getText(),
-//           indexType->getName()
-//         )
-//       );
-//     }
+    string suggestion = "";
 
-//     return (Type*)(ok ? asArrayType->getElementType() : ErrorType::get());
-//   }
+    if(function.expired()) {
+      if(lhsType == rhsType) {
+        suggestion = " Implicit casts are not permitted so, if this is a cast problem, try adding an explicit cast.";
+      }
+      this->errorAt(
+        ctx->binaryOperator,
+        "No matching function for call to '{}' with operands of types '{}' and '{}'.{}"_f.format(
+          operatorName,
+          lhsType->getName(),
+          rhsType->getName(),
+          suggestion
+        )
+      );
+    } else ctx->typeId = function.lock()->getReturnType();
 
-//   auto TypeChecker::visitBinaryExpression(FridayParser::BinaryExpressionContext *ctx) -> any {
-//     Console::debug("BinaryExpressionContext: {}"_f.format(ctx->getText()));
+    return {};
+  }
 
-//     // Type* lhsType = any_cast<Type*>(this->visit(ctx->left));
-//     // Type* rhsType = any_cast<Type*>(this->visit(ctx->right));
-
-//     // auto operatorName = "operator{}({}, {})"_f.format(
-//     //   ctx->binaryOperator->getText(),
-//     //   lhsType->getName(),
-//     //   rhsType->getName()
-//     // );
-
-//     // string suggestion = "";
-
-//     // if(rtti::instanceOf<Struct>(lhsType) and rtti::instanceOf<Struct>(rhsType)) {
-//     //   if(lhsType == rhsType) {
-//     //     if(const Function* binaryOperator = dynamic_cast<Struct*>(lhsType)->getMethod(binaryOperatorName)) {
-//     //       return (Type*)binaryOperator->getType()->as<const FunctionType>()->getReturnType();
-//     //     }
-//     //   } else suggestion = " Implicit casts are not permitted so, if this is a cast problem, try adding an explicit cast.";
-//     // }
-
-//     // this->errorAt(
-//     //   ctx->binaryOperator,
-//     //   "No matching function for call to '{}' with operands of types '{}' and '{}'.{}"_f.format(
-//     //     binaryOperatorName,
-//     //     lhsType->getName(),
-//     //     rhsType->getName(),
-//     //     suggestion
-//     //   )
-//     // );
-
-//     return ErrorType::get();
-//   }
-
-//   auto TypeChecker::visitUnaryPrefixExpression(FridayParser::UnaryPrefixExpressionContext *ctx) -> any {
-//     Console::debug("UnaryPrefixExpressionContext: {}"_f.format(ctx->getText()));
-
-//     // Type* type = any_cast<Type*>(this->visit(ctx->expression()));
-//     // u64 oper = ctx->unaryOperator->getType();
-//     // string unaryOperatorName = Type::getUnaryPrefixExpressionOperatorName(oper, type);
-
-
-//     // if(Struct* asStruct = type->as<Struct>()) {
-//     //   if(const Function* unaryOperator = asStruct->getMethod(unaryOperatorName)) {
-//     //     return (Type*)unaryOperator->getType()->as<const FunctionType>()->getReturnType();
-//     //   }
-//     // }
-
-//     // this->errorAt(
-//     //   ctx->unaryOperator,
-//     //   "No matching function for call to '{}' with operand of type '{}'"_f.format(
-//     //     unaryOperatorName,
-//     //     type->getName()
-//     //   )
-//     // );
+  auto TypeCheckerVisitor::visitUnaryPrefixExpression(FridayParser::UnaryPrefixExpressionContext *ctx) -> any {
+    Console::debug("UnaryPrefixExpressionContext: {}"_f.format(ctx->getText()));
+    this->visitChildren(ctx);
     
-//     return ErrorType::get();
-//   }
+    // Type* type = any_cast<Type*>(this->visit(ctx->expression()));
+    // u64 oper = ctx->unaryOperator->getType();
+    // string unaryOperatorName = Type::getUnaryPrefixExpressionOperatorName(oper, type);
 
-//   auto TypeChecker::visitMemberAccessExpression(FridayParser::MemberAccessExpressionContext *ctx) -> any {
-//     Console::debug("MemberAccessExpressionContext: {}"_f.format(ctx->getText()));
 
-//     return ErrorType::get();
-//   }
+    // if(Struct* asStruct = type->as<Struct>()) {
+    //   if(const Function* unaryOperator = asStruct->getMethod(unaryOperatorName)) {
+    //     ctx->typeId = unaryOperator->getType()->as<const FunctionType>()->getReturnType();
+    //   }
+    // }
 
-//   auto TypeChecker::visitArrayLiteralExpression(FridayParser::ArrayLiteralExpressionContext *ctx) -> any {
-//     Console::debug("ArrayLiteralExpressionContext: {}"_f.format(ctx->getText()));
+    // this->errorAt(
+    //   ctx->unaryOperator,
+    //   "No matching function for call to '{}' with operand of type '{}'"_f.format(
+    //     unaryOperatorName,
+    //     type->getName()
+    //   )
+    // );
+    
+    return {};
+  }
 
-//     return ErrorType::get();
-//   }
+  auto TypeCheckerVisitor::visitMemberAccessExpression(FridayParser::MemberAccessExpressionContext *ctx) -> any {
+    Console::debug("MemberAccessExpressionContext: {}"_f.format(ctx->getText()));
+    this->visitChildren(ctx);
 
-//   auto TypeChecker::visitExplicitCastExpression(FridayParser::ExplicitCastExpressionContext *ctx) -> any {
-//     Console::debug("ExplicitCastExpressionContext: {}"_f.format(ctx->getText()));
+    return {};
+  }
 
-//     return ErrorType::get();
-//   }
+  auto TypeCheckerVisitor::visitArrayLiteralExpression(FridayParser::ArrayLiteralExpressionContext *ctx) -> any {
+    Console::debug("ArrayLiteralExpressionContext: {}"_f.format(ctx->getText()));
+    this->visitChildren(ctx);
 
-//   auto TypeChecker::visitNewExpression(FridayParser::NewExpressionContext *ctx) -> any {
-//     Console::debug("NewExpressionContext: {}"_f.format(ctx->getText()));
+    return {};
+  }
 
-//     return ErrorType::get();
-//   }
+  auto TypeCheckerVisitor::visitExplicitCastExpression(FridayParser::ExplicitCastExpressionContext *ctx) -> any {
+    Console::debug("ExplicitCastExpressionContext: {}"_f.format(ctx->getText()));
+    this->visitChildren(ctx);
 
-//   auto TypeChecker::visitUnaryPostfixExpression(FridayParser::UnaryPostfixExpressionContext *ctx) -> any {
-//     Console::debug("UnaryPostfixExpressionContext: {}"_f.format(ctx->getText()));
+    return {};
+  }
 
-//     return ErrorType::get();
-//   }
+  auto TypeCheckerVisitor::visitNewExpression(FridayParser::NewExpressionContext *ctx) -> any {
+    Console::debug("NewExpressionContext: {}"_f.format(ctx->getText()));
+    this->visitChildren(ctx);
 
-//   auto TypeChecker::visitNullLiteralExpression(FridayParser::NullLiteralExpressionContext *ctx) -> any {
-//     Console::debug("NullLiteralExpressionContext: {}"_f.format(ctx->getText()));
+    return {};
+  }
 
-//     return ErrorType::get();
-//   }
-// }
+  auto TypeCheckerVisitor::visitUnaryPostfixExpression(FridayParser::UnaryPostfixExpressionContext *ctx) -> any {
+    Console::debug("UnaryPostfixExpressionContext: {}"_f.format(ctx->getText()));
+    this->visitChildren(ctx);
+
+    return {};
+  }
+
+  auto TypeCheckerVisitor::visitNullLiteralExpression(FridayParser::NullLiteralExpressionContext *ctx) -> any {
+    Console::debug("NullLiteralExpressionContext: {}"_f.format(ctx->getText()));
+    this->visitChildren(ctx);
+
+    return {};
+  }
+}

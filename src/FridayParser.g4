@@ -93,8 +93,8 @@ options {
   | forStatement
   | whileStatement
   | declarationStatement
-  | scope
   | deferStatement
+  | scope
   ;
 
   deferrableStatement

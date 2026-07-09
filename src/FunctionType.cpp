@@ -45,7 +45,7 @@ namespace friday::inline api::inline typesystem {
     static map<string, FunctionType> S_functionTypes = {};
 
     FunctionType functionType { returnType, move(paramsTypes) };
-    return &S_functionTypes.try_emplace(functionType.getName(), functionType).first->second;
+    return rtti::cast<Type>(&S_functionTypes.try_emplace(functionType.getName(), functionType).first->second);
   }
 
   auto FunctionType::getParameterType(u64 index) const -> Type* {

@@ -20,18 +20,83 @@ auto measure(Func&& func, string label) -> string {
   return format("{{ \"label\": \"{}\", \"time\": \"{}\"}}", label, chrono::duration_cast<chrono::milliseconds>(end - begin));
 }
 
+auto createOperator(ISymbolTable& parent, string name, weak<Type> ret, weak<Type> lhs, weak<Type> rhs) -> rc<Overload> {
+  rc<Overload> overload = make_shared<Overload>(parent, name);
+  overload->add(
+    vector{
+      lhs.lock().get(), 
+      rhs.lock().get()
+    }, 
+    make_shared<Function>(
+      *overload, 
+      name, 
+      *ret.lock(), 
+      vector{
+        pair{"lhs"s, lhs.lock().get()}, 
+        pair{"rhs"s, rhs.lock().get()}
+      }
+    )
+  );
 
+  return overload;
+}
 
 auto Main(vector<string> paths) -> void {
   llvm::LLVMContext ctx;
 
   auto context = make_shared<CompilationContext>();
   context->global = make_shared<Namespace>("");
-  context->global->define(make_shared<Primitive>(*context->global, "int", llvm::Type::getInt64Ty(ctx)));
-  context->global->define(make_shared<Primitive>(*context->global, "byte", llvm::Type::getInt8Ty(ctx)));
-  context->global->define(make_shared<Primitive>(*context->global, "bool", llvm::Type::getInt1Ty(ctx)));
-  context->global->define(make_shared<Primitive>(*context->global, "float", llvm::Type::getDoubleTy(ctx)));
-  context->global->define(make_shared<Primitive>(*context->global, "void", llvm::Type::getVoidTy(ctx)));
+
+  auto intType = make_shared<Primitive>(*context->global, "int", llvm::Type::getInt64Ty(ctx));
+  auto byteType = make_shared<Primitive>(*context->global, "byte", llvm::Type::getInt8Ty(ctx));
+  auto boolType = make_shared<Primitive>(*context->global, "bool", llvm::Type::getInt1Ty(ctx));
+  auto floatType = make_shared<Primitive>(*context->global, "float", llvm::Type::getDoubleTy(ctx));
+  auto voidType = make_shared<Primitive>(*context->global, "void", llvm::Type::getVoidTy(ctx));
+
+  intType->define(createOperator(*context->global, "operator+", intType, intType, intType));
+  intType->define(createOperator(*context->global, "operator-", intType, intType, intType));
+  intType->define(createOperator(*context->global, "operator*", intType, intType, intType));
+  intType->define(createOperator(*context->global, "operator/", intType, intType, intType));
+  intType->define(createOperator(*context->global, "operator%", intType, intType, intType));
+  intType->define(createOperator(*context->global, "operator==", intType, intType, intType));
+  intType->define(createOperator(*context->global, "operator!=", intType, intType, intType));
+  intType->define(createOperator(*context->global, "operator<", boolType, intType, intType));
+  intType->define(createOperator(*context->global, "operator<=", boolType, intType, intType));
+  intType->define(createOperator(*context->global, "operator>", boolType, intType, intType));
+  intType->define(createOperator(*context->global, "operator>=", boolType, intType, intType));
+
+  floatType->define(createOperator(*context->global, "operator+", floatType, floatType, floatType));
+  floatType->define(createOperator(*context->global, "operator-", floatType, floatType, floatType));
+  floatType->define(createOperator(*context->global, "operator*", floatType, floatType, floatType));
+  floatType->define(createOperator(*context->global, "operator/", floatType, floatType, floatType));
+  floatType->define(createOperator(*context->global, "operator%", floatType, floatType, floatType));
+  floatType->define(createOperator(*context->global, "operator==", floatType, floatType, floatType));
+  floatType->define(createOperator(*context->global, "operator!=", floatType, floatType, floatType));
+  floatType->define(createOperator(*context->global, "operator<", boolType, floatType, floatType));
+  floatType->define(createOperator(*context->global, "operator<=", boolType, floatType, floatType));
+  floatType->define(createOperator(*context->global, "operator>", boolType, floatType, floatType));
+  floatType->define(createOperator(*context->global, "operator>=", boolType, floatType, floatType));
+
+  byteType->define(createOperator(*context->global, "operator+", byteType, byteType, byteType));
+  byteType->define(createOperator(*context->global, "operator-", byteType, byteType, byteType));
+  byteType->define(createOperator(*context->global, "operator*", byteType, byteType, byteType));
+  byteType->define(createOperator(*context->global, "operator/", byteType, byteType, byteType));
+  byteType->define(createOperator(*context->global, "operator%", byteType, byteType, byteType));
+  byteType->define(createOperator(*context->global, "operator==", byteType, byteType, byteType));
+  byteType->define(createOperator(*context->global, "operator!=", byteType, byteType, byteType));
+  byteType->define(createOperator(*context->global, "operator<", boolType, byteType, byteType));
+  byteType->define(createOperator(*context->global, "operator<=", boolType, byteType, byteType));
+  byteType->define(createOperator(*context->global, "operator>", boolType, byteType, byteType));
+  byteType->define(createOperator(*context->global, "operator>=", boolType, byteType, byteType));
+
+  boolType->define(createOperator(*context->global, "operator==", boolType, boolType, boolType));
+  boolType->define(createOperator(*context->global, "operator!=", boolType, boolType, boolType));
+
+  context->global->define(intType);
+  context->global->define(byteType);
+  context->global->define(boolType);
+  context->global->define(floatType);
+  context->global->define(voidType);
 
   auto parse = [&context](string path) {
     return async(launch::async, [&context, path]() {
@@ -84,7 +149,12 @@ auto Main(vector<string> paths) -> void {
   }
 
 
-  // auto typeCheckerErrors = TypeCheckerVisitor{*context}.analyze().errors();
+  auto typeCheckerErrors = TypeCheckerVisitor{*context}.analyze().errors();
+
+  if(not overloadSolverErrors.empty()) {
+    ranges::for_each(overloadSolverErrors, &SemanticError::report);
+    return;
+  }
 
 
   // LLVMObjectEmitterVisitor{*context}.emit();
