@@ -25,10 +25,10 @@ namespace friday::inline api::inline pipeline {
     auto unit = this->getCurrentUnit();
     auto token = ctx->IDENTIFIER()->getSymbol();
 
-    if(not unit->ownedNamespace.expired()) {
+    if(not unit->getOwnedNamespace().expired()) {
       this->errorAt(
         token, 
-        NAMESPACE_REDECLARATION.format(unit->ownedNamespace.lock()->getQualifiedId())
+        NAMESPACE_REDECLARATION.format(unit->getOwnedNamespace().lock()->getQualifiedId())
       );
       return {};
     }
@@ -37,18 +37,18 @@ namespace friday::inline api::inline pipeline {
     auto& namespaces = this->getCompilationContext().namespaces;
     
     if(auto it = namespaces.find(identifier); it != namespaces.end()) {
-      unit->ownedNamespace = it->second;
+      unit->setOwnedNamespace(it->second);
     } else {
       auto [iter, ok] = namespaces.emplace(
         identifier, 
         make_shared<Namespace>(identifier)
       );
 
-      unit->ownedNamespace = iter->second;
+      unit->setOwnedNamespace(iter->second);
       ctx->namespaceDecl = iter->second;
     }
 
-    this->M_currentSymbolTable = unit->ownedNamespace.lock().get();
+    this->M_currentSymbolTable = unit->getOwnedNamespace().lock().get();
 
     return {};
   }
@@ -65,7 +65,7 @@ namespace friday::inline api::inline pipeline {
       return {};
     }
 
-    auto nsp = dynamic_cast<Namespace*>(this->M_currentSymbolTable);
+    auto nsp = rtti::cast<Namespace>(this->M_currentSymbolTable);
     rc<Struct> strct = make_shared<Struct>(*nsp, name);
     this->current().define(strct);
     ctx->structDecl = strct;
@@ -86,9 +86,9 @@ namespace friday::inline api::inline pipeline {
     weak<ISymbol> candidate = this->M_currentSymbolTable->lookUpIf(name, isOverload, {});
     if(candidate.expired()) {
       rc<Overload> overload = make_shared<Overload>(this->current(), name);
-      ctx->overload = overload;
+      ctx->overloadDecl = overload;
       this->current().define(overload);
-    } else ctx->overload = dynamic_pointer_cast<Overload>(candidate.lock());
+    } else ctx->overloadDecl = dynamic_pointer_cast<Overload>(candidate.lock());
 
     return {};
   }
@@ -100,9 +100,9 @@ namespace friday::inline api::inline pipeline {
     weak<ISymbol> candidate = this->current().lookUpIf(name, isOverload, {});
     if(candidate.expired()) {
       rc<Overload> overload = make_shared<Overload>(this->current(), name);
-      ctx->overload = overload;
+      ctx->overloadDecl = overload;
       this->current().define(overload);
-    } else ctx->overload = dynamic_pointer_cast<Overload>(candidate.lock());
+    } else ctx->overloadDecl = dynamic_pointer_cast<Overload>(candidate.lock());
 
     return {};
   }

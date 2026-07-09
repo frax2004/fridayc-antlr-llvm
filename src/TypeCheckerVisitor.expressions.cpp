@@ -72,7 +72,10 @@ namespace friday::inline api::inline pipeline {
     };
     
     string id = ctx->IDENTIFIER()->getText();
-    weak<ISymbol> symbol = this->top()->lookUpIf(id, isVariableOrFunction, {});
+    weak<ISymbolTable> scope = this->top();
+    if(scope.expired()) throw OperationNotSupportedError("Internal error.");
+
+    weak<ISymbol> symbol = scope.lock()->lookUpIf(id, isVariableOrFunction, {});
 
     if(symbol.expired()) {
       auto toSuggestion = [](string const& message) {

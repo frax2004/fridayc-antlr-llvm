@@ -8,27 +8,39 @@ namespace friday::inline api::inline typesystem {
   
   template<derived_from<ISymbol>... Ts>
   auto SymbolTable<Ts...>::lookUp(string const& id, weak<ISymbol> defaultValue) -> weak<ISymbol> {
-
+    // Console::debug("Searching '{}'..."_f.format(id));
     if(auto it = this->M_symbols.find(id); it != this->M_symbols.end()) {
+      // Console::debug("Found");
       return it->second;
     } else if(auto parent = this->getParent(); parent != nullptr) {
+      // Console::debug("Not Found. Looking Upwards for '{}'..."_f.format(id));
       return parent->lookUp(id, defaultValue);
     }
 
+    // Console::debug("Not Found");
     return defaultValue;
   }
 
   template<derived_from<ISymbol>... Ts>
   auto SymbolTable<Ts...>::lookUpIf(string const& id, Predicate<ISymbol*> predicate, weak<ISymbol> defaultValue) -> weak<ISymbol> {
+    // Console::debug("(Predicate) Searching '{}'..."_f.format(id));
 
     if(auto it = this->M_symbols.find(id); it != this->M_symbols.end()) {
       rc<ISymbol> candidate = it->second;
-      if(predicate(candidate.get())) return candidate;
-      else return defaultValue;
+      if(predicate(candidate.get())) {
+        // Console::debug("Found (predicate is true)");
+        return candidate;
+      }
+      else {
+        // Console::debug("Not Found (predicate is false)");
+        return defaultValue; // TODO POTENTIAL BUG, IN THIS CASE THE LOOKUP SHOULD BE DONE UPWARDS
+      }
     } else if(auto parent = this->getParent(); parent != nullptr) {
+      // Console::debug("Not Found. Looking Upwards for '{}'..."_f.format(id));
       return parent->lookUpIf(id, predicate, defaultValue);
     }
 
+    // Console::debug("Not Found");
     return defaultValue;
   }
 

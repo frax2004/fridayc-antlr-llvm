@@ -42,6 +42,7 @@ auto createOperator(ISymbolTable& parent, string name, weak<Type> ret, weak<Type
 }
 
 auto Main(vector<string> paths) -> void {
+  Console::setDebugEnabled(false);
   llvm::LLVMContext ctx;
 
   auto context = make_shared<CompilationContext>();
@@ -148,11 +149,10 @@ auto Main(vector<string> paths) -> void {
     return;
   }
 
-
   auto typeCheckerErrors = TypeCheckerVisitor{*context}.analyze().errors();
 
-  if(not overloadSolverErrors.empty()) {
-    ranges::for_each(overloadSolverErrors, &SemanticError::report);
+  if(not typeCheckerErrors.empty()) {
+    ranges::for_each(typeCheckerErrors, &SemanticError::report);
     return;
   }
 

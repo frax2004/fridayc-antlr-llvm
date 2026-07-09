@@ -61,8 +61,8 @@ namespace friday::inline api::inline pipeline {
       );
     }
 
-    if(ctx->overload.expired()) throw OperationNotSupportedError("Internal error.");
-    rc<Overload> asOverload = ctx->overload.lock();
+    if(ctx->overloadDecl.expired()) throw OperationNotSupportedError("Internal error.");
+    rc<Overload> asOverload = ctx->overloadDecl.lock();
 
     if(asOverload->hasMatch(paramsTypes)) {
       ok = false;
@@ -87,7 +87,13 @@ namespace friday::inline api::inline pipeline {
     rc<Function> function = make_shared<Function>(*asOverload, overloadName, *retType, parameters);
     asOverload->add(paramsTypes, function);
 
+    rc<Scope> scope = make_shared<Scope>(*asOverload->getDeclaringSymbolTable());
+    for(auto [paramName, paramType] : parameters) {
+      scope->define(make_shared<Variable>(*scope, paramName, *paramType));
+    }
+
     ctx->functionDecl = function;
+    ctx->block->scope = scope;
 
     return {};
   }
@@ -140,8 +146,8 @@ namespace friday::inline api::inline pipeline {
       );
     }
 
-    if(ctx->overload.expired()) throw OperationNotSupportedError("Internal error.");
-    rc<Overload> asOverload = ctx->overload.lock();
+    if(ctx->overloadDecl.expired()) throw OperationNotSupportedError("Internal error.");
+    rc<Overload> asOverload = ctx->overloadDecl.lock();
 
     if(asOverload->hasMatch(paramsTypes)) {
       ok = false;

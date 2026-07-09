@@ -9,10 +9,11 @@ namespace friday::inline api::inline pipeline {
   struct CompilationContext;
 
   struct TranslationUnit {
-    public:
+    private:
     weak<Namespace> ownedNamespace { };
     map<string, weak<Namespace>> usedNamespaces { };
 
+    private:
     CompilationContext* globalContext { nullptr };
     string path = "";
     ifstream inputStream;
@@ -25,8 +26,14 @@ namespace friday::inline api::inline pipeline {
     public:
     TranslationUnit(CompilationContext& ctx, string path);
     TranslationUnit(TranslationUnit const&) = delete;
-    
+
     public:
+    auto getPath() const -> string;
+    auto getParseTree() const -> ant::tree::ParseTree*;
+    auto use(rc<Namespace> nsp) -> void;
+    auto getOwnedNamespace() const -> weak<Namespace>;
+    auto setOwnedNamespace(rc<Namespace> nsp) -> void;
+
     auto lookUp(string const& name, weak<ISymbol> defaultValue) -> weak<ISymbol>;
     auto lookUpIf(string const& name, Predicate<ISymbol*> predicate, weak<ISymbol> defaultValue) -> weak<ISymbol>;
 

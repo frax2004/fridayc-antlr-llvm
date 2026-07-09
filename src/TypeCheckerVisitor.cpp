@@ -7,18 +7,19 @@ namespace friday::inline api::inline pipeline {
     : StaticAnalyzer { ctx }
   {}
 
-  auto TypeCheckerVisitor::push(ISymbolTable& scope) -> void {
-    this->M_symbolTables.push(&scope);
+  auto TypeCheckerVisitor::push(weak<ISymbolTable> scope) -> void {
+    this->M_symbolTables.push(scope);
   }
 
-  auto TypeCheckerVisitor::pop() -> ISymbolTable* {
-    ISymbolTable* x = this->M_symbolTables.top();
+  auto TypeCheckerVisitor::pop() -> weak<ISymbolTable> {
+    if(this->M_symbolTables.empty()) return {};
+    weak<ISymbolTable> x = this->top();
     this->M_symbolTables.pop();
     return x;
   }
 
-  auto TypeCheckerVisitor::top() -> ISymbolTable* {
-    return this->M_symbolTables.top();
+  auto TypeCheckerVisitor::top() -> weak<ISymbolTable> {
+    return not this->M_symbolTables.empty() ? this->M_symbolTables.top() : weak<ISymbolTable>{};
   }
 
   auto TypeCheckerVisitor::BYTE() -> Type* {
@@ -53,16 +54,16 @@ namespace friday::inline api::inline pipeline {
     auto toOverload = [](rc<ISymbol> ref) { 
       return dynamic_pointer_cast<Overload>(ref); 
     };
-    
+
     auto tryMatch = [lhsType, rhsType, toOptional](rc<Overload> ref) { 
       return toOptional(ref->tryMatch({lhsType, rhsType})); 
     };
 
     weak<ISymbol> candidate = this->getCurrentUnit()->lookUpIf(operatorName, isOverload, {});
 
-    auto searchInStruct = [lhsType, candidate, operatorName]() -> optional<weak<ISymbol>> {
+    auto searchInStruct = [lhsType, candidate, operatorName, toOptional]() -> optional<weak<ISymbol>> {
       if(auto lhsAsStruct = rtti::cast<Struct>(lhsType); candidate.expired() and lhsAsStruct != nullptr) {
-        return make_optional(lhsAsStruct->getMethod(operatorName));
+        return toOptional(lhsAsStruct->getMethod(operatorName));
       } else return nullopt;
     };
 

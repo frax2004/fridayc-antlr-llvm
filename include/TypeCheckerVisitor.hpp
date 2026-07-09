@@ -7,7 +7,7 @@ namespace friday::inline api::inline pipeline {
 
   struct TypeCheckerVisitor : StaticAnalyzer {
     private:
-    stack<ISymbolTable*> M_symbolTables { };
+    stack<weak<ISymbolTable>> M_symbolTables { };
 
     public:
     TypeCheckerVisitor(CompilationContext& ctx) noexcept;
@@ -20,10 +20,11 @@ namespace friday::inline api::inline pipeline {
     auto visitExpressionStatement(FridayParser::ExpressionStatementContext *ctx) -> any override;
     auto visitDeferStatement(FridayParser::DeferStatementContext *ctx) -> any override;
     auto visitPrintStatement(FridayParser::PrintStatementContext *ctx) -> any override;
-    auto visitScope(FridayParser::ScopeContext *ctx) -> any override;
     auto visitReturnStatement(FridayParser::ReturnStatementContext *ctx) -> any override;
-    auto visitInlineScope(FridayParser::InlineScopeContext *ctx) -> any override;
-    
+    auto visitScopeStatement(FridayParser::ScopeStatementContext *ctx) -> any override;
+    auto visitBasicBlock(FridayParser::BasicBlockContext *ctx) -> any override;
+    auto visitTrailingBlock(FridayParser::TrailingBlockContext *ctx) -> any override;
+
     auto visitMemberAccessExpression(FridayParser::MemberAccessExpressionContext *ctx) -> any override;
     auto visitArrayLiteralExpression(FridayParser::ArrayLiteralExpressionContext *ctx) -> any override;
     auto visitExplicitCastExpression(FridayParser::ExplicitCastExpressionContext *ctx) -> any override;
@@ -46,9 +47,9 @@ namespace friday::inline api::inline pipeline {
     virtual auto endUnit(TranslationUnit& unit) -> void final override;
 
     private:
-    auto push(ISymbolTable& scope) -> void;
-    auto pop() -> ISymbolTable*;
-    auto top() -> ISymbolTable*;
+    auto push(weak<ISymbolTable> scope) -> void;
+    auto pop() -> weak<ISymbolTable>;
+    auto top() -> weak<ISymbolTable>;
 
     auto BYTE() -> Type*;
     auto INT() -> Type*;

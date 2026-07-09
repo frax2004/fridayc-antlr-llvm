@@ -61,4 +61,25 @@ namespace friday::inline api::inline pipeline {
 
     return defaultValue;
   }
+
+  auto TranslationUnit::getPath() const -> string {
+    return this->path;
+  }
+
+  auto TranslationUnit::getParseTree() const -> ant::tree::ParseTree* {
+    return this->ast;
+  }
+
+  auto TranslationUnit::use(rc<Namespace> nsp) -> void {
+    this->usedNamespaces.try_emplace(nsp->getQualifiedId(), nsp);
+  }
+
+  auto TranslationUnit::getOwnedNamespace() const -> weak<Namespace> {
+    return this->ownedNamespace;
+  }
+
+  auto TranslationUnit::setOwnedNamespace(rc<Namespace> nsp) -> void {
+    this->ownedNamespace = nsp;
+  }
+  
 }
