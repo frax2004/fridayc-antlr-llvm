@@ -60,4 +60,13 @@ namespace friday::inline api::inline typesystem {
   auto Overload::getType() const -> Type* {
     return UnresolvedOverloadType::get();
   }
+
+  auto Overload::isOverload(ISymbol* symbol) -> bool {
+    return rtti::instanceOf<Overload>(symbol);
+  }
+
+  auto Overload::toOverload(ISymbol* symbol) -> Overload* {
+    return rtti::cast<Overload>(symbol);
+  }
+
 }

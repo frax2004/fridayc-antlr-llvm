@@ -3,9 +3,10 @@
 
 namespace friday::inline api::inline typesystem {
   
-  struct Primitive : Struct {
+  struct Primitive final : Struct {
     public:
     Primitive(Namespace& global, string name, llvm::Type* T);
+    ~Primitive() override = default;
 
     auto getLLVMType(llvm::LLVMContext& ctx) const noexcept -> llvm::Type* override;
 

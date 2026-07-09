@@ -3,9 +3,10 @@
 
 namespace friday::inline api::inline pipeline {
   // will bind namespaces with their used namespaces
-  struct NamespaceBindingVisitor : StaticAnalyzer {
+  struct NamespaceBindingVisitor final : StaticAnalyzer {
     public:
     NamespaceBindingVisitor(CompilationContext& ctx);
+    ~NamespaceBindingVisitor() override = default;
   
     auto beginUnit(TranslationUnit& unit) -> void override;
     auto endUnit(TranslationUnit& unit) -> void override;

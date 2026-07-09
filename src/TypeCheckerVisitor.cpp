@@ -78,11 +78,12 @@ namespace friday::inline api::inline pipeline {
     .value_or({});
   }
   
-  auto TypeCheckerVisitor::beginUnit(TranslationUnit& unit) -> void {
-
+  auto TypeCheckerVisitor::beginUnit(TranslationUnit& _) -> void {
+    (void)_;
   }
 
-  auto TypeCheckerVisitor::endUnit(TranslationUnit& unit) -> void {
+  auto TypeCheckerVisitor::endUnit(TranslationUnit& _) -> void {
+    (void)_;
   }
 
 }

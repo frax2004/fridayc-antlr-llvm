@@ -10,6 +10,7 @@ namespace friday::inline api::inline typesystem {
 
     public:
     Scope(ISymbolTable& parent);
+    ~Scope() override = default;
 
     auto getVariable(string const& id, weak<Variable> defaultValue = {}) -> weak<Variable>;
     auto getParent() -> ISymbolTable* override;

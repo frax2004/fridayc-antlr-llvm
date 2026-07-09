@@ -2,11 +2,11 @@
 
 namespace friday::inline api::inline typesystem {
 
-  PointerType::PointerType(Type& pointedType, u64 dimensions) noexcept
-    : M_name { format("{:*>{}}{}", "", dimensions, pointedType.getName()) }
-    , M_pointedType { &pointedType }
-    , M_dimensions { dimensions }
-  {}
+  PointerType::PointerType(Type& pointedType, u64 dimensions) noexcept {
+    this->M_name = "{:*>{}}{}"_f.format("", dimensions, pointedType.getName());
+    this->M_pointedType = &pointedType;
+    this->M_dimensions = dimensions;
+  }
 
   auto PointerType::getName() const noexcept -> string const& {
     return this->M_name;

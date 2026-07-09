@@ -4,14 +4,15 @@
 
 namespace friday::inline api::inline typesystem {
 
-  struct FunctionType final : public Type {
+  struct FunctionType final : Type {
     private:
-    Type* M_returnType { nullptr };
     vector<Type*> M_parameters;
     string M_name;
+    Type* M_returnType { nullptr };
 
     private:
     FunctionType(Type& returnType, vector<Type*> paramsTypes) noexcept;
+    ~FunctionType() override = default;
 
     public:
     static auto get(Type& returnType, vector<Type*> paramsTypes) noexcept -> Type*;

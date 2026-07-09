@@ -17,7 +17,8 @@ namespace friday::inline api::inline pipeline {
     this->M_currentSymbolTable = &unit;
   }
   
-  auto DiscoveryVisitor::endUnit(TranslationUnit& unit) -> void {
+  auto DiscoveryVisitor::endUnit(TranslationUnit& _) -> void {
+    (void)_;
     this->M_currentSymbolTable = nullptr;
   }
 
@@ -55,9 +56,8 @@ namespace friday::inline api::inline pipeline {
 
   auto DiscoveryVisitor::visitStructStatement(FridayParser::StructStatementContext* ctx) -> any {
     auto name = ctx->structName->getText();
-    auto isStruct = static_cast<bool(*)(ISymbol*)>(&rtti::instanceOf<Struct>);
 
-    if(not this->current()->lookUpIf(name, isStruct, {}).expired()) {
+    if(not this->current()->lookUpIf(name, Struct::isStruct, {}).expired()) {
       this->errorAt(
         ctx->structName,
         STRUCT_REDECLARATION.format(name)
@@ -81,9 +81,8 @@ namespace friday::inline api::inline pipeline {
 
   auto DiscoveryVisitor::visitFunctionStatement(FridayParser::FunctionStatementContext* ctx) -> any {
     auto name = ctx->name->getText();
-    auto isOverload = static_cast<bool(*)(ISymbol*)>(&rtti::instanceOf<Overload>);
 
-    weak<ISymbol> candidate = this->M_currentSymbolTable->lookUpIf(name, isOverload, {});
+    weak<ISymbol> candidate = this->M_currentSymbolTable->lookUpIf(name, Overload::isOverload, {});
     if(candidate.expired()) {
       rc<Overload> overload = make_shared<Overload>(*this->current(), name);
       ctx->overloadDecl = overload;
@@ -95,9 +94,8 @@ namespace friday::inline api::inline pipeline {
 
   auto DiscoveryVisitor::visitNativeFunctionStatement(FridayParser::NativeFunctionStatementContext* ctx) -> any {
     auto name = ctx->name->getText();
-    auto isOverload = static_cast<bool(*)(ISymbol*)>(&rtti::instanceOf<Overload>);
 
-    weak<ISymbol> candidate = this->current()->lookUpIf(name, isOverload, {});
+    weak<ISymbol> candidate = this->current()->lookUpIf(name, Overload::isOverload, {});
     if(candidate.expired()) {
       rc<Overload> overload = make_shared<Overload>(*this->current(), name);
       ctx->overloadDecl = overload;

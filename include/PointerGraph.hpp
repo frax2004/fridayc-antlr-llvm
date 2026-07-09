@@ -4,10 +4,10 @@
 namespace friday::inline core::inline collections {
   template<class T>
   requires is_pointer_v<T>
-  struct PointerGraph {
+  struct PointerGraph final {
   
     private:
-    unordered_map<T, set<T>> M_adjacencyList;
+    unordered_map<T, set<T>> M_adjacencyList {};
   
     public:
     auto addEdge(T from, T to) -> void;

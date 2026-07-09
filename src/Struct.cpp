@@ -4,10 +4,10 @@
 
 namespace friday::inline api::inline typesystem {
 
-  Struct::Struct(Namespace& parent, string name) noexcept
-    : M_declaryingNamespace { &parent }
-    , M_name { move(name) }
-  {}
+  Struct::Struct(Namespace& parent, string name) noexcept {
+    this->M_declaryingNamespace = &parent;
+    this->M_name = name;
+  }
 
   auto Struct::getField(string const& name, weak<Variable> defaultValue) noexcept -> weak<Variable> {
     constexpr auto isVariable = [](ISymbol* symbol) {
@@ -80,4 +80,13 @@ namespace friday::inline api::inline typesystem {
   auto Struct::getParent() -> ISymbolTable* {
     return rtti::cast<ISymbolTable>(this->M_declaryingNamespace);
   }
+
+  auto Struct::isStruct(ISymbol* symbol) -> bool {
+    return rtti::instanceOf<Struct>(symbol);
+  }
+
+  auto Struct::toStruct(ISymbol* symbol) -> Struct* {
+    return rtti::cast<Struct>(symbol);
+  }
+
 }

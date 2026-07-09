@@ -3,11 +3,11 @@
 #include <NotImplementedError.hpp>
 
 namespace friday::inline api::inline typesystem {
-  Variable::Variable(ISymbolTable& declaringScope, string name, Type& type) noexcept
-    : M_declaringScope { &declaringScope }
-    , M_name { move(name) }
-    , M_type { &type }
-  {}
+  Variable::Variable(ISymbolTable& declaringScope, string name, Type& type) noexcept {
+    this->M_declaringScope = &declaringScope;
+    this->M_name = name;
+    this->M_type = &type;
+  }
 
   auto Variable::getQualifiedId() const -> string {
     return this->M_name;
@@ -33,5 +33,12 @@ namespace friday::inline api::inline typesystem {
     return this->M_type;
   }
 
+  auto Variable::isVariable(ISymbol* symbol) -> bool {
+    return rtti::instanceOf<Variable>(symbol);
+  }
+
+  auto Variable::toVariable(ISymbol* symbol) -> Variable* {
+    return rtti::cast<Variable>(symbol);
+  }
 
 }

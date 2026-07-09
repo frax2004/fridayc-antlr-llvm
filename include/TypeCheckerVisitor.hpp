@@ -5,12 +5,13 @@
 
 namespace friday::inline api::inline pipeline {
 
-  struct TypeCheckerVisitor : StaticAnalyzer {
+  struct TypeCheckerVisitor final : StaticAnalyzer {
     private:
     stack<weak<ISymbolTable>> M_symbolTables { };
 
     public:
     TypeCheckerVisitor(CompilationContext& ctx) noexcept;
+    ~TypeCheckerVisitor() override = default;
     
     public:
     auto visitDeclarationStatement(FridayParser::DeclarationStatementContext *ctx) -> any override;

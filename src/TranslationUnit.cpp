@@ -4,8 +4,8 @@
 namespace friday::inline api::inline pipeline {
 
   TranslationUnit::TranslationUnit(CompilationContext& ctx, string path)
-    : path { string(path) }
-    , globalContext { &ctx }
+    : globalContext { &ctx }
+    , path { string(path) }
     , inputStream { this->path }
     , input { this->inputStream }
     , lexer { &this->input }
@@ -29,6 +29,9 @@ namespace friday::inline api::inline pipeline {
   }
 
   auto TranslationUnit::mostSimilar(string const& name, Predicate<ISymbol*> filter, u64 maxEditDistance) noexcept -> weak<ISymbol> {
+    (void)name;
+    (void)filter;
+    (void)maxEditDistance;
     return {};
   }
 

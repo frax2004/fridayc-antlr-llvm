@@ -5,7 +5,7 @@
 #include <FridayParserBaseVisitor.h>
 
 namespace friday::inline api::inline pipeline {
-  struct StaticAnalyzer : public FridayParserBaseVisitor {
+  struct StaticAnalyzer : public FridayParserBaseVisitor, NonCopyable {
     private:
     CompilationContext* context { nullptr };
     vector<SemanticError> M_errors { };
@@ -13,6 +13,7 @@ namespace friday::inline api::inline pipeline {
 
     public:
     StaticAnalyzer(CompilationContext& ctx);
+    virtual ~StaticAnalyzer() override = default;
 
     public:
     auto errors() -> vector<SemanticError>;

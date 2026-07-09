@@ -3,19 +3,19 @@
 namespace friday::inline api::inline typesystem {
   FunctionType::FunctionType(Type& returnType, vector<Type*> paramsTypes) noexcept
     : Type { } 
-    , M_name { 
-        format(
-          "{}({})", 
-          returnType.getName(), 
-          paramsTypes
-          | views::transform(&Type::getName)
-          | views::join_with(", "s)
-          | ranges::to<string>()
-        )
-      }
-    , M_returnType { &returnType }
-    , M_parameters { paramsTypes }
-  {}
+  {
+    this->M_name = "{}({})"_f.format(
+      returnType.getName(), 
+      paramsTypes
+      | views::transform(&Type::getName)
+      | views::join_with(", "s)
+      | ranges::to<string>()
+    );
+
+    this->M_returnType = &returnType;
+
+    this->M_parameters = paramsTypes;
+  }
 
   auto FunctionType::getParametersTypes() const noexcept -> vector<Type*> const& {
     return this->M_parameters;

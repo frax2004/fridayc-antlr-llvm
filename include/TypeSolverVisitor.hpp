@@ -4,7 +4,7 @@
 
 namespace friday::inline api::inline pipeline {
   // will fill structs with fields and build the dependency graph
-  struct TypeSolverVisitor : StaticAnalyzer {
+  struct TypeSolverVisitor final : StaticAnalyzer {
 
     private:
     PointerGraph<Struct*> M_dependencyGraph { };
@@ -12,6 +12,7 @@ namespace friday::inline api::inline pipeline {
 
     public:
     TypeSolverVisitor(CompilationContext& ctx);
+    ~TypeSolverVisitor() override = default;
 
     auto beginUnit(TranslationUnit& unit) -> void override;
     auto endUnit(TranslationUnit& unit) -> void override;

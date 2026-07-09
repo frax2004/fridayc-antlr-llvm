@@ -5,8 +5,9 @@
 
 namespace friday::inline api::inline parser {
 
-  struct SemanticError : public Error<> {
+  struct SemanticError final : public Error<> {
     SemanticError(SourceLocation location, string message);
+    ~SemanticError() override = default;
 
     auto report() const noexcept -> void;
     auto what() const noexcept -> string override;

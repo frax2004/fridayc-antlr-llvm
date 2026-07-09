@@ -17,6 +17,7 @@ namespace friday::inline api::inline typesystem {
 
     public:
     Struct(Namespace& parent, string name) noexcept;
+    ~Struct() override = default;
 
     auto getField(string const& name, weak<Variable> defaultValue = {}) noexcept -> weak<Variable>;
     auto getMethod(string const& name, weak<Overload> defaultValue = {}) noexcept -> weak<Overload>;
@@ -28,6 +29,10 @@ namespace friday::inline api::inline typesystem {
     auto getAttributes() const -> Attributes override;
     auto getParent() -> ISymbolTable* override;
     auto getDeclaringSymbolTable() -> ISymbolTable* override;
+
+    static auto isStruct(ISymbol* symbol) -> bool;
+    static auto toStruct(ISymbol* symbol) -> Struct*;
+
   };
 }
 

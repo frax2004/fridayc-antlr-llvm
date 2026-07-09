@@ -3,14 +3,13 @@
 
 namespace friday::inline api::inline typesystem {
   
-  Function::Function(Overload& parent, string name, Type& returnType, vector<pair<string, Type*>> parameters)
-    : M_owner { &parent }
-    , M_parameters {
-      parameters 
-      | views::transform(&pair<string, Type*>::first) 
-      | ranges::to<vector>()
-    }
-  {
+  Function::Function(Overload& parent, Type& returnType, vector<pair<string, Type*>> parameters) {
+    this->M_owner = &parent;
+
+    this->M_parameters = parameters 
+    | views::transform(&pair<string, Type*>::first) 
+    | ranges::to<vector>();
+
     this->M_signature = (FunctionType*)FunctionType::get(
       returnType,
       parameters

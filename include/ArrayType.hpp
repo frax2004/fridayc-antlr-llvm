@@ -5,12 +5,13 @@ namespace friday::inline api::inline typesystem {
 
   struct ArrayType final : Type {
     private:
-    Type* M_elementType { nullptr };
-    u64 M_length;
-    string M_name;
+    string M_name        { "" };
+    Type*  M_elementType { nullptr };
+    u64    M_length      { 0 };
 
     private:
     ArrayType(Type& elementType, u64 length) noexcept;
+    ~ArrayType() override = default;
 
     public:
     static auto get(Type& elementType, u64 length) noexcept -> Type*;

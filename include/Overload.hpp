@@ -15,6 +15,7 @@ namespace friday::inline api::inline typesystem {
 
     public:
     Overload(ISymbolTable& parent, string name);
+    ~Overload() override = default;
 
     auto getFunctions() const -> vector<weak<Function>>;
     auto add(vector<Type*> argsTypes, rc<Function> function) -> void;
@@ -27,6 +28,9 @@ namespace friday::inline api::inline typesystem {
     auto getDeclaringSymbolTable() -> ISymbolTable* override;
     auto getAttributes() const -> Attributes override;
     auto getType() const -> Type* override;
+
+    static auto isOverload(ISymbol* symbol) -> bool;
+    static auto toOverload(ISymbol* symbol) -> Overload*;
   };
 }
 

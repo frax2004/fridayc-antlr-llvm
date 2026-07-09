@@ -6,7 +6,8 @@ namespace friday::inline api::inline typesystem {
     return this->M_name;
   }
 
-  auto UnresolvedOverloadType::getLLVMType(llvm::LLVMContext& ctx) const noexcept -> llvm::Type* {
+  auto UnresolvedOverloadType::getLLVMType(llvm::LLVMContext& _) const noexcept -> llvm::Type* {
+    (void)_;
     return nullptr;
   }
   

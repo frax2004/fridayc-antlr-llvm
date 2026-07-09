@@ -4,12 +4,14 @@
 
 namespace friday::inline api::inline pipeline {
   // will forward declare namespaces, structs and functions
-  struct DiscoveryVisitor : StaticAnalyzer {
+  struct DiscoveryVisitor final : StaticAnalyzer {
     private:
     ISymbolTable* M_currentSymbolTable { nullptr };
 
     public:
     DiscoveryVisitor(CompilationContext& ctx);
+    ~DiscoveryVisitor() override = default;
+
     auto beginUnit(TranslationUnit& unit) -> void override;
     auto endUnit(TranslationUnit& unit) -> void override;
 

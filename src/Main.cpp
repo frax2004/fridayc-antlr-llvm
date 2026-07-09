@@ -29,7 +29,6 @@ auto createOperator(ISymbolTable& parent, string name, weak<Type> ret, weak<Type
     }, 
     make_shared<Function>(
       *overload, 
-      name, 
       *ret.lock(), 
       vector{
         pair{"lhs"s, lhs.lock().get()}, 

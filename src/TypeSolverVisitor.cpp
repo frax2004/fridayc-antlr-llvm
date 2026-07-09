@@ -10,16 +10,18 @@ namespace friday::inline api::inline pipeline {
     : StaticAnalyzer { ctx }
   {}
   
-  auto TypeSolverVisitor::beginUnit(TranslationUnit& unit) -> void {
+  auto TypeSolverVisitor::beginUnit(TranslationUnit& _) -> void {
+    (void)_;
     // this->M_dependencyGraph = {};
   }
 
   auto TypeSolverVisitor::endUnit(TranslationUnit& _) -> void {
+    (void)_;
+
     auto reportDependency = [this](tuple<Struct*, Struct*> pair) {
-      auto toToken = [this](Struct* item) { return this->M_properties.at(item); };
 
       auto [strct, field] = pair;
-      auto typeToken = toToken(strct), fieldToken = toToken(field);
+      auto fieldToken = this->M_properties.at(field);
 
       this->errorAt(
         fieldToken->getStart(),
@@ -44,7 +46,6 @@ namespace friday::inline api::inline pipeline {
   }
 
   auto TypeSolverVisitor::visitStructStatement(FridayParser::StructStatementContext* ctx) -> any {
-    auto isStruct = static_cast<bool(*)(ISymbol*)>(&rtti::instanceOf<Struct>);
 
     string structName = ctx->structName->getText();
     
@@ -54,7 +55,6 @@ namespace friday::inline api::inline pipeline {
     auto fieldsNames = ctx->fieldsNames | views::transform(&ant::Token::getText);
     auto fieldsTypes = ctx->fieldsTypes | views::transform([this](auto typeCtx) { return this->toType(typeCtx); });
 
-    bool ok = true;
     for(u64 i = 0; auto [fieldName, fieldType] : views::zip(fieldsNames, fieldsTypes)) {
       if(asStruct->isDefined(fieldName)) {
         this->errorAt(
@@ -64,7 +64,6 @@ namespace friday::inline api::inline pipeline {
             fieldName
           )
         );
-        ok = false;
       } else if(fieldType == nullptr or fieldType == ErrorType::get()) {
         this->errorAt(
           ctx->fieldsTypes[i]->getStart(),
@@ -74,7 +73,6 @@ namespace friday::inline api::inline pipeline {
             ctx->fieldsTypes[i]->getText()
           )
         );
-        ok = false;
       } else {
         rc<Variable> field = make_shared<Variable>(*asStruct, fieldName, *fieldType);
         asStruct->define(field);
@@ -106,9 +104,9 @@ namespace friday::inline api::inline pipeline {
     if(not candidate.expired()) {
       ctx->typeId = rtti::cast<Type>(candidate.lock().get());
     } else {
-      auto toSuggestion = [](string const& message) {
-        return format(" Did you mean '{}'?", message);
-      };
+      // auto toSuggestion = [](string const& message) {
+      //   return format(" Did you mean '{}'?", message);
+      // };
 
       this->errorAt(token, "There is no type named '{}' in the current scope."_f.format(id));
     }

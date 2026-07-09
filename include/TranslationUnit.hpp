@@ -8,24 +8,22 @@ namespace friday::inline api::inline pipeline {
 
   struct CompilationContext;
 
-  struct TranslationUnit : ISymbolTable {
+  struct TranslationUnit final : ISymbolTable {
     private:
-    weak<Namespace> ownedNamespace;
+    weak<Namespace>              ownedNamespace { };
     map<string, weak<Namespace>> usedNamespaces { };
-
-    private:
-    CompilationContext* globalContext { nullptr };
-    string path = "";
-    ifstream inputStream;
-    ant::ANTLRInputStream input;
-    FridayScanner lexer;
-    ant::CommonTokenStream tokens;
-    FridayParser parser;
-    ant::tree::ParseTree* ast { nullptr };
+    CompilationContext*          globalContext { nullptr };
+    string                       path = "";
+    ifstream                     inputStream;
+    ant::ANTLRInputStream        input;
+    FridayScanner                lexer;
+    ant::CommonTokenStream       tokens;
+    FridayParser                 parser;
+    ant::tree::ParseTree*        ast { nullptr };
 
     public:
     TranslationUnit(CompilationContext& ctx, string path);
-    TranslationUnit(TranslationUnit const&) = delete;
+    ~TranslationUnit() override = default;
 
     public:
     auto getPath() const -> string;

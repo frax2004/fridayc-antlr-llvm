@@ -6,7 +6,7 @@
 
 namespace friday::inline api::inline typesystem {
 
-  struct Variable : TypedEntity, ISymbol {
+  struct Variable final : TypedEntity, ISymbol {
     private:
     string M_name;
     Type* M_type { nullptr };
@@ -14,6 +14,8 @@ namespace friday::inline api::inline typesystem {
 
     public:
     Variable(ISymbolTable& declaringScope, string name, Type& type) noexcept;
+    constexpr ~Variable() override = default;
+
     
     auto getQualifiedId() const -> string override;
     auto getFullQualifiedId() const -> string override;
@@ -22,6 +24,9 @@ namespace friday::inline api::inline typesystem {
 
     auto getAttributes() const -> Attributes override;
     auto getType() const -> Type* override;
+
+    static auto isVariable(ISymbol* symbol) -> bool;
+    static auto toVariable(ISymbol* symbol) -> Variable*;
   };
 }
 

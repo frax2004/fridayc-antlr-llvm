@@ -8,9 +8,13 @@ namespace friday::inline api::inline pipeline {
     : StaticAnalyzer { ctx }
   {}
 
-  auto NamespaceBindingVisitor::beginUnit(TranslationUnit& unit) -> void { }
+  auto NamespaceBindingVisitor::beginUnit(TranslationUnit& _) -> void {
+    (void)_;
+  }
 
-  auto NamespaceBindingVisitor::endUnit(TranslationUnit& unit) -> void { }
+  auto NamespaceBindingVisitor::endUnit(TranslationUnit& _) -> void {
+    (void)_;
+  }
 
   auto NamespaceBindingVisitor::visitUsingStatement(FridayParser::UsingStatementContext* ctx) -> any {
     auto token = ctx->IDENTIFIER()->getSymbol();

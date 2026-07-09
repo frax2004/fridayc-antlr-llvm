@@ -9,7 +9,11 @@ namespace friday::inline core {
     constexpr inline Error() noexcept;
 
     public:
-    constexpr inline virtual ~Error() noexcept = default;
+    constexpr Error(Error &&) = default;
+    constexpr Error(Error const&) = default;
+    constexpr auto operator=(Error &&) -> Error& = default;
+    constexpr auto operator=(Error const&) -> Error& = default;
+    constexpr virtual ~Error() noexcept = default;
     
     constexpr inline virtual auto what() const noexcept -> MessageType = 0;
     virtual constexpr inline auto trace() const noexcept -> string final;

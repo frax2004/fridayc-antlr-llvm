@@ -2,17 +2,20 @@
 #include <OperationNotSupportedError.hpp>
 
 namespace friday::inline api::inline typesystem {
-  ArrayType::ArrayType(Type& elementType, u64 length) noexcept
-    : M_elementType { &elementType }
-    , M_length { length }
-    , M_name { "[]"s + elementType.getName() }
-  {}
+  ArrayType::ArrayType(Type& elementType, u64 length) noexcept {
+    this->M_elementType = &elementType;
+    this->M_length = length;
+    this->M_name = "[]{}"_f.format(elementType.getName());
+  }
 
   auto ArrayType::get(Type& elementType, u64 length) noexcept -> Type* {
     static map<string, ArrayType> S_arrayTypes = {};
 
-    ArrayType array { elementType, length };
-    return rtti::cast<Type>(&S_arrayTypes.try_emplace(array.getName(), array).first->second);
+    ArrayType T { elementType, length };
+    string name = T.getName();
+
+    &S_arrayTypes.try_emplace(name, move(T)).first->second;
+    return nullptr;
   }
 
   auto ArrayType::getElementType() const noexcept -> Type* {
@@ -28,7 +31,12 @@ namespace friday::inline api::inline typesystem {
   }
 
   auto ArrayType::getLLVMType(llvm::LLVMContext& ctx) const noexcept -> llvm::Type* {
-    return llvm::ArrayType::get(this->M_elementType->getLLVMType(ctx), this->M_length);
+    return rtti::cast<llvm::Type>(
+      llvm::ArrayType::get(
+        this->M_elementType->getLLVMType(ctx), 
+        this->M_length
+      )
+    );
   }
 
 }

@@ -18,6 +18,7 @@ namespace friday::inline api::inline typesystem {
     public:
     Namespace(string name);
     Namespace(Namespace& parent, string name);
+    ~Namespace() override = default;
 
     auto getFunction(string const& id, weak<Overload> defaultValue = {}) -> weak<Overload>;
     auto getStruct(string const& id, weak<Struct> defaultValue = {}) -> weak<Struct>;

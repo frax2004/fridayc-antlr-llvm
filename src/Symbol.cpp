@@ -10,4 +10,6 @@ namespace friday::inline api::inline typesystem {
     | views::join_with("."s)
     | ranges::to<string>();
   }
+  
+
 }

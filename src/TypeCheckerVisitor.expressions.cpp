@@ -74,9 +74,9 @@ namespace friday::inline api::inline pipeline {
     weak<ISymbol> symbol = scope.lock()->lookUp(id, {});
 
     if(symbol.expired()) {
-      auto toSuggestion = [](string const& message) {
-        return format(" Did you mean '{}'?", message);
-      };
+      // auto toSuggestion = [](string const& message) {
+      //   return format(" Did you mean '{}'?", message);
+      // };
 
       // string suggestion = this->top()->mostSimilar(id, isVariableOrFunction, 3);
       // .transform(toSuggestion)

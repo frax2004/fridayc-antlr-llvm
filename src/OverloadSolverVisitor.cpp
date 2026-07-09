@@ -8,9 +8,13 @@ namespace friday::inline api::inline pipeline {
     : StaticAnalyzer { ctx }
   {}
 
-  auto OverloadSolverVisitor::beginUnit(TranslationUnit& unit) -> void {}
+  auto OverloadSolverVisitor::beginUnit(TranslationUnit& _) -> void {
+    (void)_;
+  }
 
-  auto OverloadSolverVisitor::endUnit(TranslationUnit& unit) -> void {}
+  auto OverloadSolverVisitor::endUnit(TranslationUnit& _) -> void {
+    (void)_;
+  }
 
   auto OverloadSolverVisitor::visitFunctionStatement(FridayParser::FunctionStatementContext* ctx) -> any {
 
@@ -29,6 +33,8 @@ namespace friday::inline api::inline pipeline {
         default: throw InvalidArgumentError{"Invalid visibility modifier"};
       }
     };
+
+    (void)toVisibility;
     
     string overloadName = ctx->name->getText();
 
@@ -84,7 +90,7 @@ namespace friday::inline api::inline pipeline {
     | views::transform(tup2pair)
     | ranges::to<vector>();
 
-    rc<Function> function = make_shared<Function>(*asOverload, overloadName, *retType, parameters);
+    rc<Function> function = make_shared<Function>(*asOverload, *retType, parameters);
     asOverload->add(paramsTypes, function);
 
     rc<Scope> scope = make_shared<Scope>(*asOverload->getDeclaringSymbolTable());
@@ -114,6 +120,8 @@ namespace friday::inline api::inline pipeline {
         default: throw InvalidArgumentError{"Invalid visibility modifier"};
       }
     };
+
+    (void)toVisibility;
 
     string overloadName = ctx->name->getText();
 
@@ -169,7 +177,7 @@ namespace friday::inline api::inline pipeline {
     | views::transform(tup2pair)
     | ranges::to<vector>();
 
-    rc<Function> function = make_shared<Function>(*asOverload, overloadName, *retType, parameters);
+    rc<Function> function = make_shared<Function>(*asOverload, *retType, parameters);
     asOverload->add(paramsTypes, function);
 
     ctx->functionDecl = function;

@@ -4,9 +4,10 @@
 
 namespace friday::inline api::inline pipeline {
   // will solve the overload signatures
-  struct OverloadSolverVisitor : StaticAnalyzer {
+  struct OverloadSolverVisitor final : StaticAnalyzer {
     public:
     OverloadSolverVisitor(CompilationContext& ctx);
+    ~OverloadSolverVisitor() override = default;
 
     auto beginUnit(TranslationUnit& unit) -> void override;
     auto endUnit(TranslationUnit& unit) -> void override;

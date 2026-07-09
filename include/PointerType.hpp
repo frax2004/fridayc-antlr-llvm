@@ -5,14 +5,15 @@
 namespace friday::inline api::inline typesystem {
 
 
-  struct PointerType final : public Type {
+  struct PointerType final : Type {
     private:
-    Type* M_pointedType { nullptr };
     string M_name;
+    Type* M_pointedType { nullptr };
     u64 M_dimensions;
 
     private:
     PointerType(Type& pointedType, u64 dimensions) noexcept;
+    ~PointerType() override = default;
 
     public:
     static auto get(Type& pointedType, u64 dimensions) noexcept -> Type*;

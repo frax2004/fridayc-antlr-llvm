@@ -3,7 +3,11 @@
 
 namespace friday::inline api::inline typesystem {
 
-  struct ISymbolTable {
+  struct ISymbolTable : NonCopyable {
+    public:
+    constexpr ISymbolTable() = default;
+    virtual ~ISymbolTable() override = default;
+
     public:
     virtual auto lookUp(string const& id, weak<ISymbol> defaultValue) -> weak<ISymbol> = 0;
     virtual auto lookUpIf(string const& id, Predicate<ISymbol*> predicate, weak<ISymbol> defaultValue) -> weak<ISymbol> = 0;
@@ -22,6 +26,10 @@ namespace friday::inline api::inline typesystem {
     private:
     template<class... Bases>
     static auto assertInstanceOf(weak<ISymbol> object) -> bool;
+
+    public:
+    constexpr SymbolTable() = default;
+    virtual ~SymbolTable() override = default;
 
     public:
     virtual auto lookUp(string const& id, weak<ISymbol> defaultValue) -> weak<ISymbol> override;

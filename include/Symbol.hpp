@@ -7,7 +7,10 @@
 namespace friday::inline api::inline typesystem {
   struct ISymbolTable;
 
-  struct ISymbol {
+  struct ISymbol : NonCopyable {
+    constexpr ISymbol() = default;
+    virtual ~ISymbol() override = default;
+
     static auto getDemangledId(string const& id) -> string;
 
     virtual auto getMangledId() const -> string = 0;
