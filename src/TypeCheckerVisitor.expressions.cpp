@@ -66,16 +66,12 @@ namespace friday::inline api::inline pipeline {
 
   auto TypeCheckerVisitor::visitIdentifierExpression(FridayParser::IdentifierExpressionContext *ctx) -> any {
     Console::debug("IdentifierExpressionContext: {}"_f.format(ctx->getText()));
-
-    auto isVariableOrFunction = [](ISymbol* symbol) -> bool {
-      return rtti::instanceOf<Variable>(symbol) or rtti::instanceOf<Overload>(symbol);
-    };
     
     string id = ctx->IDENTIFIER()->getText();
     weak<ISymbolTable> scope = this->top();
     if(scope.expired()) throw OperationNotSupportedError("Internal error.");
 
-    weak<ISymbol> symbol = scope.lock()->lookUpIf(id, isVariableOrFunction, {});
+    weak<ISymbol> symbol = scope.lock()->lookUp(id, {});
 
     if(symbol.expired()) {
       auto toSuggestion = [](string const& message) {
@@ -93,7 +89,12 @@ namespace friday::inline api::inline pipeline {
           suggestion
         )
       );
-    } else ctx->typeId = dynamic_pointer_cast<TypedEntity>(symbol.lock())->getType();
+    } else {
+      rc<ISymbol> ref = symbol.lock();
+      if(rtti::instanceOf<TypedEntity>(ref.get())) ctx->typeId = dynamic_pointer_cast<TypedEntity>(ref)->getType();
+      else if(rtti::instanceOf<Struct>(ref.get())) ctx->typeId = dynamic_pointer_cast<Type>(ref).get();
+      else throw InvalidArgumentError{"Invalid symbol kind in identifier expression"};
+    }
     
     return {};
   }

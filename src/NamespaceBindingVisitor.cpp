@@ -27,7 +27,7 @@ namespace friday::inline api::inline pipeline {
       return {};
     }
 
-    this->getCurrentUnit()->usedNamespaces.try_emplace(name, it->second);
+    this->getCurrentUnit()->use(it->second);
     
     return {};
   }

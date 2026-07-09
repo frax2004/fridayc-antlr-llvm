@@ -23,23 +23,23 @@ namespace friday::inline api::inline pipeline {
   }
 
   auto TypeCheckerVisitor::BYTE() -> Type* {
-    return rtti::cast<Type>(this->getCurrentUnit()->globalContext->global->getStruct("byte").lock().get());
+    return rtti::cast<Type>(this->getCurrentUnit()->getContext()->global->getStruct("byte").lock().get());
   }
 
   auto TypeCheckerVisitor::INT() -> Type* {
-    return rtti::cast<Type>(this->getCurrentUnit()->globalContext->global->getStruct("int").lock().get());
+    return rtti::cast<Type>(this->getCurrentUnit()->getContext()->global->getStruct("int").lock().get());
   }
 
   auto TypeCheckerVisitor::BOOL() -> Type* {
-    return rtti::cast<Type>(this->getCurrentUnit()->globalContext->global->getStruct("bool").lock().get());
+    return rtti::cast<Type>(this->getCurrentUnit()->getContext()->global->getStruct("bool").lock().get());
   }
 
   auto TypeCheckerVisitor::VOID() -> Type* {
-    return rtti::cast<Type>(this->getCurrentUnit()->globalContext->global->getStruct("void").lock().get());
+    return rtti::cast<Type>(this->getCurrentUnit()->getContext()->global->getStruct("void").lock().get());
   }
 
   auto TypeCheckerVisitor::FLOAT() -> Type* {
-    return rtti::cast<Type>(this->getCurrentUnit()->globalContext->global->getStruct("float").lock().get());
+    return rtti::cast<Type>(this->getCurrentUnit()->getContext()->global->getStruct("float").lock().get());
   }
 
   auto TypeCheckerVisitor::findBinaryOperator(string operatorName, Type* lhsType, Type* rhsType) -> weak<Function> {

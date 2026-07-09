@@ -135,7 +135,9 @@ auto Main(vector<string> paths) -> void {
     return;
   }
 
+  Console::setDebugEnabled(true);
   auto typeSolverErrors = TypeSolverVisitor{*context}.analyze().errors();
+  Console::setDebugEnabled(false);
   
   if(not typeSolverErrors.empty()) {
     ranges::for_each(typeSolverErrors, &SemanticError::report);

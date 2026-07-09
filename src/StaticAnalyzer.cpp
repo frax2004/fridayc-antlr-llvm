@@ -20,7 +20,7 @@ namespace friday::inline api::inline pipeline {
     for(auto& unit: this->context->units) {
       this->setCurrentUnit(unit.get());
       this->beginUnit(*unit);
-      this->visit(unit->ast);
+      this->visit(unit->getParseTree());
       this->endUnit(*unit);
       this->setCurrentUnit(nullptr);
     }
@@ -36,7 +36,7 @@ namespace friday::inline api::inline pipeline {
     this->M_errors.push_back(
       SemanticError{
         SourceLocation {
-          this->M_currentUnit->path,
+          this->M_currentUnit->getPath(),
           token->getLine(),
           token->getCharPositionInLine()+1
         },

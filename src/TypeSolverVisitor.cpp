@@ -14,7 +14,7 @@ namespace friday::inline api::inline pipeline {
     // this->M_dependencyGraph = {};
   }
 
-  auto TypeSolverVisitor::endUnit(TranslationUnit& unit) -> void {
+  auto TypeSolverVisitor::endUnit(TranslationUnit& _) -> void {
     auto reportDependency = [this](tuple<Struct*, Struct*> pair) {
       auto toToken = [this](Struct* item) { return this->M_properties.at(item); };
 
@@ -46,7 +46,6 @@ namespace friday::inline api::inline pipeline {
   auto TypeSolverVisitor::visitStructStatement(FridayParser::StructStatementContext* ctx) -> any {
     auto isStruct = static_cast<bool(*)(ISymbol*)>(&rtti::instanceOf<Struct>);
 
-    TranslationUnit* unit = this->getCurrentUnit();
     string structName = ctx->structName->getText();
     
     if(ctx->structDecl.expired()) throw OperationNotSupportedError("Internal error.");
@@ -101,18 +100,16 @@ namespace friday::inline api::inline pipeline {
     TranslationUnit* unit = this->getCurrentUnit();
     ant::Token* token = ctx->IDENTIFIER()->getSymbol();
     string id = token->getText();
-    Type* T = ErrorType::get();
 
     weak<ISymbol> candidate = unit->lookUpIf(id, isStruct, {});
 
     if(not candidate.expired()) {
-      T = rtti::cast<Type>(candidate.lock().get());
-      ctx->typeId = T;
+      ctx->typeId = rtti::cast<Type>(candidate.lock().get());
     } else {
       auto toSuggestion = [](string const& message) {
         return format(" Did you mean '{}'?", message);
       };
-  
+
       this->errorAt(token, "There is no type named '{}' in the current scope."_f.format(id));
     }
 

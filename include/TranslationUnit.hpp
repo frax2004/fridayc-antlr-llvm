@@ -8,9 +8,9 @@ namespace friday::inline api::inline pipeline {
 
   struct CompilationContext;
 
-  struct TranslationUnit {
+  struct TranslationUnit : ISymbolTable {
     private:
-    weak<Namespace> ownedNamespace { };
+    weak<Namespace> ownedNamespace;
     map<string, weak<Namespace>> usedNamespaces { };
 
     private:
@@ -33,9 +33,15 @@ namespace friday::inline api::inline pipeline {
     auto use(rc<Namespace> nsp) -> void;
     auto getOwnedNamespace() const -> weak<Namespace>;
     auto setOwnedNamespace(rc<Namespace> nsp) -> void;
+    auto getContext() -> CompilationContext*;
 
-    auto lookUp(string const& name, weak<ISymbol> defaultValue) -> weak<ISymbol>;
-    auto lookUpIf(string const& name, Predicate<ISymbol*> predicate, weak<ISymbol> defaultValue) -> weak<ISymbol>;
+    auto define(rc<ISymbol> symbol) -> bool override;
+    auto isDefined(string const& id) -> bool override;
+    auto mostSimilar(string const& name, Predicate<ISymbol*> filter, u64 maxEditDistance = 0) noexcept -> weak<ISymbol> override;
+    auto getSymbols() const -> vector<weak<ISymbol>> override;
+    auto getParent() -> ISymbolTable* override;
+    auto lookUp(string const& name, weak<ISymbol> defaultValue) -> weak<ISymbol> override;
+    auto lookUpIf(string const& name, Predicate<ISymbol*> predicate, weak<ISymbol> defaultValue) -> weak<ISymbol> override;
 
     static auto parse(CompilationContext& ctx, string path) -> rc<TranslationUnit>;
   };

@@ -9,12 +9,12 @@ namespace friday::inline api::inline pipeline {
     : StaticAnalyzer { ctx }
   {}
   
-  auto DiscoveryVisitor::current() -> ISymbolTable& {
-    return *this->M_currentSymbolTable;
+  auto DiscoveryVisitor::current() -> ISymbolTable* {
+    return this->M_currentSymbolTable;
   }
   
   auto DiscoveryVisitor::beginUnit(TranslationUnit& unit) -> void {
-    this->M_currentSymbolTable = this->getCompilationContext().global.get();
+    this->M_currentSymbolTable = &unit;
   }
   
   auto DiscoveryVisitor::endUnit(TranslationUnit& unit) -> void {
@@ -25,7 +25,7 @@ namespace friday::inline api::inline pipeline {
     auto unit = this->getCurrentUnit();
     auto token = ctx->IDENTIFIER()->getSymbol();
 
-    if(not unit->getOwnedNamespace().expired()) {
+    if(auto owned = unit->getOwnedNamespace(); not owned.expired() and owned.lock() != this->getCompilationContext().global) {
       this->errorAt(
         token, 
         NAMESPACE_REDECLARATION.format(unit->getOwnedNamespace().lock()->getQualifiedId())
@@ -57,7 +57,7 @@ namespace friday::inline api::inline pipeline {
     auto name = ctx->structName->getText();
     auto isStruct = static_cast<bool(*)(ISymbol*)>(&rtti::instanceOf<Struct>);
 
-    if(not this->current().lookUpIf(name, isStruct, {}).expired()) {
+    if(not this->current()->lookUpIf(name, isStruct, {}).expired()) {
       this->errorAt(
         ctx->structName,
         STRUCT_REDECLARATION.format(name)
@@ -67,10 +67,10 @@ namespace friday::inline api::inline pipeline {
 
     auto nsp = rtti::cast<Namespace>(this->M_currentSymbolTable);
     rc<Struct> strct = make_shared<Struct>(*nsp, name);
-    this->current().define(strct);
+    this->current()->define(strct);
     ctx->structDecl = strct;
 
-    auto previous = &this->current();
+    auto previous = this->current();
     this->M_currentSymbolTable = strct.get();
 
     this->visitChildren(ctx);
@@ -85,9 +85,9 @@ namespace friday::inline api::inline pipeline {
 
     weak<ISymbol> candidate = this->M_currentSymbolTable->lookUpIf(name, isOverload, {});
     if(candidate.expired()) {
-      rc<Overload> overload = make_shared<Overload>(this->current(), name);
+      rc<Overload> overload = make_shared<Overload>(*this->current(), name);
       ctx->overloadDecl = overload;
-      this->current().define(overload);
+      this->current()->define(overload);
     } else ctx->overloadDecl = dynamic_pointer_cast<Overload>(candidate.lock());
 
     return {};
@@ -97,11 +97,11 @@ namespace friday::inline api::inline pipeline {
     auto name = ctx->name->getText();
     auto isOverload = static_cast<bool(*)(ISymbol*)>(&rtti::instanceOf<Overload>);
 
-    weak<ISymbol> candidate = this->current().lookUpIf(name, isOverload, {});
+    weak<ISymbol> candidate = this->current()->lookUpIf(name, isOverload, {});
     if(candidate.expired()) {
-      rc<Overload> overload = make_shared<Overload>(this->current(), name);
+      rc<Overload> overload = make_shared<Overload>(*this->current(), name);
       ctx->overloadDecl = overload;
-      this->current().define(overload);
+      this->current()->define(overload);
     } else ctx->overloadDecl = dynamic_pointer_cast<Overload>(candidate.lock());
 
     return {};
