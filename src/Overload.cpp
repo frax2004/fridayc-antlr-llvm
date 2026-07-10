@@ -69,4 +69,14 @@ namespace friday::inline api::inline typesystem {
     return rtti::cast<Overload>(symbol);
   }
 
+  auto Overload::getName() const noexcept -> string const& {
+    static const string S_name = "<unresolved-overload-type>"s;
+    return S_name;
+  }
+
+  auto Overload::getLLVMType(llvm::LLVMContext& ctx) const noexcept -> llvm::Type* {
+    (void)ctx;
+    return nullptr;
+  }
+
 }

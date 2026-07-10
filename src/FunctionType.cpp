@@ -42,10 +42,10 @@ namespace friday::inline api::inline typesystem {
   }
 
   auto FunctionType::get(Type& returnType, vector<Type*> paramsTypes) noexcept -> Type* {
-    static map<string, FunctionType> S_functionTypes = {};
+    static map<string, rc<FunctionType>> S_functionTypes = {};
 
-    FunctionType functionType { returnType, move(paramsTypes) };
-    return rtti::cast<Type>(&S_functionTypes.try_emplace(functionType.getName(), functionType).first->second);
+    rc<FunctionType> functionType { new FunctionType(returnType, move(paramsTypes)) };
+    return rtti::cast<Type>(S_functionTypes.try_emplace(functionType->getName(), functionType).first->second.get());
   }
 
   auto FunctionType::getParameterType(u64 index) const -> Type* {

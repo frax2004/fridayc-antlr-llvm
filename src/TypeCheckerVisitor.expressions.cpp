@@ -11,7 +11,8 @@ namespace friday::inline api::inline pipeline {
 
     auto candidate = ctx->func->typeId;
 
-    if(candidate == ErrorType::get() or not rtti::instanceOf<FunctionType>(candidate)) {
+    if(candidate == ErrorType::get() or not rtti::instanceOf<Overload>(candidate)) {
+      Console::log("{} instanceof Overload :: {}"_f.format(ctx->func->getText(), rtti::instanceOf<Overload>(candidate)));
       this->errorAt(
         ctx->getStart(),
         "The underlined expression '{}' of type '{}' is not a function and cannot be called."_f.format(
@@ -22,17 +23,46 @@ namespace friday::inline api::inline pipeline {
       return {};
     }
 
-    auto funcType = rtti::cast<FunctionType>(candidate);
+    auto overload = rtti::cast<Overload>(candidate);
 
     auto argsTypes = ctx->args
     | views::transform(&FridayParser::ExpressionContext::typeId)
     | ranges::to<vector>();
 
+    if(auto memberAccess = rtti::cast<FridayParser::MemberAccessExpressionContext>(ctx->func)) {
+      argsTypes.insert(argsTypes.begin(), memberAccess->object->typeId);
+    }
+
+    auto function = overload->tryMatch(argsTypes);
+
+    if(function.expired()) {
+      this->errorAt(
+        ctx->func->getStart(),
+        "No overload of function '{}' matches the given arguments ({}):\nAvailable overloads:\n{}"_f.format(
+          overload->getQualifiedId(),
+          argsTypes 
+          | views::transform(&Type::getName)
+          | views::join_with(", "s)
+          | ranges::to<string>(),
+          overload->getFunctions()
+          | views::transform(&weak<Function>::lock)
+          | views::transform(&rc<Function>::get)
+          | views::transform(&Function::getType)
+          | views::transform(&Type::getName)
+          | views::join_with("\n"s)
+          | ranges::to<string>()
+        )
+      );
+      return {};
+    }
+
+    auto funcType = rtti::cast<FunctionType>(function.lock()->getType());
+
     bool ok = true;
     if(funcType->getParametersCount() != argsTypes.size()) {
       ok = false;
       this->errorAt(
-        ctx->RIGHT_PAREN()->getSymbol(),
+        ctx->getStart(),
         "In function call '{}' of type '{}' : the function expects {} arguments but {} were given."_f.format(
           ctx->func->getText(),
           funcType->getName(),
@@ -91,8 +121,9 @@ namespace friday::inline api::inline pipeline {
       );
     } else {
       rc<ISymbol> ref = symbol.lock();
-      if(rtti::instanceOf<TypedEntity>(ref.get())) ctx->typeId = dynamic_pointer_cast<TypedEntity>(ref)->getType();
+      if(rtti::instanceOf<Variable>(ref.get())) ctx->typeId = dynamic_pointer_cast<Variable>(ref)->getType();
       else if(rtti::instanceOf<Struct>(ref.get())) ctx->typeId = dynamic_pointer_cast<Type>(ref).get();
+      else if(rtti::instanceOf<Overload>(ref.get())) ctx->typeId = dynamic_pointer_cast<Type>(ref).get();
       else throw InvalidArgumentError{"Invalid symbol kind in identifier expression"};
     }
     
@@ -132,7 +163,7 @@ namespace friday::inline api::inline pipeline {
   auto TypeCheckerVisitor::visitGroupingExpression(FridayParser::GroupingExpressionContext *ctx) -> any {
     Console::debug("GroupingExpressionContext: {}"_f.format(ctx->getText()));
     this->visitChildren(ctx);
-    ctx->typeId = ctx->typeId;
+    ctx->typeId = ctx->expression()->typeId;
     return {};
   }
 
@@ -234,7 +265,29 @@ namespace friday::inline api::inline pipeline {
 
   auto TypeCheckerVisitor::visitMemberAccessExpression(FridayParser::MemberAccessExpressionContext *ctx) -> any {
     Console::debug("MemberAccessExpressionContext: {}"_f.format(ctx->getText()));
-    this->visitChildren(ctx);
+
+    this->visit(ctx->object);
+    auto memberName = ctx->member->getText();
+
+    Struct* asStruct = rtti::cast<Struct>(ctx->object->typeId);
+    if(asStruct == nullptr) {
+      this->errorAt(
+        ctx->object->getStart(),
+        "Expression of type '{}' is not a struct"_f.format(ctx->object->typeId->getName())
+      );
+    } else if(not asStruct->isDefined(memberName)) {
+      this->errorAt(
+        ctx->IDENTIFIER()->getSymbol(),
+        "Struct '{}' has no field or method called '{}'"_f.format(asStruct->getName(), memberName)
+      );
+    } else {
+      auto member = asStruct->lookUp(memberName, {}).lock().get();
+      if(rtti::instanceOf<Variable>(member)) {
+        ctx->typeId = rtti::cast<Variable>(member)->getType();
+      } else if(rtti::instanceOf<Overload>(member)) {
+        ctx->typeId = rtti::cast<Type>(member);
+      }
+    } 
 
     return {};
   }

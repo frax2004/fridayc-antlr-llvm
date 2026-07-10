@@ -11,6 +11,8 @@ namespace friday::inline api::inline typesystem {
 
     private:
     ArrayType(Type& elementType, u64 length) noexcept;
+
+    public:
     ~ArrayType() override = default;
 
     public:

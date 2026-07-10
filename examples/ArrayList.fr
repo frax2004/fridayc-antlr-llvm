@@ -1,7 +1,8 @@
 
+public native fn get() -> ArrayList;
 
 public fn main() -> void {
-  let a: ArrayList = ArrayList.create();
+  let a: ArrayList = get();
   defer a.destroy();
 
   const x: int = 0;
@@ -39,8 +40,8 @@ public struct C {
 
 using libc;
 
-public struct ArrayList {
-  private data: **void;
+public struct ArrayList[T] {
+  private data: *T;
   private count: int;
   private capacity: int;
 

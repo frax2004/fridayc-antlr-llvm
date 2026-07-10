@@ -12,6 +12,8 @@ namespace friday::inline api::inline typesystem {
 
     private:
     FunctionType(Type& returnType, vector<Type*> paramsTypes) noexcept;
+
+    public:
     ~FunctionType() override = default;
 
     public:

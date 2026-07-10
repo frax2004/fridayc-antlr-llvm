@@ -7,7 +7,7 @@
 
 namespace friday::inline api::inline typesystem {
 
-  struct Overload final : ISymbol, TypedEntity {
+  struct Overload final : ISymbol, TypedEntity, Type {
     private:
     ISymbolTable* M_declaringSymbolTable { nullptr };
     string M_name;
@@ -28,6 +28,8 @@ namespace friday::inline api::inline typesystem {
     auto getDeclaringSymbolTable() -> ISymbolTable* override;
     auto getAttributes() const -> Attributes override;
     auto getType() const -> Type* override;
+    auto getName() const noexcept -> string const& override;
+    auto getLLVMType(llvm::LLVMContext& ctx) const noexcept -> llvm::Type* override;
 
     static auto isOverload(ISymbol* symbol) -> bool;
     static auto toOverload(ISymbol* symbol) -> Overload*;

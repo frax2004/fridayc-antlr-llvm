@@ -25,17 +25,10 @@ namespace friday::inline api::inline typesystem {
   }
 
   auto PointerType::get(Type& elementType, u64 dimensions) noexcept -> Type* {
-    static map<string, PointerType> S_PointerTypes = {};
+    static map<string, rc<PointerType>> S_PointerTypes = {};
 
-    Type* elementTypeRef = &elementType;
-
-    if(auto asPointer = rtti::cast<PointerType>(elementTypeRef)) {
-      elementTypeRef = asPointer->getPointedType();
-      dimensions += asPointer->getDimensions();
-    }
-
-    PointerType type { *elementTypeRef, dimensions };
-    return rtti::cast<Type>(&S_PointerTypes.try_emplace(type.getName(), type).first->second);
+    rc<PointerType> type {new PointerType(elementType, dimensions)};
+    return rtti::cast<Type>(S_PointerTypes.try_emplace(type->getName(), type).first->second.get());
   }
 
 }

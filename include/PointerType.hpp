@@ -13,6 +13,8 @@ namespace friday::inline api::inline typesystem {
 
     private:
     PointerType(Type& pointedType, u64 dimensions) noexcept;
+
+    public:
     ~PointerType() override = default;
 
     public:

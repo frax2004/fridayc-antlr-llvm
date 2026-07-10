@@ -9,13 +9,10 @@ namespace friday::inline api::inline typesystem {
   }
 
   auto ArrayType::get(Type& elementType, u64 length) noexcept -> Type* {
-    static map<string, ArrayType> S_arrayTypes = {};
-
-    ArrayType T { elementType, length };
-    string name = T.getName();
-
-    &S_arrayTypes.try_emplace(name, move(T)).first->second;
-    return nullptr;
+    static map<string, rc<ArrayType>> S_arrayTypes = {};
+    
+    rc<ArrayType> T {new ArrayType(elementType, length)};
+    return rtti::cast<Type>(S_arrayTypes.try_emplace(T->getName(), T).first->second.get());
   }
 
   auto ArrayType::getElementType() const noexcept -> Type* {
