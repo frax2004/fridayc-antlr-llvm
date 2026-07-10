@@ -40,8 +40,8 @@ public struct C {
 
 using libc;
 
-public struct ArrayList[T] {
-  private data: *T;
+public struct ArrayList {
+  private data: **void;
   private count: int;
   private capacity: int;
 

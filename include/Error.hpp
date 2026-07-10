@@ -1,5 +1,6 @@
 #pragma once
-#include <Common.hpp>
+
+#include <Core.hpp>
 
 namespace friday::inline core {
 

@@ -1,0 +1,8 @@
+#pragma once
+
+
+#define FRIDAY_API
+
+
+#define FRIDAY_API_POINTER_WRAPPER                 1
+#define FRIDAY_API_POINTER_WRAPPER_RUNTIME_SUPPORT 1
