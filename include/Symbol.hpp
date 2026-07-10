@@ -7,7 +7,7 @@
 namespace friday::inline api::inline typesystem {
   struct ISymbolTable;
 
-  struct ISymbol : NonCopyable {
+  struct FRIDAY_API ISymbol : NonCopyable {
     constexpr ISymbol() = default;
     virtual ~ISymbol() override = default;
 
@@ -16,7 +16,7 @@ namespace friday::inline api::inline typesystem {
     virtual auto getMangledId() const -> string = 0;
     virtual auto getQualifiedId() const -> string = 0;
     virtual auto getFullQualifiedId() const -> string = 0;
-    virtual auto getDeclaringSymbolTable() -> ISymbolTable* = 0;
+    virtual auto getDeclaringSymbolTable() -> Pointer<ISymbolTable> = 0;
     virtual auto getAttributes() const -> Attributes = 0;
   };
 }

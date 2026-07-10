@@ -28,7 +28,7 @@ namespace friday::inline api::inline pipeline {
     return this->ownedNamespace.lock()->isDefined(id);
   }
 
-  auto TranslationUnit::mostSimilar(string const& name, Predicate<ISymbol*> filter, u64 maxEditDistance) noexcept -> weak<ISymbol> {
+  auto TranslationUnit::mostSimilar(string const& name, Predicate<Pointer<ISymbol>> filter, u64 maxEditDistance) noexcept -> weak<ISymbol> {
     (void)name;
     (void)filter;
     (void)maxEditDistance;
@@ -72,7 +72,7 @@ namespace friday::inline api::inline pipeline {
     return defaultValue;
   }
 
-  auto TranslationUnit::lookUpIf(string const& name, Predicate<ISymbol*> predicate, weak<ISymbol> defaultValue) -> weak<ISymbol> {
+  auto TranslationUnit::lookUpIf(string const& name, Predicate<Pointer<ISymbol>> predicate, weak<ISymbol> defaultValue) -> weak<ISymbol> {
     Console::debug("(TranslationUnit - Predicate) Searching '{}'..."_f.format(name));
 
     auto global = this->globalContext->global.get();
@@ -110,11 +110,11 @@ namespace friday::inline api::inline pipeline {
     return this->path;
   }
 
-  auto TranslationUnit::getParent() -> ISymbolTable* {
+  auto TranslationUnit::getParent() -> Pointer<ISymbolTable> {
     return rtti::cast<ISymbolTable>(this->ownedNamespace.lock().get());
   }
 
-  auto TranslationUnit::getParseTree() const -> ant::tree::ParseTree* {
+  auto TranslationUnit::getParseTree() const -> Pointer<ant::tree::ParseTree> {
     return this->ast;
   }
 
@@ -130,7 +130,7 @@ namespace friday::inline api::inline pipeline {
     this->ownedNamespace = nsp;
   }
 
-  auto TranslationUnit::getContext() -> CompilationContext* {
+  auto TranslationUnit::getContext() -> Pointer<CompilationContext> {
     return this->globalContext;
   }
   

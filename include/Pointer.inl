@@ -30,4 +30,10 @@ constexpr auto Pointer<T>::operator->(this auto&& self) -> decltype(auto) {
   return self.M_pointer;
 }
 
+template<class T>
+constexpr Pointer<T>::operator bool() const noexcept {
+  return this->M_pointer != nullptr;
+}
+
+
 #endif

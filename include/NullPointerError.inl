@@ -3,7 +3,7 @@
 #endif
 
 namespace friday::inline core {
-  constexpr inline NullPointerError::NullPointerError(void* ptr) noexcept
+  constexpr inline NullPointerError::NullPointerError(Pointer<void> ptr) noexcept
     : M_message { format("Attempting to read from illegal memory address {}.\n", ptr) }
   {}
 

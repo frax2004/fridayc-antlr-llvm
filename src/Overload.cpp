@@ -20,17 +20,17 @@ namespace friday::inline api::inline typesystem {
     | ranges::to<vector>();
   }
 
-  auto Overload::add(vector<Type*> argsTypes, rc<Function> function) -> void {
+  auto Overload::add(vector<Pointer<Type>> argsTypes, rc<Function> function) -> void {
     this->M_overloads.try_emplace(move(argsTypes), function);
   }
 
-  auto Overload::tryMatch(vector<Type*> const& argsTypes) -> weak<Function> {
+  auto Overload::tryMatch(vector<Pointer<Type>> const& argsTypes) -> weak<Function> {
     if(auto it = this->M_overloads.find(argsTypes); it != this->M_overloads.end()) {
       return it->second;
     } else return {};
   }
 
-  auto Overload::hasMatch(vector<Type*> const& argsTypes) const -> bool {
+  auto Overload::hasMatch(vector<Pointer<Type>> const& argsTypes) const -> bool {
     return this->M_overloads.contains(argsTypes);
   }
 
@@ -49,7 +49,7 @@ namespace friday::inline api::inline typesystem {
     throw OperationNotSupportedError{"Overload::getMangledId()"};
   }
 
-  auto Overload::getDeclaringSymbolTable() -> ISymbolTable* {
+  auto Overload::getDeclaringSymbolTable() -> Pointer<ISymbolTable> {
     return this->M_declaringSymbolTable;
   }
 
@@ -57,15 +57,15 @@ namespace friday::inline api::inline typesystem {
     throw NotImplementedError{"Overload::getAttributes()"};
   }
   
-  auto Overload::getType() const -> Type* {
+  auto Overload::getType() const -> Pointer<Type> {
     return UnresolvedOverloadType::get();
   }
 
-  auto Overload::isOverload(ISymbol* symbol) -> bool {
+  auto Overload::isOverload(Pointer<ISymbol> symbol) -> bool {
     return rtti::instanceOf<Overload>(symbol);
   }
 
-  auto Overload::toOverload(ISymbol* symbol) -> Overload* {
+  auto Overload::toOverload(Pointer<ISymbol> symbol) -> Pointer<Overload> {
     return rtti::cast<Overload>(symbol);
   }
 
@@ -74,7 +74,7 @@ namespace friday::inline api::inline typesystem {
     return S_name;
   }
 
-  auto Overload::getLLVMType(llvm::LLVMContext& ctx) const noexcept -> llvm::Type* {
+  auto Overload::getLLVMType(llvm::LLVMContext& ctx) const noexcept -> Pointer<llvm::Type> {
     (void)ctx;
     return nullptr;
   }

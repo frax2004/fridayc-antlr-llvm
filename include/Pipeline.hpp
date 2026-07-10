@@ -10,9 +10,9 @@
 
 namespace friday::inline api::inline pipeline {
 
-  struct Pipeline final {
+  struct FRIDAY_API Pipeline final {
     private:
-    optional<CompilationContext*> M_context;
+    optional<Pointer<CompilationContext>> M_context;
 
     public:
     Pipeline(CompilationContext& context);
@@ -20,7 +20,7 @@ namespace friday::inline api::inline pipeline {
     template<derived_from<StaticAnalyzer> T>
     auto andThen() -> Pipeline&;
 
-  template<invocable<CompilationContext*> Fn>
+  template<invocable<Pointer<CompilationContext>> Fn>
     auto peek(Fn&& fn) -> Pipeline&;
   };
 

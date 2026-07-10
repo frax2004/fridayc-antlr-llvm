@@ -16,7 +16,7 @@ namespace friday::inline api::inline pipeline {
     (void)_;
   }
 
-  auto NamespaceBindingVisitor::visitUsingStatement(FridayParser::UsingStatementContext* ctx) -> any {
+  auto NamespaceBindingVisitor::visitUsingStatement(FridayParser::UsingStatementContext *ctx) -> any {
     auto token = ctx->IDENTIFIER()->getSymbol();
     auto name = token->getText();
 

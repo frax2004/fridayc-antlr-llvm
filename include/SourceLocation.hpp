@@ -7,7 +7,7 @@
 namespace friday::inline core::inline util {
   
 
-  struct SourceLocation final {
+  struct FRIDAY_API SourceLocation final {
     constexpr SourceLocation() noexcept = default;
     constexpr SourceLocation(SourceLocation const& other) noexcept = default;
     constexpr SourceLocation(SourceLocation && other) noexcept = default;

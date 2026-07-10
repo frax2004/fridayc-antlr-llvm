@@ -5,7 +5,7 @@
 namespace friday::inline core {
 
   template<class MessageType = string>
-  struct Error {
+  struct FRIDAY_API Error {
     protected:
     constexpr inline Error() noexcept;
 

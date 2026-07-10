@@ -99,14 +99,14 @@ namespace friday::inline api::inline pipeline {
   auto TypeCheckerVisitor::visitReturnStatement(FridayParser::ReturnStatementContext *ctx) -> any {
     Console::debug("ReturnStatementContext: {}"_f.format(ctx->getText()));
     this->visitChildren(ctx);
-    // Type* actual = any_cast<Type*>(this->visit(ctx->expression()));
+    // Pointer<Type> actual = any_cast<Pointer<Type>>(this->visit(ctx->expression()));
     // if(actual == ErrorType::get() or actual != this->M_currentFunctionReturnType) {
     //   this->errorAt(
     //     ctx->expression()->getStart(),
     //     RETURN_TYPE_MISMATCH.format(actual->getName(), this->M_currentFunctionReturnType->getName())
     //   );
-    //   return (Type*)ErrorType::get();
-    // } else return (Type*)this->M_currentScope->resolve("void")->as<Struct>();
+    //   return (Pointer<Type>)ErrorType::get();
+    // } else return (Pointer<Type>)this->M_currentScope->resolve("void")->as<Struct>();
     return {};
   }
 
@@ -114,16 +114,16 @@ namespace friday::inline api::inline pipeline {
     Console::debug("PrintStatementContext: {}"_f.format(ctx->getText()));
     this->visitChildren(ctx);
 
-    // Type* expected = PointerType::get((Type*)this->M_currentScope->resolve("byte")->as<Struct>(), 1);
-    // Type* actual = any_cast<Type*>(this->visit(ctx->expr()));
+    // Pointer<Type> expected = PointerType::get((Pointer<Type>)this->M_currentScope->resolve("byte")->as<Struct>(), 1);
+    // Pointer<Type> actual = any_cast<Pointer<Type>>(this->visit(ctx->expr()));
 
     // if(expected != actual) {
     //   this->errorAt(
     //     ctx->expr()->getStart(),
     //     EXPRESSION_NOT_CONVERTIBLE.format(actual->getName(), expected->getName())
     //   );
-    //   return (Type*)ErrorType::get();
-    // } else return (Type*)this->M_currentScope->resolve("void")->as<Struct>();
+    //   return (Pointer<Type>)ErrorType::get();
+    // } else return (Pointer<Type>)this->M_currentScope->resolve("void")->as<Struct>();
     return {};
   }
 

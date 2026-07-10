@@ -4,13 +4,13 @@
 #include <Builder.hpp>
 
 namespace friday::inline api::inline pipeline {
-  struct BinaryOperatorBuilder final : Builder<rc<Overload>> {
+  struct FRIDAY_API BinaryOperatorBuilder final : Builder<rc<Overload>> {
     private:
     string M_name;
     weak<Type> M_lhs;
     weak<Type> M_rhs;
     weak<Type> M_ret;
-    ISymbolTable* M_parent;
+    Pointer<ISymbolTable> M_parent;
 
 
     public:

@@ -6,12 +6,12 @@ namespace friday::inline api::inline typesystem {
     return this->M_name;
   }
 
-  auto ErrorType::getLLVMType(llvm::LLVMContext& _) const noexcept -> llvm::Type* {
+  auto ErrorType::getLLVMType(llvm::LLVMContext& _) const noexcept -> Pointer<llvm::Type> {
     (void)_;
     return nullptr;
   }
   
-  auto ErrorType::get() -> Type* {
+  auto ErrorType::get() -> Pointer<Type> {
     static ErrorType ERROR;
     return rtti::cast<Type>(&ERROR);
   }

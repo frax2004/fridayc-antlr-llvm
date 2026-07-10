@@ -4,7 +4,7 @@
 
 namespace friday::inline core {
 
-  struct NotImplementedError final : public Error<> {
+  struct FRIDAY_API NotImplementedError final : public Error<> {
     constexpr inline NotImplementedError(string info) noexcept;
     constexpr ~NotImplementedError() override = default;
     constexpr inline auto what() const noexcept -> string override;

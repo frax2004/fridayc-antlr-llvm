@@ -5,7 +5,7 @@
 
 namespace friday::inline api::inline parser {
 
-  struct SemanticError final : public Error<> {
+  struct FRIDAY_API SemanticError final : public Error<> {
     SemanticError(SourceLocation location, string message);
     ~SemanticError() override = default;
 

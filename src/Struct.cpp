@@ -10,8 +10,8 @@ namespace friday::inline api::inline typesystem {
   }
 
   auto Struct::getField(string const& name, weak<Variable> defaultValue) noexcept -> weak<Variable> {
-    constexpr auto isVariable = [](ISymbol* symbol) {
-      return dynamic_cast<Variable*>(symbol) != nullptr;
+    constexpr auto isVariable = [](Pointer<ISymbol> symbol) {
+      return dynamic_cast<Pointer<Variable>>(symbol) != nullptr;
     };
 
     weak<ISymbol> candidate = lookUpIf(name, isVariable, defaultValue);
@@ -19,8 +19,8 @@ namespace friday::inline api::inline typesystem {
   }
 
   auto Struct::getMethod(string const& name, weak<Overload> defaultValue) noexcept -> weak<Overload> {
-    constexpr auto isMethod = [](ISymbol* symbol) {
-      return dynamic_cast<Overload*>(symbol) != nullptr;
+    constexpr auto isMethod = [](Pointer<ISymbol> symbol) {
+      return dynamic_cast<Pointer<Overload>>(symbol) != nullptr;
     };
 
     weak<ISymbol> candidate = lookUpIf(name, isMethod, defaultValue);
@@ -31,16 +31,16 @@ namespace friday::inline api::inline typesystem {
     return this->M_name;
   }
 
-  auto Struct::getLLVMType(llvm::LLVMContext& ctx) const noexcept -> llvm::Type* {
-    constexpr auto isVariable = [](ISymbol* symbol) {
-      return dynamic_cast<Variable*>(symbol) != nullptr;
+  auto Struct::getLLVMType(llvm::LLVMContext& ctx) const noexcept -> Pointer<llvm::Type> {
+    constexpr auto isVariable = [](Pointer<ISymbol> symbol) {
+      return dynamic_cast<Pointer<Variable>>(symbol) != nullptr;
     };
     
-    constexpr auto toVariable = [](ISymbol* symbol) {
-      return dynamic_cast<Variable*>(symbol);
+    constexpr auto toVariable = [](Pointer<ISymbol> symbol) {
+      return dynamic_cast<Pointer<Variable>>(symbol);
     };
 
-    auto toLLVMType = [&ctx](Type* type) {
+    auto toLLVMType = [&ctx](Pointer<Type> type) {
       return type->getLLVMType(ctx);
     };
 
@@ -69,7 +69,7 @@ namespace friday::inline api::inline typesystem {
     throw NotImplementedError{"Struct::getMangledId()"};
   }
 
-  auto Struct::getDeclaringSymbolTable() -> ISymbolTable* {
+  auto Struct::getDeclaringSymbolTable() -> Pointer<ISymbolTable> {
     return rtti::cast<ISymbolTable>(this->M_declaryingNamespace);
   }
 
@@ -77,15 +77,15 @@ namespace friday::inline api::inline typesystem {
     throw NotImplementedError{"Struct::getAttributes()"};
   }
 
-  auto Struct::getParent() -> ISymbolTable* {
+  auto Struct::getParent() -> Pointer<ISymbolTable> {
     return rtti::cast<ISymbolTable>(this->M_declaryingNamespace);
   }
 
-  auto Struct::isStruct(ISymbol* symbol) -> bool {
+  auto Struct::isStruct(Pointer<ISymbol> symbol) -> bool {
     return rtti::instanceOf<Struct>(symbol);
   }
 
-  auto Struct::toStruct(ISymbol* symbol) -> Struct* {
+  auto Struct::toStruct(Pointer<ISymbol> symbol) -> Pointer<Struct> {
     return rtti::cast<Struct>(symbol);
   }
 

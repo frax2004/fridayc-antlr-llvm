@@ -1,7 +1,7 @@
 #include <FunctionType.hpp>
 
 namespace friday::inline api::inline typesystem {
-  FunctionType::FunctionType(Type& returnType, vector<Type*> paramsTypes) noexcept
+  FunctionType::FunctionType(Type& returnType, vector<Pointer<Type>> paramsTypes) noexcept
     : Type { } 
   {
     this->M_name = "{}({})"_f.format(
@@ -17,7 +17,7 @@ namespace friday::inline api::inline typesystem {
     this->M_parameters = paramsTypes;
   }
 
-  auto FunctionType::getParametersTypes() const noexcept -> vector<Type*> const& {
+  auto FunctionType::getParametersTypes() const noexcept -> vector<Pointer<Type>> const& {
     return this->M_parameters;
   }
 
@@ -29,8 +29,8 @@ namespace friday::inline api::inline typesystem {
     return this->M_parameters.size();
   }
 
-  auto FunctionType::getLLVMType(llvm::LLVMContext& ctx) const noexcept -> llvm::Type* {
-    auto toLLVMType = [&ctx](Type* T) -> llvm::Type* {
+  auto FunctionType::getLLVMType(llvm::LLVMContext& ctx) const noexcept -> Pointer<llvm::Type> {
+    auto toLLVMType = [&ctx](Pointer<Type> T) -> Pointer<llvm::Type> {
       return T->getLLVMType(ctx);
     };
 
@@ -41,18 +41,18 @@ namespace friday::inline api::inline typesystem {
     return llvm::FunctionType::get(this->M_returnType->getLLVMType(ctx), paramsTypes, false);
   }
 
-  auto FunctionType::get(Type& returnType, vector<Type*> paramsTypes) noexcept -> Type* {
+  auto FunctionType::get(Type& returnType, vector<Pointer<Type>> paramsTypes) noexcept -> Pointer<Type> {
     static map<string, rc<FunctionType>> S_functionTypes = {};
 
     rc<FunctionType> functionType { new FunctionType(returnType, move(paramsTypes)) };
     return rtti::cast<Type>(S_functionTypes.try_emplace(functionType->getName(), functionType).first->second.get());
   }
 
-  auto FunctionType::getParameterType(u64 index) const -> Type* {
+  auto FunctionType::getParameterType(u64 index) const -> Pointer<Type> {
     return this->M_parameters.at(index);
   }
 
-  auto FunctionType::getReturnType() const noexcept -> Type* {
+  auto FunctionType::getReturnType() const noexcept -> Pointer<Type> {
     return this->M_returnType;
   }
 

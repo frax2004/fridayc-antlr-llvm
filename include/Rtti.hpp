@@ -7,10 +7,10 @@ namespace friday::inline core::inline rtti {
   auto nameOf(type_info const& info) noexcept -> string;
 
   template<class To, class From>
-  auto cast(From* from) -> To*;
+  auto cast(Pointer<From> from) -> Pointer<To>;
 
   template<class Other, class This>
-  auto instanceOf(This* object) -> bool;
+  auto instanceOf(Pointer<This> object) -> bool;
 }
 
 #include <Rtti.inl>

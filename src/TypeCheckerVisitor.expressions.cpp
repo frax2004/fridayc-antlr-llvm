@@ -73,7 +73,7 @@ namespace friday::inline api::inline pipeline {
     }
 
     for(u64 i = 0; i < min(argsTypes.size(), funcType->getParametersCount()); i++) {
-      Type* T = argsTypes[i];
+      Pointer<Type> T = argsTypes[i];
 
       if(T != funcType->getParameterType(i)) {
         ok = false;
@@ -171,10 +171,10 @@ namespace friday::inline api::inline pipeline {
     Console::debug("SubscriptExpressionContext: {}"_f.format(ctx->getText()));
     this->visitChildren(ctx);
 
-    Type* arrayType = ctx->array->typeId;
-    Type* indexType = ctx->index->typeId;
+    Pointer<Type> arrayType = ctx->array->typeId;
+    Pointer<Type> indexType = ctx->index->typeId;
 
-    ArrayType* asArrayType = rtti::cast<ArrayType>(arrayType);
+    Pointer<ArrayType> asArrayType = rtti::cast<ArrayType>(arrayType);
 
     bool ok = true;
     if(
@@ -211,8 +211,8 @@ namespace friday::inline api::inline pipeline {
     Console::debug("BinaryExpressionContext: {}"_f.format(ctx->getText()));
     this->visitChildren(ctx);
 
-    Type* lhsType = ctx->left->typeId;
-    Type* rhsType = ctx->right->typeId;
+    Pointer<Type> lhsType = ctx->left->typeId;
+    Pointer<Type> rhsType = ctx->right->typeId;
 
     string operatorName = "operator{}"_f.format(ctx->binaryOperator->getText());
     weak<Function> function = this->findBinaryOperator(operatorName, lhsType, rhsType);
@@ -241,13 +241,13 @@ namespace friday::inline api::inline pipeline {
     Console::debug("UnaryPrefixExpressionContext: {}"_f.format(ctx->getText()));
     this->visitChildren(ctx);
     
-    // Type* type = any_cast<Type*>(this->visit(ctx->expression()));
+    // Pointer<Type> type = any_cast<Pointer<Type>>(this->visit(ctx->expression()));
     // u64 oper = ctx->unaryOperator->getType();
     // string unaryOperatorName = Type::getUnaryPrefixExpressionOperatorName(oper, type);
 
 
-    // if(Struct* asStruct = type->as<Struct>()) {
-    //   if(const Function* unaryOperator = asStruct->getMethod(unaryOperatorName)) {
+    // if(Pointer<Struct> asStruct = type->as<Struct>()) {
+    //   if(const Pointer<Function> unaryOperator = asStruct->getMethod(unaryOperatorName)) {
     //     ctx->typeId = unaryOperator->getType()->as<const FunctionType>()->getReturnType();
     //   }
     // }
@@ -269,7 +269,7 @@ namespace friday::inline api::inline pipeline {
     this->visit(ctx->object);
     auto memberName = ctx->member->getText();
 
-    Struct* asStruct = rtti::cast<Struct>(ctx->object->typeId);
+    Pointer<Struct> asStruct = rtti::cast<Struct>(ctx->object->typeId);
     if(asStruct == nullptr) {
       this->errorAt(
         ctx->object->getStart(),

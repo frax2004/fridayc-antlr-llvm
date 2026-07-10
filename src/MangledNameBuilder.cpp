@@ -12,7 +12,7 @@ namespace friday::inline api::inline typesystem {
     return *this;
   }
 
-  auto MangledNameBuilder::param(Type* type) -> MangledNameBuilder& {
+  auto MangledNameBuilder::param(Pointer<Type> type) -> MangledNameBuilder& {
     this->M_argsTypes.push_back(type);
     return *this;
   }

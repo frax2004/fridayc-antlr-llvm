@@ -86,7 +86,7 @@ namespace friday::inline api::inline pipeline {
       | ranges::to<string>()
     );
 
-    FILE* output = fopen("table.json", "w+");
+    Pointer<FILE> output = fopen("table.json", "w+");
     println(output, "{}", table);
     fclose(output);
 

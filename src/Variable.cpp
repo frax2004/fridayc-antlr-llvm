@@ -21,7 +21,7 @@ namespace friday::inline api::inline typesystem {
     throw NotImplementedError{"Variable::getMangledId()"};
   }
 
-  auto Variable::getDeclaringSymbolTable() -> ISymbolTable* {
+  auto Variable::getDeclaringSymbolTable() -> Pointer<ISymbolTable> {
     return this->M_declaringScope;
   }
 
@@ -29,15 +29,15 @@ namespace friday::inline api::inline typesystem {
     throw NotImplementedError{"Variable::getAttributes()"};
   }
 
-  auto Variable::getType() const -> Type* {
+  auto Variable::getType() const -> Pointer<Type> {
     return this->M_type;
   }
 
-  auto Variable::isVariable(ISymbol* symbol) -> bool {
+  auto Variable::isVariable(Pointer<ISymbol> symbol) -> bool {
     return rtti::instanceOf<Variable>(symbol);
   }
 
-  auto Variable::toVariable(ISymbol* symbol) -> Variable* {
+  auto Variable::toVariable(Pointer<ISymbol> symbol) -> Pointer<Variable> {
     return rtti::cast<Variable>(symbol);
   }
 

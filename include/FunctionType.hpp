@@ -4,26 +4,26 @@
 
 namespace friday::inline api::inline typesystem {
 
-  struct FunctionType final : Type {
+  struct FRIDAY_API FunctionType final : Type {
     private:
-    vector<Type*> M_parameters;
+    vector<Pointer<Type>> M_parameters;
     string M_name;
-    Type* M_returnType { nullptr };
+    Pointer<Type> M_returnType { nullptr };
 
     private:
-    FunctionType(Type& returnType, vector<Type*> paramsTypes) noexcept;
+    FunctionType(Type& returnType, vector<Pointer<Type>> paramsTypes) noexcept;
 
     public:
     ~FunctionType() override = default;
 
     public:
-    static auto get(Type& returnType, vector<Type*> paramsTypes) noexcept -> Type*;
+    static auto get(Type& returnType, vector<Pointer<Type>> paramsTypes) noexcept -> Pointer<Type>;
 
-    auto getParameterType(u64 index) const -> Type*;
-    auto getParametersTypes() const noexcept -> vector<Type*> const&;
+    auto getParameterType(u64 index) const -> Pointer<Type>;
+    auto getParametersTypes() const noexcept -> vector<Pointer<Type>> const&;
     auto getParametersCount() const noexcept -> u64;
-    auto getReturnType() const noexcept -> Type*;
-    auto getLLVMType(llvm::LLVMContext& ctx) const noexcept -> llvm::Type* override;
+    auto getReturnType() const noexcept -> Pointer<Type>;
+    auto getLLVMType(llvm::LLVMContext& ctx) const noexcept -> Pointer<llvm::Type> override;
     auto getName() const noexcept -> string const& override;
   };
 }

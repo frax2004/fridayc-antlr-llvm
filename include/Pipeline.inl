@@ -9,7 +9,7 @@ namespace friday::inline api::inline pipeline {
   auto Pipeline::andThen() -> Pipeline& {
     
     this->M_context = M_context
-    .and_then([](CompilationContext* ctx) -> optional<CompilationContext*> {
+    .and_then([](Pointer<CompilationContext> ctx) -> optional<Pointer<CompilationContext>> {
       auto errors = T{*ctx}.analyze().errors();
 
       if(not errors.empty()) {
@@ -21,7 +21,7 @@ namespace friday::inline api::inline pipeline {
     return *this;
   }
   
-  template<invocable<CompilationContext*> Fn>
+  template<invocable<Pointer<CompilationContext>> Fn>
   auto Pipeline::peek(Fn&& fn) -> Pipeline& {
     if(this->M_context.has_value()) invoke(fn, this->M_context.value());
     return *this;

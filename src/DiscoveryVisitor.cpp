@@ -9,7 +9,7 @@ namespace friday::inline api::inline pipeline {
     : StaticAnalyzer { ctx }
   {}
   
-  auto DiscoveryVisitor::current() -> ISymbolTable* {
+  auto DiscoveryVisitor::current() -> Pointer<ISymbolTable> {
     return this->M_currentSymbolTable;
   }
   
@@ -22,7 +22,7 @@ namespace friday::inline api::inline pipeline {
     this->M_currentSymbolTable = nullptr;
   }
 
-  auto DiscoveryVisitor::visitNamespaceStatement(FridayParser::NamespaceStatementContext* ctx) -> any {
+  auto DiscoveryVisitor::visitNamespaceStatement(FridayParser::NamespaceStatementContext *ctx) -> any {
     auto unit = this->getCurrentUnit();
     auto token = ctx->IDENTIFIER()->getSymbol();
 
@@ -54,7 +54,7 @@ namespace friday::inline api::inline pipeline {
     return {};
   }
 
-  auto DiscoveryVisitor::visitStructStatement(FridayParser::StructStatementContext* ctx) -> any {
+  auto DiscoveryVisitor::visitStructStatement(FridayParser::StructStatementContext *ctx) -> any {
     auto name = ctx->structName->getText();
 
     if(not this->current()->lookUpIf(name, Struct::isStruct, {}).expired()) {
@@ -79,7 +79,7 @@ namespace friday::inline api::inline pipeline {
     return {};
   }
 
-  auto DiscoveryVisitor::visitFunctionStatement(FridayParser::FunctionStatementContext* ctx) -> any {
+  auto DiscoveryVisitor::visitFunctionStatement(FridayParser::FunctionStatementContext *ctx) -> any {
     auto name = ctx->name->getText();
 
     weak<ISymbol> candidate = this->M_currentSymbolTable->lookUpIf(name, Overload::isOverload, {});
@@ -92,7 +92,7 @@ namespace friday::inline api::inline pipeline {
     return {};
   }
 
-  auto DiscoveryVisitor::visitNativeFunctionStatement(FridayParser::NativeFunctionStatementContext* ctx) -> any {
+  auto DiscoveryVisitor::visitNativeFunctionStatement(FridayParser::NativeFunctionStatementContext *ctx) -> any {
     auto name = ctx->name->getText();
 
     weak<ISymbol> candidate = this->current()->lookUpIf(name, Overload::isOverload, {});

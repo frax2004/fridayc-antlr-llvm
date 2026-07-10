@@ -22,7 +22,7 @@ namespace friday::inline api::inline typesystem {
   }
 
   template<derived_from<ISymbol>... Ts>
-  auto SymbolTable<Ts...>::lookUpIf(string const& id, Predicate<ISymbol*> predicate, weak<ISymbol> defaultValue) -> weak<ISymbol> {
+  auto SymbolTable<Ts...>::lookUpIf(string const& id, Predicate<Pointer<ISymbol>> predicate, weak<ISymbol> defaultValue) -> weak<ISymbol> {
     Console::debug("(Predicate) Searching '{}'..."_f.format(id));
 
     if(auto it = this->M_symbols.find(id); it != this->M_symbols.end()) {
@@ -50,7 +50,7 @@ namespace friday::inline api::inline typesystem {
   }
 
   template<derived_from<ISymbol>... Ts>
-  auto SymbolTable<Ts...>::mostSimilar(string const& name, Predicate<ISymbol*> filter, u64 maxEditDistance) noexcept -> weak<ISymbol> {
+  auto SymbolTable<Ts...>::mostSimilar(string const& name, Predicate<Pointer<ISymbol>> filter, u64 maxEditDistance) noexcept -> weak<ISymbol> {
     (void)name;
     (void)filter;
     (void)maxEditDistance;

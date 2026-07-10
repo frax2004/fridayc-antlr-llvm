@@ -5,7 +5,7 @@
 
 namespace friday::inline api::inline pipeline {
 
-  struct TypeCheckerVisitor final : StaticAnalyzer {
+  struct FRIDAY_API TypeCheckerVisitor final : StaticAnalyzer {
     private:
     stack<weak<ISymbolTable>> M_symbolTables { };
 
@@ -52,17 +52,17 @@ namespace friday::inline api::inline pipeline {
     auto pop() -> weak<ISymbolTable>;
     auto top() -> weak<ISymbolTable>;
 
-    auto BYTE() -> Type*;
-    auto INT() -> Type*;
-    auto BOOL() -> Type*;
-    auto VOID() -> Type*;
-    auto FLOAT() -> Type*;
+    auto BYTE() -> Pointer<Type>;
+    auto INT() -> Pointer<Type>;
+    auto BOOL() -> Pointer<Type>;
+    auto VOID() -> Pointer<Type>;
+    auto FLOAT() -> Pointer<Type>;
 
     template<class T>
-    auto byVisiting() -> function<any (T*)> {
-      return [this](T* ctx) { return this->visit(ctx); };
+    auto byVisiting() -> function<any (Pointer<T>)> {
+      return [this](Pointer<T> ctx) { return this->visit(ctx); };
     }
 
-    auto findBinaryOperator(string operatorName, Type* lhs, Type* rhs) -> weak<Function>;
+    auto findBinaryOperator(string operatorName, Pointer<Type> lhs, Pointer<Type> rhs) -> weak<Function>;
   };
 }

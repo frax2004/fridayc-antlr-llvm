@@ -6,7 +6,7 @@
 
 namespace friday::inline api::inline pipeline {
   
-  struct CompilationContext final : NonCopyable {
+  struct FRIDAY_API CompilationContext final : NonCopyable {
     CompilationContext(vector<string> const& paths);
     ~CompilationContext() = default;
 

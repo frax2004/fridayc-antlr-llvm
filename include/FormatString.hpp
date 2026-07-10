@@ -3,7 +3,7 @@
 #include <Core.hpp>
 
 namespace friday::inline core {
-  struct FormatString final {
+  struct FRIDAY_API FormatString final {
     const i8* fmt { nullptr };
 
     template<class ... Args>

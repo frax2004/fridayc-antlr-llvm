@@ -18,7 +18,7 @@ namespace friday::inline api::inline pipeline {
   auto TypeSolverVisitor::endUnit(TranslationUnit& _) -> void {
     (void)_;
 
-    auto reportDependency = [this](tuple<Struct*, Struct*> pair) {
+    auto reportDependency = [this](tuple<Pointer<Struct>, Pointer<Struct>> pair) {
 
       auto [strct, field] = pair;
       auto fieldToken = this->M_properties.at(field);
@@ -32,7 +32,7 @@ namespace friday::inline api::inline pipeline {
       );
     };
     
-    auto reportCycle = [&](vector<Struct*> const& cycle) {
+    auto reportCycle = [&](vector<Pointer<Struct>> const& cycle) {
       this->errorAt(
         this->M_properties[cycle[0]]->getStart(),
         "In declaration of struct \"{}\", detected cyclic struct dependency."_f.format(
@@ -45,7 +45,7 @@ namespace friday::inline api::inline pipeline {
     ranges::for_each(this->M_dependencyGraph.getCycles(), reportCycle);
   }
 
-  auto TypeSolverVisitor::visitStructStatement(FridayParser::StructStatementContext* ctx) -> any {
+  auto TypeSolverVisitor::visitStructStatement(FridayParser::StructStatementContext *ctx) -> any {
 
     string structName = ctx->structName->getText();
     
@@ -93,10 +93,10 @@ namespace friday::inline api::inline pipeline {
 
   auto TypeSolverVisitor::visitSimpleType(FridayParser::SimpleTypeContext *ctx) -> any {
 
-    auto isStruct = static_cast<bool(*)(ISymbol*)>(&rtti::instanceOf<Struct>);
+    auto isStruct = static_cast<bool(*)(Pointer<ISymbol>)>(&rtti::instanceOf<Struct>);
 
-    TranslationUnit* unit = this->getCurrentUnit();
-    ant::Token* token = ctx->IDENTIFIER()->getSymbol();
+    Pointer<TranslationUnit> unit = this->getCurrentUnit();
+    Pointer<ant::Token> token = ctx->IDENTIFIER()->getSymbol();
     string id = token->getText();
 
     weak<ISymbol> candidate = unit->lookUpIf(id, isStruct, {});
@@ -116,12 +116,12 @@ namespace friday::inline api::inline pipeline {
 
   auto TypeSolverVisitor::visitFunctionType(FridayParser::FunctionTypeContext *ctx) -> any {
 
-    auto isErrorType = [](Type* type) {
+    auto isErrorType = [](Pointer<Type> type) {
       return type == ErrorType::get();
     };
 
-    Type* retType = any_cast<Type*>(this->visit(ctx->returnType));
-    vector<Type*> paramsTypes = ctx->paramsTypes
+    Pointer<Type> retType = any_cast<Pointer<Type>>(this->visit(ctx->returnType));
+    vector<Pointer<Type>> paramsTypes = ctx->paramsTypes
     | views::transform([this](auto typeCtx) { return this->toType(typeCtx); })
     | ranges::to<vector>();
 
@@ -159,7 +159,7 @@ namespace friday::inline api::inline pipeline {
 
   auto TypeSolverVisitor::visitPointerType(FridayParser::PointerTypeContext *ctx) -> any {
 
-    Type* type = this->toType(ctx->pointedType);
+    Pointer<Type> type = this->toType(ctx->pointedType);
     u64 dimensions = ctx->STAR().size();
 
     if(type == ErrorType::get()) {
@@ -179,9 +179,9 @@ namespace friday::inline api::inline pipeline {
     return {};
   }
 
-  auto TypeSolverVisitor::visitArrayType(FridayParser::ArrayTypeContext* ctx) -> any {
+  auto TypeSolverVisitor::visitArrayType(FridayParser::ArrayTypeContext *ctx) -> any {
 
-    Type* type = this->toType(ctx->elementType);
+    Pointer<Type> type = this->toType(ctx->elementType);
     u64 length = ctx->LEFT_SQUARE().size();
 
     if(type == ErrorType::get()) {

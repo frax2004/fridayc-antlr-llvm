@@ -8,7 +8,7 @@
 #endif
 
 template<class T>
-struct Pointer final {
+struct FRIDAY_API Pointer final {
   using value_type = T;
   using reference_type = T&;
   using pointer_type = T*;
@@ -19,6 +19,7 @@ struct Pointer final {
   constexpr Pointer(Pointer &&) noexcept = default;
   constexpr ~Pointer() noexcept = default;
 
+  constexpr operator bool() const noexcept;
   constexpr auto operator<=>(Pointer const&) const -> strong_ordering = default;
   constexpr auto operator*(this auto&& self) -> decltype(auto);
   constexpr auto operator->(this auto&& self) -> decltype(auto);
@@ -31,6 +32,7 @@ struct Pointer final {
 
 #else
 
+template<class T>
 using Pointer = T*;
 
 #endif

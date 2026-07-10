@@ -12,8 +12,8 @@ namespace friday::inline api::inline typesystem {
   {}
 
   auto Namespace::getFunction(string const& id, weak<Overload> defaultValue) -> weak<Overload> {
-    constexpr auto isOverload = [](ISymbol* symbol) {
-      return dynamic_cast<Overload*>(symbol) != nullptr;
+    constexpr auto isOverload = [](Pointer<ISymbol> symbol) {
+      return dynamic_cast<Pointer<Overload>>(symbol) != nullptr;
     };
 
     weak<ISymbol> candidate = lookUpIf(id, isOverload, defaultValue);
@@ -21,8 +21,8 @@ namespace friday::inline api::inline typesystem {
   }
 
   auto Namespace::getStruct(string const& id, weak<Struct> defaultValue) -> weak<Struct> {
-    constexpr auto isStruct = [](ISymbol* symbol) {
-      return dynamic_cast<Struct*>(symbol) != nullptr;
+    constexpr auto isStruct = [](Pointer<ISymbol> symbol) {
+      return dynamic_cast<Pointer<Struct>>(symbol) != nullptr;
     };
 
     weak<ISymbol> candidate = lookUpIf(id, isStruct, defaultValue);
@@ -30,8 +30,8 @@ namespace friday::inline api::inline typesystem {
   }
 
   auto Namespace::getVariable(string const& id, weak<Variable> defaultValue) -> weak<Variable> {
-    constexpr auto isVariable = [](ISymbol* symbol) {
-      return dynamic_cast<Variable*>(symbol) != nullptr;
+    constexpr auto isVariable = [](Pointer<ISymbol> symbol) {
+      return dynamic_cast<Pointer<Variable>>(symbol) != nullptr;
     };
 
     weak<ISymbol> candidate = lookUpIf(id, isVariable, defaultValue);
@@ -50,7 +50,7 @@ namespace friday::inline api::inline typesystem {
     throw NotImplementedError{"Namespace::getMangledId()"};
   }
 
-  auto Namespace::getDeclaringSymbolTable() -> ISymbolTable* {
+  auto Namespace::getDeclaringSymbolTable() -> Pointer<ISymbolTable> {
     return this->M_parentNamespace;
   }
 
@@ -58,7 +58,7 @@ namespace friday::inline api::inline typesystem {
     throw NotImplementedError{"Namespace::getAttributes()"};
   }
 
-  auto Namespace::getParent() -> ISymbolTable* {
+  auto Namespace::getParent() -> Pointer<ISymbolTable> {
     return rtti::cast<ISymbolTable>(this->M_parentNamespace);
   }  
 }

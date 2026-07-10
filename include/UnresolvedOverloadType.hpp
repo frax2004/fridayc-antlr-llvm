@@ -4,7 +4,7 @@
 
 namespace friday::inline api::inline typesystem {
 
-  struct UnresolvedOverloadType final : Type {
+  struct FRIDAY_API UnresolvedOverloadType final : Type {
     private:
     constexpr UnresolvedOverloadType() = default;
 
@@ -12,9 +12,9 @@ namespace friday::inline api::inline typesystem {
     constexpr ~UnresolvedOverloadType() override = default;
 
     auto getName() const noexcept -> string const& override;
-    auto getLLVMType(llvm::LLVMContext& ctx) const noexcept -> llvm::Type* override;
+    auto getLLVMType(llvm::LLVMContext& ctx) const noexcept -> Pointer<llvm::Type> override;
     
-    static auto get() -> Type*;
+    static auto get() -> Pointer<Type>;
 
     private:
     string M_name = "<unresolved-overload-type>"s;

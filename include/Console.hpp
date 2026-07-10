@@ -4,12 +4,12 @@
 
 namespace friday::inline core::inline IO {
 
-  struct Console final {
+  struct FRIDAY_API Console final {
     private:
     constexpr Console() noexcept = default;
 
     public:
-    struct Color final {
+    struct FRIDAY_API Color final {
 
       private:
       constexpr inline Color() noexcept = default;

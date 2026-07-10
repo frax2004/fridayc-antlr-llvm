@@ -8,18 +8,18 @@ namespace friday::inline api::inline pipeline {
 
   struct CompilationContext;
 
-  struct TranslationUnit final : ISymbolTable {
+  struct FRIDAY_API TranslationUnit final : ISymbolTable {
     private:
     weak<Namespace>              ownedNamespace { };
     map<string, weak<Namespace>> usedNamespaces { };
-    CompilationContext*          globalContext { nullptr };
+    Pointer<CompilationContext>          globalContext { nullptr };
     string                       path = "";
     ifstream                     inputStream;
     ant::ANTLRInputStream        input;
     FridayScanner                lexer;
     ant::CommonTokenStream       tokens;
     FridayParser                 parser;
-    ant::tree::ParseTree*        ast { nullptr };
+    Pointer<ant::tree::ParseTree>        ast { nullptr };
 
     public:
     TranslationUnit(CompilationContext& ctx, string path);
@@ -27,19 +27,19 @@ namespace friday::inline api::inline pipeline {
 
     public:
     auto getPath() const -> string;
-    auto getParseTree() const -> ant::tree::ParseTree*;
+    auto getParseTree() const -> Pointer<ant::tree::ParseTree>;
     auto use(rc<Namespace> nsp) -> void;
     auto getOwnedNamespace() const -> weak<Namespace>;
     auto setOwnedNamespace(rc<Namespace> nsp) -> void;
-    auto getContext() -> CompilationContext*;
+    auto getContext() -> Pointer<CompilationContext>;
 
     auto define(rc<ISymbol> symbol) -> bool override;
     auto isDefined(string const& id) -> bool override;
-    auto mostSimilar(string const& name, Predicate<ISymbol*> filter, u64 maxEditDistance = 0) noexcept -> weak<ISymbol> override;
+    auto mostSimilar(string const& name, Predicate<Pointer<ISymbol>> filter, u64 maxEditDistance = 0) noexcept -> weak<ISymbol> override;
     auto getSymbols() const -> vector<weak<ISymbol>> override;
-    auto getParent() -> ISymbolTable* override;
+    auto getParent() -> Pointer<ISymbolTable> override;
     auto lookUp(string const& name, weak<ISymbol> defaultValue) -> weak<ISymbol> override;
-    auto lookUpIf(string const& name, Predicate<ISymbol*> predicate, weak<ISymbol> defaultValue) -> weak<ISymbol> override;
+    auto lookUpIf(string const& name, Predicate<Pointer<ISymbol>> predicate, weak<ISymbol> defaultValue) -> weak<ISymbol> override;
 
     static auto parse(CompilationContext& ctx, string path) -> rc<TranslationUnit>;
   };

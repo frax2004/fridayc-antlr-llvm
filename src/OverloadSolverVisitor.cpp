@@ -16,13 +16,13 @@ namespace friday::inline api::inline pipeline {
     (void)_;
   }
 
-  auto OverloadSolverVisitor::visitFunctionStatement(FridayParser::FunctionStatementContext* ctx) -> any {
+  auto OverloadSolverVisitor::visitFunctionStatement(FridayParser::FunctionStatementContext *ctx) -> any {
 
-    auto isErrorType = [](Type* other) { 
+    auto isErrorType = [](Pointer<Type> other) { 
       return other == ErrorType::get(); 
     };
 
-    auto tup2pair = [](tuple<string, Type*> const& tup) {
+    auto tup2pair = [](tuple<string, Pointer<Type>> const& tup) {
       return make_pair(get<0>(tup), get<1>(tup));
     };
 
@@ -104,12 +104,12 @@ namespace friday::inline api::inline pipeline {
     return {};
   }
 
-  auto OverloadSolverVisitor::visitNativeFunctionStatement(FridayParser::NativeFunctionStatementContext* ctx) -> any {
-    auto isErrorType = [](Type* other) { 
+  auto OverloadSolverVisitor::visitNativeFunctionStatement(FridayParser::NativeFunctionStatementContext *ctx) -> any {
+    auto isErrorType = [](Pointer<Type> other) { 
       return other == ErrorType::get(); 
     };
 
-    auto tup2pair = [](tuple<string, Type*> const& tup) {
+    auto tup2pair = [](tuple<string, Pointer<Type>> const& tup) {
       return make_pair(get<0>(tup), get<1>(tup));
     };
 

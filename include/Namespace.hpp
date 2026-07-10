@@ -10,9 +10,9 @@
 
 namespace friday::inline api::inline typesystem {
 
-  struct Namespace final : ISymbol, SymbolTable<Variable, Struct, Overload> {
+  struct FRIDAY_API Namespace final : ISymbol, SymbolTable<Variable, Struct, Overload> {
     private:
-    Namespace* M_parentNamespace { nullptr };
+    Pointer<Namespace> M_parentNamespace { nullptr };
     string M_name;
 
     public:
@@ -27,15 +27,15 @@ namespace friday::inline api::inline typesystem {
     auto getQualifiedId() const -> string override;
     auto getFullQualifiedId() const -> string override;
     auto getMangledId() const -> string override;
-    auto getDeclaringSymbolTable() -> ISymbolTable* override;
-    auto getParent() -> ISymbolTable* override;
+    auto getDeclaringSymbolTable() -> Pointer<ISymbolTable> override;
+    auto getParent() -> Pointer<ISymbolTable> override;
     auto getAttributes() const -> Attributes override;
   };
 }
 
 
 template<>
-struct json::stringify<friday::Namespace> {
+struct FRIDAY_API json::stringify<friday::Namespace> {
   auto operator()(friday::Namespace const& self) -> string {
     auto name = self.getQualifiedId();
     auto symbols = self.getSymbols();
@@ -45,7 +45,7 @@ struct json::stringify<friday::Namespace> {
     auto sct2str = json::stringify<friday::Struct>{};
     auto ovl2str = json::stringify<friday::Overload>{};
 
-    auto sym2str = [&](friday::ISymbol* symbol) {
+    auto sym2str = [&](Pointer<friday::ISymbol> symbol) {
       if(auto asVar = friday::rtti::cast<friday::Variable>(symbol)) 
         return var2str(*asVar);
       else if(auto asStruct = friday::rtti::cast<friday::Struct>(symbol)) 

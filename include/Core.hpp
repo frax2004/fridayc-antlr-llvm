@@ -2,7 +2,7 @@
 
 #include <Version.hpp>
 #include <bits/stdc++.h>
-
+#include <Pointer.hpp>
 
 using namespace std;
 using namespace string_literals;
@@ -34,8 +34,8 @@ using weak = weak_ptr<T>;
 using string_ref = string_view;
 
 template<class T>
-struct hash<vector<T*>> {
-  auto operator()(vector<T*> const& vec) const noexcept -> size_t;
+struct FRIDAY_API hash<vector<Pointer<T>>> {
+  auto operator()(vector<Pointer<T>> const& vec) const noexcept -> size_t;
 };
 
 #include <Core.inl>

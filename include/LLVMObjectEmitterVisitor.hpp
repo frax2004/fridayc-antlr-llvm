@@ -3,7 +3,7 @@
 
 namespace friday::inline api::inline pipeline {
   // will emit the llvm object files
-  struct LLVMObjectEmitterVisitor final : StaticAnalyzer {
+  struct FRIDAY_API LLVMObjectEmitterVisitor final : StaticAnalyzer {
   
     public:
     LLVMObjectEmitterVisitor(CompilationContext& ctx);

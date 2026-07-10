@@ -5,11 +5,11 @@
 #include <FridayParserBaseVisitor.h>
 
 namespace friday::inline api::inline pipeline {
-  struct StaticAnalyzer : public FridayParserBaseVisitor, NonCopyable {
+  struct FRIDAY_API StaticAnalyzer : public FridayParserBaseVisitor, NonCopyable {
     private:
-    CompilationContext* context { nullptr };
+    Pointer<CompilationContext> context { nullptr };
     vector<SemanticError> M_errors { };
-    TranslationUnit* M_currentUnit { nullptr };
+    Pointer<TranslationUnit> M_currentUnit { nullptr };
 
     public:
     StaticAnalyzer(CompilationContext& ctx);
@@ -24,9 +24,9 @@ namespace friday::inline api::inline pipeline {
     auto getCompilationContext() -> CompilationContext&;
     
     protected:
-    auto setCurrentUnit(TranslationUnit* unit) -> void;
-    auto getCurrentUnit() -> TranslationUnit*;
-    auto errorAt(ant::Token* token, string message) -> void;
+    auto setCurrentUnit(Pointer<TranslationUnit> unit) -> void;
+    auto getCurrentUnit() -> Pointer<TranslationUnit>;
+    auto errorAt(Pointer<ant::Token> token, string message) -> void;
 
   };
 }

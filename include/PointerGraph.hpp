@@ -4,7 +4,7 @@
 namespace friday::inline core::inline collections {
   template<class T>
   requires is_pointer_v<T>
-  struct PointerGraph final {
+  struct FRIDAY_API PointerGraph final {
   
     private:
     unordered_map<T, set<T>> M_adjacencyList {};

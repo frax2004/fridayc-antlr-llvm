@@ -22,32 +22,32 @@ namespace friday::inline api::inline pipeline {
     return not this->M_symbolTables.empty() ? this->M_symbolTables.top() : weak<ISymbolTable>{};
   }
 
-  auto TypeCheckerVisitor::BYTE() -> Type* {
+  auto TypeCheckerVisitor::BYTE() -> Pointer<Type> {
     return rtti::cast<Type>(this->getCurrentUnit()->getContext()->global->getStruct("byte").lock().get());
   }
 
-  auto TypeCheckerVisitor::INT() -> Type* {
+  auto TypeCheckerVisitor::INT() -> Pointer<Type> {
     return rtti::cast<Type>(this->getCurrentUnit()->getContext()->global->getStruct("int").lock().get());
   }
 
-  auto TypeCheckerVisitor::BOOL() -> Type* {
+  auto TypeCheckerVisitor::BOOL() -> Pointer<Type> {
     return rtti::cast<Type>(this->getCurrentUnit()->getContext()->global->getStruct("bool").lock().get());
   }
 
-  auto TypeCheckerVisitor::VOID() -> Type* {
+  auto TypeCheckerVisitor::VOID() -> Pointer<Type> {
     return rtti::cast<Type>(this->getCurrentUnit()->getContext()->global->getStruct("void").lock().get());
   }
 
-  auto TypeCheckerVisitor::FLOAT() -> Type* {
+  auto TypeCheckerVisitor::FLOAT() -> Pointer<Type> {
     return rtti::cast<Type>(this->getCurrentUnit()->getContext()->global->getStruct("float").lock().get());
   }
 
-  auto TypeCheckerVisitor::findBinaryOperator(string operatorName, Type* lhsType, Type* rhsType) -> weak<Function> {
+  auto TypeCheckerVisitor::findBinaryOperator(string operatorName, Pointer<Type> lhsType, Pointer<Type> rhsType) -> weak<Function> {
     auto toOptional = []<typename T>(weak<T> ref) { 
       return not ref.expired() ? make_optional(ref) : nullopt; 
     };
 
-    auto isOverload = [](ISymbol* symbol) { 
+    auto isOverload = [](Pointer<ISymbol> symbol) { 
       return rtti::instanceOf<Overload>(symbol); 
     };
 

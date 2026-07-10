@@ -4,7 +4,7 @@
 
 namespace friday::inline api::inline typesystem {
 
-  struct ErrorType final : Type {
+  struct FRIDAY_API ErrorType final : Type {
     private:
     constexpr ErrorType() = default;
 
@@ -13,9 +13,9 @@ namespace friday::inline api::inline typesystem {
 
     public:
     auto getName() const noexcept -> string const& override;
-    auto getLLVMType(llvm::LLVMContext& ctx) const noexcept -> llvm::Type* override;
+    auto getLLVMType(llvm::LLVMContext& ctx) const noexcept -> Pointer<llvm::Type> override;
     
-    static auto get() -> Type*;
+    static auto get() -> Pointer<Type>;
 
     private:
     string M_name = "<error-type>"s;

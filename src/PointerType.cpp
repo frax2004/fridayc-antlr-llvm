@@ -12,11 +12,11 @@ namespace friday::inline api::inline typesystem {
     return this->M_name;
   }
 
-  auto PointerType::getLLVMType(llvm::LLVMContext& ctx) const noexcept -> llvm::Type* {
+  auto PointerType::getLLVMType(llvm::LLVMContext& ctx) const noexcept -> Pointer<llvm::Type> {
     return llvm::PointerType::get(ctx, 0);
   }
 
-  auto PointerType::getPointedType() const noexcept -> Type* {
+  auto PointerType::getPointedType() const noexcept -> Pointer<Type> {
     return this->M_pointedType;
   }
 
@@ -24,7 +24,7 @@ namespace friday::inline api::inline typesystem {
     return this->M_dimensions;
   }
 
-  auto PointerType::get(Type& elementType, u64 dimensions) noexcept -> Type* {
+  auto PointerType::get(Type& elementType, u64 dimensions) noexcept -> Pointer<Type> {
     static map<string, rc<PointerType>> S_PointerTypes = {};
 
     rc<PointerType> type {new PointerType(elementType, dimensions)};

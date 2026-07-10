@@ -28,7 +28,7 @@ namespace friday::inline api::inline pipeline {
     return *this;
   }
 
-  auto StaticAnalyzer::errorAt(ant::Token* token, string message) -> void {
+  auto StaticAnalyzer::errorAt(Pointer<ant::Token> token, string message) -> void {
     if(not this->M_currentUnit) {
       throw NullPointerError{};
     }
@@ -45,11 +45,11 @@ namespace friday::inline api::inline pipeline {
     );
   }
 
-  auto StaticAnalyzer::setCurrentUnit(TranslationUnit* unit) -> void {
+  auto StaticAnalyzer::setCurrentUnit(Pointer<TranslationUnit> unit) -> void {
     this->M_currentUnit = unit;
   }
 
-  auto StaticAnalyzer::getCurrentUnit() -> TranslationUnit* {
+  auto StaticAnalyzer::getCurrentUnit() -> Pointer<TranslationUnit> {
     return this->M_currentUnit;
   }
 

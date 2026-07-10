@@ -5,9 +5,8 @@
 
 namespace friday::inline api::inline typesystem {
 
-  struct Attributes final {
+  struct FRIDAY_API Attributes final {
     VisibilityModifier visibility;
-    SourceLocation definition;
     bool isStatic;
     bool isConst;
     bool isUnused;
