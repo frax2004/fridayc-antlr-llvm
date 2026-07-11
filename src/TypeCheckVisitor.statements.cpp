@@ -5,11 +5,11 @@
 
 
 namespace friday::inline api::inline pipeline {
-  constexpr static auto RETURN_TYPE_MISMATCH = "Expression of type '{}' does not match the function return type '{}'. Implicit casts are not permitted, if this is the problem, try adding an explicit cast."_f;
+  constexpr static auto RETURN_TYPE_MISMATCH       = "Expression of type '{}' does not match the function return type '{}'. Implicit casts are not permitted, if this is the problem, try adding an explicit cast."_f;
   constexpr static auto EXPRESSION_NOT_CONVERTIBLE = "Expression of type '{}' is not convertible to {}. Implicit cast are not permitted, if this is the problem, try adding an explicit cast."_f;
-  constexpr static auto ENTITY_REDECLARATION = "Redeclaration of name '{}' previously already defined as a different entity."_f;
-  constexpr static auto PARAM_REDECLARATION = "In function declaration, redeclaration of parameter #{} named '{}' of type '{}' previously already defined."_f;
-  constexpr static auto INVALID_PARAM_TYPE = "In function declaration, parameter #{} named '{}' has an invalid type '{}'."_f;
+  constexpr static auto ENTITY_REDECLARATION       = "Redeclaration of name '{}' previously already defined as a different entity."_f;
+  constexpr static auto PARAM_REDECLARATION        = "In function declaration, redeclaration of parameter #{} named '{}' of type '{}' previously already defined."_f;
+  constexpr static auto INVALID_PARAM_TYPE         = "In function declaration, parameter #{} named '{}' has an invalid type '{}'."_f;
 
   auto TypeCheckerVisitor::visitScopeStatement(FridayParser::ScopeStatementContext *ctx) -> any {
     Console::debug("ScopeStatementContext: {}"_f.format(ctx->getText()));

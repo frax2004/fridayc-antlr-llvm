@@ -10,3 +10,8 @@ auto hash<vector<Pointer<T>>>::operator()(vector<Pointer<T>> const& vec) const n
   }
   return seed;
 }
+
+template<class T>
+auto weak<T>::to_optional() -> optional<weak<T>> {
+  return not this->expired() ? optional{*this} : nullopt;
+}

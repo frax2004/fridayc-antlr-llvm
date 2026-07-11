@@ -23,57 +23,45 @@ namespace friday::inline api::inline pipeline {
   }
 
   auto TypeCheckerVisitor::BYTE() -> Pointer<Type> {
-    return rtti::cast<Type>(this->get_current_unit()->comp_context()->get_global()->find_struct("byte").lock().get());
+    return rtti::cast<Type>(this->comp_context().get_global()->find_struct("byte").lock().get());
   }
 
   auto TypeCheckerVisitor::INT() -> Pointer<Type> {
-    return rtti::cast<Type>(this->get_current_unit()->comp_context()->get_global()->find_struct("int").lock().get());
+    return rtti::cast<Type>(this->comp_context().get_global()->find_struct("int").lock().get());
   }
 
   auto TypeCheckerVisitor::BOOL() -> Pointer<Type> {
-    return rtti::cast<Type>(this->get_current_unit()->comp_context()->get_global()->find_struct("bool").lock().get());
+    return rtti::cast<Type>(this->comp_context().get_global()->find_struct("bool").lock().get());
   }
 
   auto TypeCheckerVisitor::VOID() -> Pointer<Type> {
-    return rtti::cast<Type>(this->get_current_unit()->comp_context()->get_global()->find_struct("void").lock().get());
+    return rtti::cast<Type>(this->comp_context().get_global()->find_struct("void").lock().get());
   }
 
   auto TypeCheckerVisitor::FLOAT() -> Pointer<Type> {
-    return rtti::cast<Type>(this->get_current_unit()->comp_context()->get_global()->find_struct("float").lock().get());
+    return rtti::cast<Type>(this->comp_context().get_global()->find_struct("float").lock().get());
   }
 
   auto TypeCheckerVisitor::find_binary_operator(string_view name, Pointer<Type> lhsType, Pointer<Type> rhsType) -> weak<Function> {
-    auto toOptional = []<typename T>(weak<T> ref) { 
-      return not ref.expired() ? make_optional(ref) : nullopt; 
+
+    weak<ISymbol> candidate = this->get_current_unit()->look_up_if(name, &Overload::is_overload, {});
+
+    auto try_match = [lhsType, rhsType](Overload* ref) { 
+      return ref->try_match({lhsType, rhsType}).to_optional();
     };
 
-    auto is_overload = [](Pointer<ISymbol> symbol) { 
-      return rtti::instance_of<Overload>(symbol); 
-    };
-
-    auto to_overload = [](rc<ISymbol> ref) { 
-      return dynamic_pointer_cast<Overload>(ref); 
-    };
-
-    auto try_match = [lhsType, rhsType, toOptional](rc<Overload> ref) { 
-      return toOptional(ref->try_match({lhsType, rhsType})); 
-    };
-
-    weak<ISymbol> candidate = this->get_current_unit()->look_up_if(name, is_overload, {});
-
-    auto searchInStruct = [lhsType, candidate, name, toOptional]() -> optional<weak<ISymbol>> {
+    auto search_within_left_struct = [lhsType, candidate, name]() -> optional<weak<ISymbol>> {
       if(auto lhsAsStruct = rtti::cast<Struct>(lhsType); candidate.expired() and lhsAsStruct != nullptr) {
-        return toOptional(lhsAsStruct->find_method(name));
+        return lhsAsStruct->find_method(name).to_optional();
       } else return nullopt;
     };
 
-    // Attempt to find a matching operator within the current namespace
-    return toOptional(candidate)
-    // Attempt to find a matching operator within lhs' struct
-    .or_else(searchInStruct)
+    return candidate
+    .to_optional()
+    .or_else(search_within_left_struct)
     .transform(&weak<ISymbol>::lock)
-    .transform(to_overload)
-    // Attempt to match the operator with the operands
+    .transform(&rc<ISymbol>::get)
+    .transform(&Overload::to_overload)
     .and_then(try_match)
     .value_or({});
   }

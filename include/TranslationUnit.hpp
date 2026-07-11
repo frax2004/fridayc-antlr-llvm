@@ -32,7 +32,7 @@ namespace friday::inline api::inline pipeline {
     auto use(rc<Namespace> nsp) -> void;
     auto get_owned_namespace() const -> weak<Namespace>;
     auto set_owned_namespace(rc<Namespace> nsp) -> void;
-    auto comp_context() -> Pointer<CompilationContext>;
+    auto comp_context() -> CompilationContext&;
 
     auto define(rc<ISymbol> symbol) -> bool override;
     auto is_defined(string_view id) -> bool override;

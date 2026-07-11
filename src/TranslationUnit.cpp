@@ -13,7 +13,7 @@ namespace friday::inline api::inline pipeline {
     , parser { &this->tokens }
     , ast { this->parser.translationUnit() }
   {
-    this->ownedNamespace = this->comp_context()->get_global();
+    this->ownedNamespace = this->comp_context().get_global();
   }
 
   auto TranslationUnit::parse(CompilationContext& ctx, string path) -> rc<TranslationUnit> {
@@ -58,7 +58,7 @@ namespace friday::inline api::inline pipeline {
       }
     }
 
-    auto global = this->comp_context()->get_global().get();
+    auto global = this->comp_context().get_global().get();
     if(auto candidate = global->look_up(name, defaultValue); not candidate.expired()) {
       return candidate;
     }
@@ -85,7 +85,7 @@ namespace friday::inline api::inline pipeline {
       }
     }
 
-    auto global = this->comp_context()->get_global().get();
+    auto global = this->comp_context().get_global().get();
     if(auto candidate = global->look_up_if(name, predicate, defaultValue); not candidate.expired()) {
       return candidate;
     }
@@ -117,12 +117,12 @@ namespace friday::inline api::inline pipeline {
     this->ownedNamespace = nsp;
   }
 
-  auto TranslationUnit::comp_context() -> Pointer<CompilationContext> {
-    return this->globalContext;
+  auto TranslationUnit::comp_context() -> CompilationContext& {
+    return *this->globalContext;
   }
 
   auto TranslationUnit::owns_namespace() -> bool {
-    return not this->ownedNamespace.expired() and this->ownedNamespace.lock() != this->comp_context()->get_global();
+    return not this->ownedNamespace.expired() and this->ownedNamespace.lock() != this->comp_context().get_global();
   }
 
 }
