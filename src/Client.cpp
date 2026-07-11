@@ -2,11 +2,18 @@
 #include <Console.hpp>
 #include <Error.hpp>
 #include <OperationNotSupportedError.hpp>
+#include <NullPointerError.hpp>
 
 using namespace friday;
 
 
 auto main(i32 argc, const i8** argv) -> i32 {
+  if constexpr(FRIDAY_API_ENABLE_SIGSEGV_AS_EXCEPTION) {
+    signal(SIGSEGV, [](int signum) {
+      (void)signum;
+      throw NullPointerError{};
+    });
+  }
 
   extern void Main(vector<string> args);
 

@@ -12,7 +12,6 @@ namespace friday::inline api::inline pipeline {
     auto candidate = ctx->func->typeId;
 
     if(candidate == ErrorType::get() or not rtti::instance_of<Overload>(candidate)) {
-      Console::log("{} instanceof Overload :: {}"_f.format(ctx->func->getText(), rtti::instance_of<Overload>(candidate)));
       this->error_at(
         ctx->getStart(),
         "The underlined expression '{}' of type '{}' is not a function and cannot be called."_f.format(

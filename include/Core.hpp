@@ -29,7 +29,11 @@ template<class T>
 using rc = shared_ptr<T>;
 
 template<class T>
-using weak = weak_ptr<T>;
+struct weak final : public weak_ptr<T> {
+  using weak_ptr<T>::weak_ptr;
+
+  auto to_optional() -> optional<weak<T>>;
+};
 
 using string_ref = string_view;
 
