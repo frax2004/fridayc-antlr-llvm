@@ -18,7 +18,7 @@ namespace friday::inline api::inline pipeline {
     public:
     auto errors() -> vector<SemanticError>;
     auto analyze() -> StaticAnalyzer&;
-    
+
     virtual auto beginUnit(TranslationUnit& unit) -> void = 0;
     virtual auto endUnit(TranslationUnit& unit) -> void = 0;
     auto getCompilationContext() -> CompilationContext&;

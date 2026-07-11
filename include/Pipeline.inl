@@ -7,7 +7,7 @@ namespace friday::inline api::inline pipeline {
 
   template<derived_from<StaticAnalyzer> T>
   auto Pipeline::andThen() -> Pipeline& {
-    
+
     this->M_context = M_context
     .and_then([](Pointer<CompilationContext> ctx) -> optional<Pointer<CompilationContext>> {
       auto errors = T{*ctx}.analyze().errors();

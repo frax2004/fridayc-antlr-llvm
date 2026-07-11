@@ -2,12 +2,7 @@
 
 using namespace friday;
 
-
 auto Main(vector<string> paths) -> void {
-  // signal(SIGSEGV, [](int) {
-  //   throw NullPointerError{};
-  // });
-
   Console::setDebugEnabled(false);
 
   CompilationContext context{ paths };

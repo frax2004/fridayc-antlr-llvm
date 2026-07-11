@@ -8,7 +8,7 @@ namespace friday::inline api::inline pipeline {
   DiscoveryVisitor::DiscoveryVisitor(CompilationContext& ctx)
     : StaticAnalyzer { ctx }
   {}
-  
+
   auto DiscoveryVisitor::current() -> Pointer<ISymbolTable> {
     return this->M_currentSymbolTable;
   }
@@ -16,7 +16,7 @@ namespace friday::inline api::inline pipeline {
   auto DiscoveryVisitor::beginUnit(TranslationUnit& unit) -> void {
     this->M_currentSymbolTable = &unit;
   }
-  
+
   auto DiscoveryVisitor::endUnit(TranslationUnit& _) -> void {
     (void)_;
     this->M_currentSymbolTable = nullptr;
@@ -36,13 +36,13 @@ namespace friday::inline api::inline pipeline {
 
     string identifier = token->getText();
     auto& namespaces = this->getCompilationContext().namespaces;
-    
+
     if(auto it = namespaces.find(identifier); it != namespaces.end()) {
       unit->setOwnedNamespace(it->second);
     } else {
       auto [iter, ok] = namespaces.emplace(
         identifier, 
-        make_shared<Namespace>(identifier)
+        make_shared<Namespace>(*this->getCompilationContext().global, identifier)
       );
 
       unit->setOwnedNamespace(iter->second);

@@ -11,7 +11,7 @@ namespace friday::inline api::inline pipeline {
   auto StaticAnalyzer::errors() -> vector<SemanticError> {
     return this->M_errors;
   }
-  
+
   auto StaticAnalyzer::getCompilationContext() -> CompilationContext& {
     return *this->context;
   }

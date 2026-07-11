@@ -20,7 +20,7 @@ namespace friday::inline api::inline pipeline {
     template<derived_from<StaticAnalyzer> T>
     auto andThen() -> Pipeline&;
 
-  template<invocable<Pointer<CompilationContext>> Fn>
+    template<invocable<Pointer<CompilationContext>> Fn>
     auto peek(Fn&& fn) -> Pipeline&;
   };
 
