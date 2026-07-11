@@ -12,7 +12,7 @@ namespace friday::inline api::inline pipeline {
     auto on_unit_begin(TranslationUnit& unit) -> void override;
     auto on_unit_end(TranslationUnit& unit) -> void override;
     
-    auto visitFunctionStatement(FridayParser::FunctionStatementContext *ctx) -> any override;
+    auto visitFreeFunctionStatement(FridayParser::FreeFunctionStatementContext *ctx) -> any override;
     auto visitNativeFunctionStatement(FridayParser::NativeFunctionStatementContext *ctx) -> any override;
 
   };

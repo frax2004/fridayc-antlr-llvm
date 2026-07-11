@@ -17,7 +17,7 @@ namespace friday::inline api::inline pipeline {
 
     auto visitNamespaceStatement(FridayParser::NamespaceStatementContext *ctx) -> any override;
     auto visitStructStatement(FridayParser::StructStatementContext *ctx) -> any override;
-    auto visitFunctionStatement(FridayParser::FunctionStatementContext *ctx) -> any override;
+    auto visitFreeFunctionStatement(FridayParser::FreeFunctionStatementContext *ctx) -> any override;
     auto visitNativeFunctionStatement(FridayParser::NativeFunctionStatementContext *ctx) -> any override;
 
     private:

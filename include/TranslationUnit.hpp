@@ -26,6 +26,7 @@ namespace friday::inline api::inline pipeline {
     ~TranslationUnit() override = default;
 
     public:
+    auto owns_namespace() -> bool;
     auto get_path() const -> string;
     auto get_parse_tree() const -> Pointer<ant::tree::ParseTree>;
     auto use(rc<Namespace> nsp) -> void;

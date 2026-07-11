@@ -20,19 +20,13 @@ namespace friday::inline api::inline pipeline {
     auto token = ctx->IDENTIFIER()->getSymbol();
     auto name = token->getText();
 
-    auto& namespaces = this->comp_context().namespaces; 
-    auto it = namespaces.find(name);
+    auto nsp = this->comp_context().find_namespace(name);
     
-    if(it == namespaces.end()) {
-      this->error_at(
-        token,
-        USE_OF_UNDECLARED_NAMESPACE.format(name)
-      );
+    if(nsp.expired()) {
+      this->error_at(token, USE_OF_UNDECLARED_NAMESPACE.format(name));
       return {};
-    }
+    } else this->get_current_unit()->use(nsp.lock());
 
-    this->get_current_unit()->use(it->second);
-    
     return {};
   }
 }

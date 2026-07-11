@@ -17,7 +17,7 @@ namespace friday::inline api::inline pipeline {
   }
 
   auto StaticAnalyzer::analyze() -> StaticAnalyzer& {
-    for(auto& unit: this->M_context->units) {
+    for(auto unit: this->M_context->get_units()) {
       this->set_current_unit(unit.get());
       this->on_unit_begin(*unit);
       this->visit(unit->get_parse_tree());

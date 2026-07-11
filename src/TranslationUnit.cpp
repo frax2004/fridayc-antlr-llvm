@@ -13,7 +13,7 @@ namespace friday::inline api::inline pipeline {
     , parser { &this->tokens }
     , ast { this->parser.translationUnit() }
   {
-    this->ownedNamespace = this->globalContext->global;
+    this->ownedNamespace = this->comp_context()->get_global();
   }
 
   auto TranslationUnit::parse(CompilationContext& ctx, string path) -> rc<TranslationUnit> {
@@ -40,24 +40,25 @@ namespace friday::inline api::inline pipeline {
   }
 
   auto TranslationUnit::look_up(string_view name, weak<ISymbol> defaultValue) -> weak<ISymbol> {
-    auto global = this->globalContext->global.get();
-
-    auto notExpired = [](weak<Namespace> wr) { return not wr.expired(); };
-    auto toNamespaces = views::values 
-    | views::filter(notExpired) 
-    | views::transform(&weak<Namespace>::lock);
 
     if(not this->ownedNamespace.expired()) {
       if(auto candidate = this->ownedNamespace.lock()->look_up(name, defaultValue); not candidate.expired()) {
         return candidate;
       }
     }
+
+    auto notExpired = [](weak<Namespace> wr) { return not wr.expired(); };
+    auto toNamespaces = views::values 
+    | views::filter(notExpired) 
+    | views::transform(&weak<Namespace>::lock);
+
     for(auto nsp : this->usedNamespaces | toNamespaces) {
       if(auto candidate = nsp->look_up(name, defaultValue); not candidate.expired()) {
         return candidate;
       }
     }
 
+    auto global = this->comp_context()->get_global().get();
     if(auto candidate = global->look_up(name, defaultValue); not candidate.expired()) {
       return candidate;
     }
@@ -67,24 +68,24 @@ namespace friday::inline api::inline pipeline {
 
   auto TranslationUnit::look_up_if(string_view name, Predicate<Pointer<ISymbol>> predicate, weak<ISymbol> defaultValue) -> weak<ISymbol> {
 
-    auto global = this->globalContext->global.get();
+    if(not this->ownedNamespace.expired()) {
+      if(auto candidate = this->ownedNamespace.lock()->look_up_if(name, predicate, defaultValue); not candidate.expired()) {
+        return candidate;
+      }
+    }
 
     auto notExpired = [](weak<Namespace> wr) { return not wr.expired(); };
     auto toNamespaces = views::values 
     | views::filter(notExpired) 
     | views::transform(&weak<Namespace>::lock);
 
-    if(not this->ownedNamespace.expired()) {
-      if(auto candidate = this->ownedNamespace.lock()->look_up_if(name, predicate, defaultValue); not candidate.expired()) {
-        return candidate;
-      }
-    }
     for(auto nsp : this->usedNamespaces | toNamespaces) {
       if(auto candidate = nsp->look_up_if(name, predicate, defaultValue); not candidate.expired()) {
         return candidate;
       }
     }
 
+    auto global = this->comp_context()->get_global().get();
     if(auto candidate = global->look_up_if(name, predicate, defaultValue); not candidate.expired()) {
       return candidate;
     }
@@ -119,5 +120,9 @@ namespace friday::inline api::inline pipeline {
   auto TranslationUnit::comp_context() -> Pointer<CompilationContext> {
     return this->globalContext;
   }
-  
+
+  auto TranslationUnit::owns_namespace() -> bool {
+    return not this->ownedNamespace.expired() and this->ownedNamespace.lock() != this->comp_context()->get_global();
+  }
+
 }

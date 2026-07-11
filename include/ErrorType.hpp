@@ -16,6 +16,8 @@ namespace friday::inline api::inline typesystem {
     auto to_llvm_type(llvm::LLVMContext& ctx) const noexcept -> Pointer<llvm::Type> override;
     
     static auto get() -> Pointer<Type>;
+    static auto is_error_type(Pointer<Type> type) -> bool;
+
 
     private:
     string M_name { "<error-type>" };

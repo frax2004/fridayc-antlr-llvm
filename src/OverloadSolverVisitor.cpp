@@ -16,11 +16,7 @@ namespace friday::inline api::inline pipeline {
     (void)_;
   }
 
-  auto OverloadSolverVisitor::visitFunctionStatement(FridayParser::FunctionStatementContext *ctx) -> any {
-
-    auto isErrorType = [](Pointer<Type> other) { 
-      return other == ErrorType::get(); 
-    };
+  auto OverloadSolverVisitor::visitFreeFunctionStatement(FridayParser::FreeFunctionStatementContext *ctx) -> any {
 
     auto tup2pair = [](tuple<string, Pointer<Type>> const& tup) {
       return make_pair(get<0>(tup), get<1>(tup));
@@ -45,7 +41,7 @@ namespace friday::inline api::inline pipeline {
     auto retType = ctx->returnType->typeId;
     bool ok = true;
 
-    for(auto [i, type] : paramsTypes | views::filter(isErrorType) | views::enumerate) {
+    for(auto [i, type] : paramsTypes | views::filter(&ErrorType::is_error_type) | views::enumerate) {
       ok = false;
       this->error_at(
         ctx->paramsTypes[i]->getStart(),
@@ -57,7 +53,7 @@ namespace friday::inline api::inline pipeline {
       );
     }
 
-    if(retType == ErrorType::get()) {
+    if(ErrorType::is_error_type(retType)) {
       ok = false;
       this->error_at(
         ctx->returnType->getStart(),
@@ -105,9 +101,6 @@ namespace friday::inline api::inline pipeline {
   }
 
   auto OverloadSolverVisitor::visitNativeFunctionStatement(FridayParser::NativeFunctionStatementContext *ctx) -> any {
-    auto isErrorType = [](Pointer<Type> other) { 
-      return other == ErrorType::get(); 
-    };
 
     auto tup2pair = [](tuple<string, Pointer<Type>> const& tup) {
       return make_pair(get<0>(tup), get<1>(tup));
@@ -132,7 +125,7 @@ namespace friday::inline api::inline pipeline {
     auto retType = ctx->returnType->typeId;
     bool ok = true;
 
-    for(auto [i, type] : paramsTypes | views::filter(isErrorType) | views::enumerate) {
+    for(auto [i, type] : paramsTypes | views::filter(&ErrorType::is_error_type) | views::enumerate) {
       ok = false;
       this->error_at(
         ctx->paramsTypes[i]->getStart(),
@@ -144,7 +137,7 @@ namespace friday::inline api::inline pipeline {
       );
     }
 
-    if(retType == ErrorType::get()) {
+    if(ErrorType::is_error_type(retType)) {
       ok = false;
       this->error_at(
         ctx->returnType->getStart(),

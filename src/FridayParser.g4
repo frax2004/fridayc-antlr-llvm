@@ -28,7 +28,6 @@ options {
   | namespaceStatement
   | structStatement
   | functionStatement
-  | nativeFunctionStatement
   ;
   //////////////////////////////
   //////////////////////////////
@@ -49,14 +48,6 @@ options {
   : USING IDENTIFIER SEMI
   ;
 
-  nativeFunctionStatement returns [weak<Function> functionDecl, weak<Overload> overloadDecl]
-  : accessModifier = (PRIVATE | PUBLIC)? NATIVE FN name = IDENTIFIER LEFT_PAREN (
-      paramsNames += IDENTIFIER 
-      COL 
-      paramsTypes += type 
-      (COMMA paramsNames += IDENTIFIER COL paramsTypes += type)* 
-    )? RIGHT_PAREN ARROW returnType = type SEMI
-  ;
 
   functionStatement returns [weak<Function> functionDecl, weak<Overload> overloadDecl]
   : accessModifier = (PRIVATE | PUBLIC)? FN name = IDENTIFIER LEFT_PAREN (
@@ -64,7 +55,13 @@ options {
       COL 
       paramsTypes += type 
       (COMMA paramsNames += IDENTIFIER COL paramsTypes += type)* 
-    )? RIGHT_PAREN ARROW returnType = type block = functionScope
+    )? RIGHT_PAREN ARROW returnType = type block = functionScope                  # FreeFunctionStatement
+  | accessModifier = (PRIVATE | PUBLIC)? NATIVE FN name = IDENTIFIER LEFT_PAREN (
+      paramsNames += IDENTIFIER 
+      COL 
+      paramsTypes += type 
+      (COMMA paramsNames += IDENTIFIER COL paramsTypes += type)* 
+    )? RIGHT_PAREN ARROW returnType = type SEMI                                   # NativeFunctionStatement
   ;
 
   structStatement returns [weak<Struct> structDecl]

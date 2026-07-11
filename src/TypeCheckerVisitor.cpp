@@ -23,23 +23,23 @@ namespace friday::inline api::inline pipeline {
   }
 
   auto TypeCheckerVisitor::BYTE() -> Pointer<Type> {
-    return rtti::cast<Type>(this->get_current_unit()->comp_context()->global->find_struct("byte").lock().get());
+    return rtti::cast<Type>(this->get_current_unit()->comp_context()->get_global()->find_struct("byte").lock().get());
   }
 
   auto TypeCheckerVisitor::INT() -> Pointer<Type> {
-    return rtti::cast<Type>(this->get_current_unit()->comp_context()->global->find_struct("int").lock().get());
+    return rtti::cast<Type>(this->get_current_unit()->comp_context()->get_global()->find_struct("int").lock().get());
   }
 
   auto TypeCheckerVisitor::BOOL() -> Pointer<Type> {
-    return rtti::cast<Type>(this->get_current_unit()->comp_context()->global->find_struct("bool").lock().get());
+    return rtti::cast<Type>(this->get_current_unit()->comp_context()->get_global()->find_struct("bool").lock().get());
   }
 
   auto TypeCheckerVisitor::VOID() -> Pointer<Type> {
-    return rtti::cast<Type>(this->get_current_unit()->comp_context()->global->find_struct("void").lock().get());
+    return rtti::cast<Type>(this->get_current_unit()->comp_context()->get_global()->find_struct("void").lock().get());
   }
 
   auto TypeCheckerVisitor::FLOAT() -> Pointer<Type> {
-    return rtti::cast<Type>(this->get_current_unit()->comp_context()->global->find_struct("float").lock().get());
+    return rtti::cast<Type>(this->get_current_unit()->comp_context()->get_global()->find_struct("float").lock().get());
   }
 
   auto TypeCheckerVisitor::find_binary_operator(string_view name, Pointer<Type> lhsType, Pointer<Type> rhsType) -> weak<Function> {

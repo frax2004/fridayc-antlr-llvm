@@ -16,4 +16,8 @@ namespace friday::inline api::inline typesystem {
     return rtti::cast<Type>(&ERROR);
   }
 
+  auto ErrorType::is_error_type(Pointer<Type> type) -> bool {
+    return type == ErrorType::get();
+  }
+
 }

@@ -5,7 +5,7 @@
 namespace friday::inline api::inline pipeline {
 
   CompilationContext::CompilationContext(vector<string> const& paths) {
-    this->global = make_shared<Namespace>("");
+    this->M_global = make_shared<Namespace>("");
 
     auto parse = [this](string path) {
       return async(launch::async, [this, path]() {
@@ -17,68 +17,68 @@ namespace friday::inline api::inline pipeline {
     | views::transform(parse)
     | ranges::to<vector>();
 
-    this->units = futures
+    this->M_units = futures
     | views::transform(&future<rc<TranslationUnit>>::get)
     | ranges::to<vector>();
 
-    auto intType = make_shared<Primitive>(*this->global, "int", llvm::Type::getInt64Ty(this->llvmContext));
-    auto byteType = make_shared<Primitive>(*this->global, "byte", llvm::Type::getInt8Ty(this->llvmContext));
-    auto boolType = make_shared<Primitive>(*this->global, "bool", llvm::Type::getInt1Ty(this->llvmContext));
-    auto floatType = make_shared<Primitive>(*this->global, "float", llvm::Type::getDoubleTy(this->llvmContext));
-    auto voidType = make_shared<Primitive>(*this->global, "void", llvm::Type::getVoidTy(this->llvmContext));
+    auto intType = make_shared<Primitive>(*this->M_global, "int", llvm::Type::getInt64Ty(this->M_llvmContext));
+    auto byteType = make_shared<Primitive>(*this->M_global, "byte", llvm::Type::getInt8Ty(this->M_llvmContext));
+    auto boolType = make_shared<Primitive>(*this->M_global, "bool", llvm::Type::getInt1Ty(this->M_llvmContext));
+    auto floatType = make_shared<Primitive>(*this->M_global, "float", llvm::Type::getDoubleTy(this->M_llvmContext));
+    auto voidType = make_shared<Primitive>(*this->M_global, "void", llvm::Type::getVoidTy(this->M_llvmContext));
 
-    intType->define(BinaryOperatorBuilder{"operator+"}.within(*this->global).returns(intType).left(intType).right(intType).build());
-    intType->define(BinaryOperatorBuilder{"operator-"}.within(*this->global).returns(intType).left(intType).right(intType).build());
-    intType->define(BinaryOperatorBuilder{"operator*"}.within(*this->global).returns(intType).left(intType).right(intType).build());
-    intType->define(BinaryOperatorBuilder{"operator/"}.within(*this->global).returns(intType).left(intType).right(intType).build());
-    intType->define(BinaryOperatorBuilder{"operator%"}.within(*this->global).returns(intType).left(intType).right(intType).build());
-    intType->define(BinaryOperatorBuilder{"operator=="}.within(*this->global).returns(intType).left(intType).right(intType).build());
-    intType->define(BinaryOperatorBuilder{"operator!="}.within(*this->global).returns(intType).left(intType).right(intType).build());
-    intType->define(BinaryOperatorBuilder{"operator<"}.within(*this->global).returns(boolType).left(intType).right(intType).build());
-    intType->define(BinaryOperatorBuilder{"operator<="}.within(*this->global).returns(boolType).left(intType).right(intType).build());
-    intType->define(BinaryOperatorBuilder{"operator>"}.within(*this->global).returns(boolType).left(intType).right(intType).build());
-    intType->define(BinaryOperatorBuilder{"operator>="}.within(*this->global).returns(boolType).left(intType).right(intType).build());
+    intType->define(BinaryOperatorBuilder{"operator+"}.within(*this->M_global).returns(intType).left(intType).right(intType).build());
+    intType->define(BinaryOperatorBuilder{"operator-"}.within(*this->M_global).returns(intType).left(intType).right(intType).build());
+    intType->define(BinaryOperatorBuilder{"operator*"}.within(*this->M_global).returns(intType).left(intType).right(intType).build());
+    intType->define(BinaryOperatorBuilder{"operator/"}.within(*this->M_global).returns(intType).left(intType).right(intType).build());
+    intType->define(BinaryOperatorBuilder{"operator%"}.within(*this->M_global).returns(intType).left(intType).right(intType).build());
+    intType->define(BinaryOperatorBuilder{"operator=="}.within(*this->M_global).returns(intType).left(intType).right(intType).build());
+    intType->define(BinaryOperatorBuilder{"operator!="}.within(*this->M_global).returns(intType).left(intType).right(intType).build());
+    intType->define(BinaryOperatorBuilder{"operator<"}.within(*this->M_global).returns(boolType).left(intType).right(intType).build());
+    intType->define(BinaryOperatorBuilder{"operator<="}.within(*this->M_global).returns(boolType).left(intType).right(intType).build());
+    intType->define(BinaryOperatorBuilder{"operator>"}.within(*this->M_global).returns(boolType).left(intType).right(intType).build());
+    intType->define(BinaryOperatorBuilder{"operator>="}.within(*this->M_global).returns(boolType).left(intType).right(intType).build());
 
-    floatType->define(BinaryOperatorBuilder{"operator+"}.within(*this->global).returns(floatType).left(floatType).right(floatType).build());
-    floatType->define(BinaryOperatorBuilder{"operator-"}.within(*this->global).returns(floatType).left(floatType).right(floatType).build());
-    floatType->define(BinaryOperatorBuilder{"operator*"}.within(*this->global).returns(floatType).left(floatType).right(floatType).build());
-    floatType->define(BinaryOperatorBuilder{"operator/"}.within(*this->global).returns(floatType).left(floatType).right(floatType).build());
-    floatType->define(BinaryOperatorBuilder{"operator%"}.within(*this->global).returns(floatType).left(floatType).right(floatType).build());
-    floatType->define(BinaryOperatorBuilder{"operator=="}.within(*this->global).returns(floatType).left(floatType).right(floatType).build());
-    floatType->define(BinaryOperatorBuilder{"operator!="}.within(*this->global).returns(floatType).left(floatType).right(floatType).build());
-    floatType->define(BinaryOperatorBuilder{"operator<"}.within(*this->global).returns(boolType).left(floatType).right(floatType).build());
-    floatType->define(BinaryOperatorBuilder{"operator<="}.within(*this->global).returns(boolType).left(floatType).right(floatType).build());
-    floatType->define(BinaryOperatorBuilder{"operator>"}.within(*this->global).returns(boolType).left(floatType).right(floatType).build());
-    floatType->define(BinaryOperatorBuilder{"operator>="}.within(*this->global).returns(boolType).left(floatType).right(floatType).build());
+    floatType->define(BinaryOperatorBuilder{"operator+"}.within(*this->M_global).returns(floatType).left(floatType).right(floatType).build());
+    floatType->define(BinaryOperatorBuilder{"operator-"}.within(*this->M_global).returns(floatType).left(floatType).right(floatType).build());
+    floatType->define(BinaryOperatorBuilder{"operator*"}.within(*this->M_global).returns(floatType).left(floatType).right(floatType).build());
+    floatType->define(BinaryOperatorBuilder{"operator/"}.within(*this->M_global).returns(floatType).left(floatType).right(floatType).build());
+    floatType->define(BinaryOperatorBuilder{"operator%"}.within(*this->M_global).returns(floatType).left(floatType).right(floatType).build());
+    floatType->define(BinaryOperatorBuilder{"operator=="}.within(*this->M_global).returns(floatType).left(floatType).right(floatType).build());
+    floatType->define(BinaryOperatorBuilder{"operator!="}.within(*this->M_global).returns(floatType).left(floatType).right(floatType).build());
+    floatType->define(BinaryOperatorBuilder{"operator<"}.within(*this->M_global).returns(boolType).left(floatType).right(floatType).build());
+    floatType->define(BinaryOperatorBuilder{"operator<="}.within(*this->M_global).returns(boolType).left(floatType).right(floatType).build());
+    floatType->define(BinaryOperatorBuilder{"operator>"}.within(*this->M_global).returns(boolType).left(floatType).right(floatType).build());
+    floatType->define(BinaryOperatorBuilder{"operator>="}.within(*this->M_global).returns(boolType).left(floatType).right(floatType).build());
 
-    byteType->define(BinaryOperatorBuilder{"operator+"}.within(*this->global).returns(byteType).left(byteType).right(byteType).build());
-    byteType->define(BinaryOperatorBuilder{"operator-"}.within(*this->global).returns(byteType).left(byteType).right(byteType).build());
-    byteType->define(BinaryOperatorBuilder{"operator*"}.within(*this->global).returns(byteType).left(byteType).right(byteType).build());
-    byteType->define(BinaryOperatorBuilder{"operator/"}.within(*this->global).returns(byteType).left(byteType).right(byteType).build());
-    byteType->define(BinaryOperatorBuilder{"operator%"}.within(*this->global).returns(byteType).left(byteType).right(byteType).build());
-    byteType->define(BinaryOperatorBuilder{"operator=="}.within(*this->global).returns(byteType).left(byteType).right(byteType).build());
-    byteType->define(BinaryOperatorBuilder{"operator!="}.within(*this->global).returns(byteType).left(byteType).right(byteType).build());
-    byteType->define(BinaryOperatorBuilder{"operator<"}.within(*this->global).returns(boolType).left(byteType).right(byteType).build());
-    byteType->define(BinaryOperatorBuilder{"operator<="}.within(*this->global).returns(boolType).left(byteType).right(byteType).build());
-    byteType->define(BinaryOperatorBuilder{"operator>"}.within(*this->global).returns(boolType).left(byteType).right(byteType).build());
-    byteType->define(BinaryOperatorBuilder{"operator>="}.within(*this->global).returns(boolType).left(byteType).right(byteType).build());
+    byteType->define(BinaryOperatorBuilder{"operator+"}.within(*this->M_global).returns(byteType).left(byteType).right(byteType).build());
+    byteType->define(BinaryOperatorBuilder{"operator-"}.within(*this->M_global).returns(byteType).left(byteType).right(byteType).build());
+    byteType->define(BinaryOperatorBuilder{"operator*"}.within(*this->M_global).returns(byteType).left(byteType).right(byteType).build());
+    byteType->define(BinaryOperatorBuilder{"operator/"}.within(*this->M_global).returns(byteType).left(byteType).right(byteType).build());
+    byteType->define(BinaryOperatorBuilder{"operator%"}.within(*this->M_global).returns(byteType).left(byteType).right(byteType).build());
+    byteType->define(BinaryOperatorBuilder{"operator=="}.within(*this->M_global).returns(byteType).left(byteType).right(byteType).build());
+    byteType->define(BinaryOperatorBuilder{"operator!="}.within(*this->M_global).returns(byteType).left(byteType).right(byteType).build());
+    byteType->define(BinaryOperatorBuilder{"operator<"}.within(*this->M_global).returns(boolType).left(byteType).right(byteType).build());
+    byteType->define(BinaryOperatorBuilder{"operator<="}.within(*this->M_global).returns(boolType).left(byteType).right(byteType).build());
+    byteType->define(BinaryOperatorBuilder{"operator>"}.within(*this->M_global).returns(boolType).left(byteType).right(byteType).build());
+    byteType->define(BinaryOperatorBuilder{"operator>="}.within(*this->M_global).returns(boolType).left(byteType).right(byteType).build());
 
-    boolType->define(BinaryOperatorBuilder{"operator=="}.within(*this->global).returns(boolType).left(boolType).right(boolType).build());
-    boolType->define(BinaryOperatorBuilder{"operator!="}.within(*this->global).returns(boolType).left(boolType).right(boolType).build());
+    boolType->define(BinaryOperatorBuilder{"operator=="}.within(*this->M_global).returns(boolType).left(boolType).right(boolType).build());
+    boolType->define(BinaryOperatorBuilder{"operator!="}.within(*this->M_global).returns(boolType).left(boolType).right(boolType).build());
 
-    this->global->define(intType);
-    this->global->define(byteType);
-    this->global->define(boolType);
-    this->global->define(floatType);
-    this->global->define(voidType);
+    this->M_global->define(intType);
+    this->M_global->define(byteType);
+    this->M_global->define(boolType);
+    this->M_global->define(floatType);
+    this->M_global->define(voidType);
   }
 
   auto CompilationContext::print() -> void {
     auto toString = json::stringify<Namespace>{}; 
 
     auto table = "[{}, {}]"_f.format(
-      toString(*this->global),
-      this->namespaces
+      toString(*this->M_global),
+      this->M_namespaces
       | views::values
       | views::transform(&rc<Namespace>::operator*)
       | views::transform(toString)
@@ -90,6 +90,36 @@ namespace friday::inline api::inline pipeline {
     println(output, "{}", table);
     fclose(output);
 
+  }
+
+  auto CompilationContext::get_units() const -> ranges::ref_view<const vector<rc<TranslationUnit>>> {
+    return this->M_units;
+  }
+
+  auto CompilationContext::add_unit(rc<TranslationUnit> unit) -> void {
+    this->M_units.push_back(unit);
+  }
+
+  auto CompilationContext::get_or_emplace_namespace(string_view name) -> weak<Namespace> {
+    if(auto it = this->M_namespaces.find(name); it != this->M_namespaces.end()) {
+      return it->second;
+    } else return this->M_namespaces.emplace(
+      string{ name }, 
+      make_shared<Namespace>(*this->M_global, string{ name })
+    ).first->second;
+  }
+
+  auto CompilationContext::get_llvm_context() -> llvm::LLVMContext& {
+    return this->M_llvmContext;
+  }
+
+  auto CompilationContext::get_global() const -> rc<Namespace> {
+    return this->M_global;
+  }
+
+  auto CompilationContext::find_namespace(string_view name) -> weak<Namespace> {
+    auto it = this->M_namespaces.find(name);
+    return it != this->M_namespaces.end() ? it->second : weak<Namespace>{};
   }
 
 }
