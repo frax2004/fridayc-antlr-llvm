@@ -46,7 +46,7 @@ namespace friday::inline api::inline pipeline {
   auto DiscoveryVisitor::visitStructStatement(FridayParser::StructStatementContext *ctx) -> any {
     auto name = ctx->structName->getText();
 
-    if(not this->current()->look_up_if(name, Struct::is_struct, {}).expired()) {
+    if(not this->current()->look_up_if(name, &Struct::is_struct, {}).expired()) {
       this->error_at(
         ctx->structName,
         STRUCT_REDECLARATION.format(name)
@@ -71,7 +71,7 @@ namespace friday::inline api::inline pipeline {
   auto DiscoveryVisitor::visitFreeFunctionStatement(FridayParser::FreeFunctionStatementContext *ctx) -> any {
     auto name = ctx->name->getText();
 
-    weak<ISymbol> candidate = this->M_currentSymbolTable->look_up_if(name, Overload::is_overload, {});
+    weak<ISymbol> candidate = this->M_currentSymbolTable->look_up_if(name, &Overload::is_overload, {});
     if(candidate.expired()) {
       rc<Overload> overload = make_shared<Overload>(*this->current(), name);
       ctx->overloadDecl = overload;
@@ -84,7 +84,7 @@ namespace friday::inline api::inline pipeline {
   auto DiscoveryVisitor::visitNativeFunctionStatement(FridayParser::NativeFunctionStatementContext *ctx) -> any {
     auto name = ctx->name->getText();
 
-    weak<ISymbol> candidate = this->current()->look_up_if(name, Overload::is_overload, {});
+    weak<ISymbol> candidate = this->current()->look_up_if(name, &Overload::is_overload, {});
     if(candidate.expired()) {
       rc<Overload> overload = make_shared<Overload>(*this->current(), name);
       ctx->overloadDecl = overload;

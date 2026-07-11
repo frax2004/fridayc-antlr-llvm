@@ -46,16 +46,18 @@ namespace friday::inline api::inline pipeline {
   }
 
   auto TypeSolverVisitor::visitStructStatement(FridayParser::StructStatementContext *ctx) -> any {
-
+    this->visitChildren(ctx);
     string structName = ctx->structName->getText();
     
     if(ctx->structDecl.expired()) throw OperationNotSupportedError("Internal error.");
     rc<Struct> asStruct = ctx->structDecl.lock();
 
-    auto fieldsNames = ctx->fieldsNames | views::transform(&ant::Token::getText);
-    auto fieldsTypes = ctx->fieldsTypes | views::transform([this](auto typeCtx) { return this->to_type(typeCtx); });
+    auto fields = views::zip(
+      ctx->fieldsNames | views::transform(&ant::Token::getText),
+      ctx->fieldsTypes | views::transform(&FridayParser::TypeContext::typeId)
+    );
 
-    for(u64 i = 0; auto [fieldName, fieldType] : views::zip(fieldsNames, fieldsTypes)) {
+    for(u64 i = 0; auto [fieldName, fieldType] : fields) {
       if(asStruct->is_defined(fieldName)) {
         this->error_at(
           ctx->fieldsNames[i],
@@ -64,7 +66,7 @@ namespace friday::inline api::inline pipeline {
             fieldName
           )
         );
-      } else if(fieldType == nullptr or fieldType == ErrorType::get()) {
+      } else if(ErrorType::is_error_type(fieldType)) {
         this->error_at(
           ctx->fieldsTypes[i]->getStart(),
           "In definition of struct \"{}\", field named \"{}\" as an invalid error type \"{}\""_f.format(
@@ -85,8 +87,6 @@ namespace friday::inline api::inline pipeline {
 
       i++;
     }
-
-    for(auto method : ctx->methods) this->visit(method); // to register all types
 
     return {};
   }
