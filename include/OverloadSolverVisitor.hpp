@@ -4,26 +4,16 @@
 
 namespace friday::inline api::inline pipeline {
   // will solve the overload signatures
-  struct OverloadSolverVisitor : StaticAnalyzer {
+  struct FRIDAY_API OverloadSolverVisitor final : StaticAnalyzer {
     public:
     OverloadSolverVisitor(CompilationContext& ctx);
+    ~OverloadSolverVisitor() override = default;
 
-    auto beginUnit(TranslationUnit& unit) -> void override;
-    auto endUnit(TranslationUnit& unit) -> void override;
+    auto on_unit_begin(TranslationUnit& unit) -> void override;
+    auto on_unit_end(TranslationUnit& unit) -> void override;
     
-    auto visitFunctionStatement(FridayParser::FunctionStatementContext* ctx) -> any override;
-    auto visitNativeFunctionStatement(FridayParser::NativeFunctionStatementContext* ctx) -> any override;
-
-    private:
-    auto visitFunction(
-      ant::Token* nameToken,
-      ant::Token* funcToken,
-      vector<FridayParser::TypeContext*> const& paramsTypes,
-      FridayParser::TypeContext* returnType,
-      vector<ant::Token*> const& paramsNames,
-      u64 accessModifier,
-      FridayParser::FunctionScopeContext* scope
-    ) -> any;
+    auto visitFreeFunctionStatement(FridayParser::FreeFunctionStatementContext *ctx) -> any override;
+    auto visitNativeFunctionStatement(FridayParser::NativeFunctionStatementContext *ctx) -> any override;
 
   };
 }

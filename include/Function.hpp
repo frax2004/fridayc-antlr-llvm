@@ -7,19 +7,21 @@ namespace friday::inline api::inline typesystem {
   
   struct Overload;
 
-  struct Function : TypedEntity {
+  struct FRIDAY_API Function final : TypedEntity {
     private:
-    Overload* M_owner { nullptr };
-    FunctionType* M_signature { nullptr };
-    vector<string> M_parameters;
+    vector<string>        M_parameters { };
+    Pointer<Overload>     M_owner      { nullptr };
+    Pointer<FunctionType> M_signature  { nullptr };
 
     public:
-    Function(Overload& owner, string name, Type& returnType, vector<pair<string, Type*>> parameters = {});
+    Function(Overload& owner, Type& returnType, vector<pair<string, Pointer<Type>>> parameters = {});
+    ~Function() override = default;
 
-    auto getParameterName(u64 index) const -> string const&;
-    auto getParameter(u64 index) const -> pair<string, Type*>;
+    auto get_param_name(u64 index) const -> string_view;
+    auto get_param(u64 index) const -> pair<string_view, Pointer<Type>>;
+    auto get_return_type() const -> Pointer<Type>;
 
-    auto getType() const -> Type* override;
+    auto get_type() const -> Pointer<Type> override;
   };
 }
 

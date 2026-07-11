@@ -5,71 +5,74 @@
 #include <InvalidArgumentError.hpp>
 
 namespace friday::inline api::inline typesystem {
-  
-  template<derived_from<ISymbol>... Ts>
-  auto SymbolTable<Ts...>::lookUp(string const& id, ISymbol* defaultValue) -> ISymbol* {
-    if(defaultValue != nullptr and not SymbolTable::assertInstanceOf<Ts...>(defaultValue)) {
-      return defaultValue;
-    }
-    
-    if(auto it = this->M_symbols.find(id); it != this->M_symbols.end()) {
-      return it->second.get();
-    } else if(auto parent = this->getParent(); parent != nullptr) {
-      return parent->lookUp(id, defaultValue);
-    } else return defaultValue;
-  }
 
   template<derived_from<ISymbol>... Ts>
-  auto SymbolTable<Ts...>::lookUpIf(string const& id, Predicate<ISymbol*> predicate, ISymbol* defaultValue) -> ISymbol* {
-    if(defaultValue != nullptr and not SymbolTable::assertInstanceOf<Ts...>(defaultValue)) {
-      return defaultValue;
-    }
-    
+  auto SymbolTable<Ts...>::look_up(string_view id, weak<ISymbol> defaultValue) -> weak<ISymbol> {
     if(auto it = this->M_symbols.find(id); it != this->M_symbols.end()) {
-      ISymbol* candidate = it->second.get();
-      if(predicate(candidate)) return candidate;
+      return it->second;
+    } else if(auto parent = this->get_parent(); parent != nullptr) {
+      return parent->look_up(id, defaultValue);
     }
-    
-    if(auto parent = this->getParent(); parent != nullptr) {
-      return parent->lookUpIf(id, predicate, defaultValue);
-    }
-    
+
     return defaultValue;
   }
 
   template<derived_from<ISymbol>... Ts>
-  auto SymbolTable<Ts...>::isDefined(string const& id) -> bool {
-    auto it = this->M_symbols.find(id);
-    return it != this->M_symbols.end() and SymbolTable::assertInstanceOf(it->second.get());
+  auto SymbolTable<Ts...>::look_up_if(string_view id, Predicate<Pointer<ISymbol>> predicate, weak<ISymbol> defaultValue) -> weak<ISymbol> {
+
+    if(auto it = this->M_symbols.find(id); it != this->M_symbols.end()) {
+      rc<ISymbol> candidate = it->second;
+      if(predicate(candidate.get())) {
+        return candidate;
+      } else {
+        return defaultValue; // TODO POTENTIAL BUG, IN THIS CASE THE LOOKUP SHOULD BE DONE UPWARDS
+      }
+    } else if(auto parent = this->get_parent(); parent != nullptr) {
+      return parent->look_up_if(id, predicate, defaultValue);
+    }
+
+    return defaultValue;
   }
 
   template<derived_from<ISymbol>... Ts>
-  auto SymbolTable<Ts...>::mostSimilar(string const& name, Predicate<ISymbol*> filter, u64 maxEditDistance) noexcept -> optional<ISymbol*> {
-    return nullopt;
-    /// TODO: to implement
+  auto SymbolTable<Ts...>::is_defined(string_view id) -> bool {
+    auto it = this->M_symbols.find(id);
+    return it != this->M_symbols.end() and SymbolTable::assert_valid_type<Ts...>(it->second);
+  }
+
+  template<derived_from<ISymbol>... Ts>
+  auto SymbolTable<Ts...>::most_similar(string_view name, Predicate<Pointer<ISymbol>> filter, u64 maxEditDistance) noexcept -> weak<ISymbol> {
+    (void)name;
+    (void)filter;
+    (void)maxEditDistance;
+    return {};
+    // TODO: to implement
   }
 
   template<derived_from<ISymbol>... Ts>
   template<class... Bases>
-  auto SymbolTable<Ts...>::assertInstanceOf(ISymbol* object) -> bool {
-    return (dynamic_cast<Bases*>(object) || ...);
+  auto SymbolTable<Ts...>::assert_valid_type(weak<ISymbol> object) -> bool {
+    return not object.expired() and (rtti::instance_of<Bases>(object.lock().get()) or ...);
   }
   
   template<derived_from<ISymbol>... Ts>
-  auto SymbolTable<Ts...>::define(ISymbol* symbol) -> bool {
+  auto SymbolTable<Ts...>::define(rc<ISymbol> symbol) -> bool {
     if(symbol == nullptr) return false;
-    if(not SymbolTable::assertInstanceOf<Ts...>(symbol)) {
+    if(not SymbolTable::assert_valid_type<Ts...>(symbol)) {
       throw InvalidArgumentError{"Invalid symbol type"};
     }
 
-    return this->M_symbols.try_emplace(symbol->getQualifiedId(), symbol).second;
+    auto [_, ok] = this->M_symbols.try_emplace(symbol->get_qualified_id(), symbol);
+    return ok;
   }
 
   template<derived_from<ISymbol>... Ts>
-  auto SymbolTable<Ts...>::getSymbols() const -> vector<ISymbol*> {
+  auto SymbolTable<Ts...>::get_symbols() const -> vector<weak<ISymbol>> {
+    auto toWeak = [](rc<ISymbol> const& ref) -> weak<ISymbol> { return ref; };
+
     return this->M_symbols
     | views::values
-    | views::transform(box<ISymbol>::get)
+    | views::transform(toWeak)
     | ranges::to<vector>();
   }
 

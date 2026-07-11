@@ -3,8 +3,9 @@
 
 namespace friday::inline api::inline pipeline {
   // will link the object files and produce the executable
-  struct LinkerVisitor : StaticAnalyzer {
+  struct FRIDAY_API LinkerVisitor final : StaticAnalyzer {
     public:
     LinkerVisitor(CompilationContext& ctx);
+    ~LinkerVisitor() override = default;
   };
 }

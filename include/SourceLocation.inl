@@ -5,9 +5,9 @@
 namespace friday::inline core::inline util {
 
   constexpr SourceLocation::SourceLocation(string filePath, u64 line, u64 column) noexcept
-    : M_filePath { move(filePath) }
-    , M_line { line }
+    : M_line { line }
     , M_column { column }
+    , M_filePath { filePath }
   {}
 
   consteval inline auto SourceLocation::invalid() noexcept -> SourceLocation {

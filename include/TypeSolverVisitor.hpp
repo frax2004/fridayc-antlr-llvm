@@ -4,22 +4,26 @@
 
 namespace friday::inline api::inline pipeline {
   // will fill structs with fields and build the dependency graph
-  struct TypeSolverVisitor : StaticAnalyzer {
+  struct FRIDAY_API TypeSolverVisitor final : StaticAnalyzer {
 
     private:
-    PointerGraph<Struct*> M_dependencyGraph { };
-    map<Struct*, ant::ParserRuleContext*> M_properties { };
+    PointerGraph<Pointer<Struct>>                         M_dependencyGraph { };
+    map<Pointer<Struct>, Pointer<ant::ParserRuleContext>> M_properties      { };
 
     public:
     TypeSolverVisitor(CompilationContext& ctx);
+    ~TypeSolverVisitor() override = default;
 
-    auto beginUnit(TranslationUnit& unit) -> void override;
-    auto endUnit(TranslationUnit& unit) -> void override;
+    auto on_unit_begin(TranslationUnit& unit) -> void override;
+    auto on_unit_end(TranslationUnit& unit) -> void override;
 
-    auto visitStructStatement(FridayParser::StructStatementContext* ctx) -> any override;
+    auto visitStructStatement(FridayParser::StructStatementContext *ctx) -> any override;
     auto visitSimpleType(FridayParser::SimpleTypeContext *ctx) -> any override;
     auto visitFunctionType(FridayParser::FunctionTypeContext *ctx) -> any override;
     auto visitPointerType(FridayParser::PointerTypeContext *ctx) -> any override;
-    auto visitArrayType(FridayParser::ArrayTypeContext* ctx) -> any override;
+    auto visitArrayType(FridayParser::ArrayTypeContext *ctx) -> any override;
+  
+    private:
+    auto to_type(FridayParser::TypeContext *type) { this->visit(type); return type->typeId; };
   };
 }

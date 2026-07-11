@@ -4,21 +4,23 @@
 
 namespace friday::inline api::inline pipeline {
   // will forward declare namespaces, structs and functions
-  struct DiscoveryVisitor : StaticAnalyzer {
+  struct FRIDAY_API DiscoveryVisitor final : StaticAnalyzer {
     private:
-    ISymbolTable* M_currentSymbolTable { nullptr };
+    Pointer<ISymbolTable> M_currentSymbolTable { nullptr };
 
     public:
     DiscoveryVisitor(CompilationContext& ctx);
-    auto beginUnit(TranslationUnit& unit) -> void override;
-    auto endUnit(TranslationUnit& unit) -> void override;
+    ~DiscoveryVisitor() override = default;
 
-    auto visitNamespaceStatement(FridayParser::NamespaceStatementContext* ctx) -> any override;
-    auto visitStructStatement(FridayParser::StructStatementContext* ctx) -> any override;
-    auto visitFunctionStatement(FridayParser::FunctionStatementContext* ctx) -> any override;
-    auto visitNativeFunctionStatement(FridayParser::NativeFunctionStatementContext* ctx) -> any override;
+    auto on_unit_begin(TranslationUnit& unit) -> void override;
+    auto on_unit_end(TranslationUnit& unit) -> void override;
+
+    auto visitNamespaceStatement(FridayParser::NamespaceStatementContext *ctx) -> any override;
+    auto visitStructStatement(FridayParser::StructStatementContext *ctx) -> any override;
+    auto visitFreeFunctionStatement(FridayParser::FreeFunctionStatementContext *ctx) -> any override;
+    auto visitNativeFunctionStatement(FridayParser::NativeFunctionStatementContext *ctx) -> any override;
 
     private:
-    auto current() -> ISymbolTable&;
+    auto current() -> Pointer<ISymbolTable>;
   };
 }

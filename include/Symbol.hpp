@@ -7,13 +7,16 @@
 namespace friday::inline api::inline typesystem {
   struct ISymbolTable;
 
-  struct ISymbol {
-    static auto getDemangledId(string const& id) -> string;
+  struct FRIDAY_API ISymbol : NonCopyable {
+    constexpr ISymbol() = default;
+    virtual ~ISymbol() override = default;
 
-    virtual auto getMangledId() const -> string = 0;
-    virtual auto getQualifiedId() const -> string = 0;
-    virtual auto getFullQualifiedId() const -> string = 0;
-    virtual auto getDeclaringSymbolTable() -> ISymbolTable* = 0;
-    virtual auto getAttributes() const -> Attributes = 0;
+    static auto get_demangled_id(string_view id) -> string;
+
+    virtual auto get_mangled_id() const -> string = 0;
+    virtual auto get_qualified_id() const -> string = 0;
+    virtual auto get_full_qualified_id() const -> string = 0;
+    virtual auto get_declaring_symbol_table() -> Pointer<ISymbolTable> = 0;
+    virtual auto get_attributes() const -> Attributes = 0;
   };
 }

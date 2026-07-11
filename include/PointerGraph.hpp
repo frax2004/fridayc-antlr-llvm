@@ -4,16 +4,16 @@
 namespace friday::inline core::inline collections {
   template<class T>
   requires is_pointer_v<T>
-  struct PointerGraph {
+  struct FRIDAY_API PointerGraph final {
   
     private:
-    unordered_map<T, set<T>> M_adjacencyList;
+    unordered_map<T, set<T>> M_adjacencyList { };
   
     public:
-    auto addEdge(T from, T to) -> void;
+    auto add_edge(T from, T to) -> void;
     template<class Visitor>
-    auto depthFirstVisit(Visitor&& visitor) -> void;
-    auto getCycles() -> vector<vector<T>>;
+    auto dfs(Visitor&& visitor) -> void;
+    auto detect_cycles() -> vector<vector<T>>;
   };
 }
 

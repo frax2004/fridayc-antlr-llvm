@@ -7,7 +7,7 @@ namespace friday::inline core::inline collections {
   template<class T>
   requires is_pointer_v<T>
   template<class Visitor>
-  auto PointerGraph<T>::depthFirstVisit(Visitor&& visitor) -> void {
+  auto PointerGraph<T>::dfs(Visitor&& visitor) -> void {
     
     unordered_set<T> marked;
   
@@ -36,13 +36,13 @@ namespace friday::inline core::inline collections {
   
   template<class T>
   requires is_pointer_v<T>
-  auto PointerGraph<T>::addEdge(T from, T to) -> void {
+  auto PointerGraph<T>::add_edge(T from, T to) -> void {
     this->M_adjacencyList[from].insert(to);
   }
   
   template<class T>
   requires is_pointer_v<T>
-  auto PointerGraph<T>::getCycles() -> vector<vector<T>> {
+  auto PointerGraph<T>::detect_cycles() -> vector<vector<T>> {
     unordered_set<T> marked;
     unordered_set<T> onStack;
     vector<T> path;

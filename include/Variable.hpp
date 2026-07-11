@@ -6,32 +6,37 @@
 
 namespace friday::inline api::inline typesystem {
 
-  struct Variable : TypedEntity, ISymbol {
+  struct FRIDAY_API Variable final : TypedEntity, ISymbol {
     private:
-    string M_name;
-    Type* M_type { nullptr };
-    ISymbolTable* M_declaringScope { nullptr };
+    string                M_name           { "" };
+    Pointer<Type>         M_type           { nullptr };
+    Pointer<ISymbolTable> M_declaringScope { nullptr };
 
     public:
     Variable(ISymbolTable& declaringScope, string name, Type& type) noexcept;
-    
-    auto getQualifiedId() const -> string override;
-    auto getFullQualifiedId() const -> string override;
-    auto getMangledId() const -> string override;
-    auto getDeclaringSymbolTable() -> ISymbolTable* override;
+    constexpr ~Variable() override = default;
 
-    auto getAttributes() const -> Attributes override;
-    auto getType() const -> Type* override;
+    
+    auto get_qualified_id() const -> string override;
+    auto get_full_qualified_id() const -> string override;
+    auto get_mangled_id() const -> string override;
+    auto get_declaring_symbol_table() -> Pointer<ISymbolTable> override;
+
+    auto get_attributes() const -> Attributes override;
+    auto get_type() const -> Pointer<Type> override;
+
+    static auto is_variable(Pointer<ISymbol> symbol) -> bool;
+    static auto to_variable(Pointer<ISymbol> symbol) -> Pointer<Variable>;
   };
 }
 
 template<>
-struct json::stringify<friday::Variable> {
+struct FRIDAY_API json::stringify<friday::Variable> {
   auto operator()(friday::Variable const& self) -> string {
     return format(
       "{{\"kind\": \"variable\", \"name\": \"{}\", \"type\": \"{}\"}}",
-      self.getQualifiedId(),
-      self.getType()->getName()
+      self.get_qualified_id(),
+      self.get_type()->get_name()
     );
   }
 };

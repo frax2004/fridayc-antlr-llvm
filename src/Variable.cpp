@@ -3,35 +3,42 @@
 #include <NotImplementedError.hpp>
 
 namespace friday::inline api::inline typesystem {
-  Variable::Variable(ISymbolTable& declaringScope, string name, Type& type) noexcept
-    : M_declaringScope { &declaringScope }
-    , M_name { move(name) }
-    , M_type { &type }
-  {}
+  Variable::Variable(ISymbolTable& declaringScope, string name, Type& type) noexcept {
+    this->M_declaringScope = &declaringScope;
+    this->M_name = name;
+    this->M_type = &type;
+  }
 
-  auto Variable::getQualifiedId() const -> string {
+  auto Variable::get_qualified_id() const -> string {
     return this->M_name;
   }
 
-  auto Variable::getFullQualifiedId() const -> string {
-    throw NotImplementedError{"Variable::getFullQualifiedId()"};
+  auto Variable::get_full_qualified_id() const -> string {
+    throw NotImplementedError{"Variable::get_full_qualified_id()"};
   }
 
-  auto Variable::getMangledId() const -> string {
-    throw NotImplementedError{"Variable::getMangledId()"};
+  auto Variable::get_mangled_id() const -> string {
+    throw NotImplementedError{"Variable::get_mangled_id()"};
   }
 
-  auto Variable::getDeclaringSymbolTable() -> ISymbolTable* {
+  auto Variable::get_declaring_symbol_table() -> Pointer<ISymbolTable> {
     return this->M_declaringScope;
   }
 
-  auto Variable::getAttributes() const -> Attributes {
-    throw NotImplementedError{"Variable::getAttributes()"};
+  auto Variable::get_attributes() const -> Attributes {
+    throw NotImplementedError{"Variable::get_attributes()"};
   }
 
-  auto Variable::getType() const -> Type* {
+  auto Variable::get_type() const -> Pointer<Type> {
     return this->M_type;
   }
 
+  auto Variable::is_variable(Pointer<ISymbol> symbol) -> bool {
+    return rtti::instance_of<Variable>(symbol);
+  }
+
+  auto Variable::to_variable(Pointer<ISymbol> symbol) -> Pointer<Variable> {
+    return rtti::cast<Variable>(symbol);
+  }
 
 }

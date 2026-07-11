@@ -10,78 +10,77 @@ namespace friday::inline api::inline pipeline {
     : StaticAnalyzer { ctx }
   {}
   
-  auto TypeSolverVisitor::beginUnit(TranslationUnit& unit) -> void {
+  auto TypeSolverVisitor::on_unit_begin(TranslationUnit& _) -> void {
+    (void)_;
     // this->M_dependencyGraph = {};
   }
 
-  auto TypeSolverVisitor::endUnit(TranslationUnit& unit) -> void {
-    auto reportDependency = [this](tuple<Struct*, Struct*> pair) {
-      auto toToken = [this](Struct* item) { return this->M_properties.at(item); };
+  auto TypeSolverVisitor::on_unit_end(TranslationUnit& _) -> void {
+    (void)_;
+
+    auto reportDependency = [this](tuple<Pointer<Struct>, Pointer<Struct>> pair) {
 
       auto [strct, field] = pair;
-      auto typeToken = toToken(strct), fieldToken = toToken(field);
+      auto fieldToken = this->M_properties.at(field);
 
-      this->errorAt(
+      this->error_at(
         fieldToken->getStart(),
         "Note: struct \"{}\" depends from struct \"{}\""_f.format(
-          strct->getQualifiedId(),
-          field->getQualifiedId()
+          strct->get_qualified_id(),
+          field->get_qualified_id()
         )
       );
     };
     
-    auto reportCycle = [&](vector<Struct*> const& cycle) {
-      this->errorAt(
+    auto reportCycle = [&](vector<Pointer<Struct>> const& cycle) {
+      this->error_at(
         this->M_properties[cycle[0]]->getStart(),
         "In declaration of struct \"{}\", detected cyclic struct dependency."_f.format(
-          cycle[0]->getQualifiedId()
+          cycle[0]->get_qualified_id()
         )
       );
       ranges::for_each(cycle | views::pairwise, reportDependency);
     };
 
-    ranges::for_each(this->M_dependencyGraph.getCycles(), reportCycle);
+    ranges::for_each(this->M_dependencyGraph.detect_cycles(), reportCycle);
   }
 
-  auto TypeSolverVisitor::visitStructStatement(FridayParser::StructStatementContext* ctx) -> any {
-    auto isStruct = (bool(*)(ISymbol*))&rtti::instanceOf<Struct>;
-
-    TranslationUnit* unit = this->getCurrentUnit();
+  auto TypeSolverVisitor::visitStructStatement(FridayParser::StructStatementContext *ctx) -> any {
+    this->visitChildren(ctx);
     string structName = ctx->structName->getText();
+    
+    if(ctx->structDecl.expired()) throw OperationNotSupportedError("Internal error.");
+    rc<Struct> asStruct = ctx->structDecl.lock();
 
-    Struct* asStruct = rtti::cast<Struct>(unit->lookUpIf(structName, isStruct));
-    if(asStruct == nullptr) throw OperationNotSupportedError("Internal error.");
+    auto fields = views::zip(
+      ctx->fieldsNames | views::transform(&ant::Token::getText),
+      ctx->fieldsTypes | views::transform(&FridayParser::TypeContext::typeId)
+    );
 
-    auto toType = [this](FridayParser::TypeContext* type) { return any_cast<Type*>(this->visit(type)); };
-    auto fieldsNames = ctx->fieldsNames | views::transform(ant::Token::getText);
-    auto fieldsTypes = ctx->fieldsTypes | views::transform(toType);
-
-    bool ok = true;
-    for(u64 i = 0; auto [field, T] : views::zip(fieldsNames, fieldsTypes)) {
-      if(asStruct->isDefined(field)) {
-        this->errorAt(
+    for(u64 i = 0; auto [fieldName, fieldType] : fields) {
+      if(asStruct->is_defined(fieldName)) {
+        this->error_at(
           ctx->fieldsNames[i],
           "In definition of struct \"{}\", redeclaration of entity \"{}\" already defined in the current scope."_f.format(
             structName,
-            field
+            fieldName
           )
         );
-        ok = false;
-      } else if(T == nullptr or T == ErrorType::get()) {
-        this->errorAt(
+      } else if(ErrorType::is_error_type(fieldType)) {
+        this->error_at(
           ctx->fieldsTypes[i]->getStart(),
           "In definition of struct \"{}\", field named \"{}\" as an invalid error type \"{}\""_f.format(
             structName,
-            field,
+            fieldName,
             ctx->fieldsTypes[i]->getText()
           )
         );
-        ok = false;
       } else {
-        asStruct->define(new Variable(*asStruct, field, *T));
-        if(auto fieldAsStruct = rtti::cast<Struct>(T)) {
-          this->M_dependencyGraph.addEdge(asStruct, fieldAsStruct);
-          this->M_properties.insert(make_pair(asStruct, ctx));
+        rc<Variable> field = make_shared<Variable>(*asStruct, fieldName, *fieldType);
+        asStruct->define(field);
+        if(auto fieldAsStruct = rtti::cast<Struct>(fieldType)) {
+          this->M_dependencyGraph.add_edge(asStruct.get(), fieldAsStruct);
+          this->M_properties.insert(make_pair(asStruct.get(), ctx));
           this->M_properties.insert(make_pair(fieldAsStruct, ctx->fieldsTypes[i]));
         }
       }
@@ -89,54 +88,47 @@ namespace friday::inline api::inline pipeline {
       i++;
     }
 
-    for(auto method : ctx->methods) this->visit(method); // to register all types
-
-    return (Type*)(ok ? rtti::cast<Type>(asStruct) : ErrorType::get());
+    return {};
   }
 
   auto TypeSolverVisitor::visitSimpleType(FridayParser::SimpleTypeContext *ctx) -> any {
 
-    auto isStruct = (bool(*)(ISymbol*))&rtti::instanceOf<Struct>;
+    auto is_struct = static_cast<bool(*)(Pointer<ISymbol>)>(&rtti::instance_of<Struct>);
 
-    TranslationUnit* unit = this->getCurrentUnit();
-    ant::Token* token = ctx->IDENTIFIER()->getSymbol();
+    Pointer<TranslationUnit> unit = this->get_current_unit();
+    Pointer<ant::Token> token = ctx->IDENTIFIER()->getSymbol();
     string id = token->getText();
 
-    Type* T = ErrorType::get();
+    weak<ISymbol> candidate = unit->look_up_if(id, is_struct, {});
 
-    if(auto asStruct = rtti::cast<Struct>(unit->lookUpIf(id, isStruct))) {
-      T = rtti::cast<Type>(asStruct);
-      ctx->typeId = T;
+    if(not candidate.expired()) {
+      ctx->typeId = rtti::cast<Type>(candidate.lock().get());
     } else {
-      auto toSuggestion = [](string const& message) {
-        return format(" Did you mean '{}'?", message);
-      };
-  
-      this->errorAt(token, "There is no type named '{}' in the current scope."_f.format(id));
+      // auto toSuggestion = [](string const& message) {
+      //   return format(" Did you mean '{}'?", message);
+      // };
+
+      this->error_at(token, "There is no type named '{}' in the current scope."_f.format(id));
     }
 
-    return (Type*)T;
+    return {};
   }
 
   auto TypeSolverVisitor::visitFunctionType(FridayParser::FunctionTypeContext *ctx) -> any {
 
-    auto toType = [this](FridayParser::TypeContext* type) { 
-      return any_cast<Type*>(this->visit(type)); 
-    };
-
-    auto isErrorType = [](Type* type) {
+    auto isErrorType = [](Pointer<Type> type) {
       return type == ErrorType::get();
     };
 
-    Type* retType = any_cast<Type*>(this->visit(ctx->returnType));
-    vector<Type*> paramsTypes = ctx->paramsTypes
-    | views::transform(toType)
+    Pointer<Type> retType = any_cast<Pointer<Type>>(this->visit(ctx->returnType));
+    vector<Pointer<Type>> paramsTypes = ctx->paramsTypes
+    | views::transform([this](auto typeCtx) { return this->to_type(typeCtx); })
     | ranges::to<vector>();
 
     bool ok = true;
-    for(auto [i, T] : paramsTypes | views::transform(isErrorType) | views::enumerate) {
+    for(auto [i, T] : paramsTypes | views::filter(isErrorType) | views::enumerate) {
       ok = false;
-      this->errorAt(
+      this->error_at(
         ctx->paramsTypes[i]->getStart(),
         "The function-type '{}' has an invalid parameter-type '{}' for the {}-th parameter"_f.format(
           ctx->getText(),
@@ -147,10 +139,9 @@ namespace friday::inline api::inline pipeline {
     }
 
 
-    Type* type = ErrorType::get();
     if(retType == ErrorType::get()) {
       ok = false;
-      this->errorAt(
+      this->error_at(
         ctx->returnType->getStart(),
         "The function-type '{}' has an invalid return-type '{}'"_f.format(
           ctx->getText(),
@@ -160,20 +151,19 @@ namespace friday::inline api::inline pipeline {
     } 
     
     if(ok) {
-      type = FunctionType::get(*retType, move(paramsTypes));
-      ctx->typeId = type;
+      ctx->typeId = FunctionType::get(*retType, move(paramsTypes));
     }
 
-    return (Type*)type;
+    return {};
   }
 
   auto TypeSolverVisitor::visitPointerType(FridayParser::PointerTypeContext *ctx) -> any {
 
-    Type* type = any_cast<Type*>(this->visit(ctx->pointedType));
+    Pointer<Type> type = this->to_type(ctx->pointedType);
     u64 dimensions = ctx->STAR().size();
 
     if(type == ErrorType::get()) {
-      this->errorAt(
+      this->error_at(
         ctx->pointedType->getStart(), 
         "Cannot form {}-th dimensional pointer '{}' from non-existent pointed-type '{}'"_f.format(
           dimensions,
@@ -186,16 +176,16 @@ namespace friday::inline api::inline pipeline {
       ctx->typeId = type;
     }
 
-    return (Type*)type;
+    return {};
   }
 
-  auto TypeSolverVisitor::visitArrayType(FridayParser::ArrayTypeContext* ctx) -> any {
+  auto TypeSolverVisitor::visitArrayType(FridayParser::ArrayTypeContext *ctx) -> any {
 
-    Type* type = any_cast<Type*>(this->visit(ctx->elementType));
+    Pointer<Type> type = this->to_type(ctx->elementType);
     u64 length = ctx->LEFT_SQUARE().size();
 
     if(type == ErrorType::get()) {
-      this->errorAt(
+      this->error_at(
         ctx->elementType->getStart(), 
         "Cannot form {}-th dimensional array type '{}' from non-existent element-type '{}'"_f.format(
           length,
@@ -208,7 +198,7 @@ namespace friday::inline api::inline pipeline {
       ctx->typeId = type;
     }
 
-    return (Type*)type;
+    return {};
   }
 
 }

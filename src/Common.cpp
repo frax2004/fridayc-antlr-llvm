@@ -1,13 +1,13 @@
 #include <Common.hpp>
 
 
-namespace friday::inline core::rtti {
+namespace friday::inline core::inline rtti {
 #if defined(__GNUC__) || defined(__clang__)
 #include <cxxabi.h>
   string demangle(const char* name) noexcept {
     i32 status = -4;
 
-    unique_ptr<char, void(*)(void*)> result {
+    unique_ptr<char, void(*)(Pointer<void>)> result {
       abi::__cxa_demangle(name, nullptr, nullptr, &status),
       free
     };
@@ -20,7 +20,7 @@ namespace friday::inline core::rtti {
   }
 #endif
 
-  auto nameOf(type_info const& info) noexcept -> string {
+  auto name_of(type_info const& info) noexcept -> string {
     return demangle(info.name());
   }
 

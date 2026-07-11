@@ -5,13 +5,14 @@
 
 namespace friday::inline api::inline typesystem {
 
-  struct Scope final : SymbolTable<Variable> {
-    ISymbolTable* M_parent { nullptr };
+  struct FRIDAY_API Scope final : SymbolTable<Variable> {
+    Pointer<ISymbolTable> M_parent { nullptr };
 
     public:
     Scope(ISymbolTable& parent);
+    ~Scope() override = default;
 
-    auto getVariable(string const& id, Variable* defaultValue = nullptr) -> Variable*;
-    auto getParent() -> ISymbolTable* override;
+    auto find_variable(string_view id, weak<Variable> defaultValue = {}) -> weak<Variable>;
+    auto get_parent() -> Pointer<ISymbolTable> override;
   };
 }

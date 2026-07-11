@@ -4,23 +4,26 @@
 
 namespace friday::inline api::inline typesystem {
 
-  struct FunctionType final : public Type {
+  struct FRIDAY_API FunctionType final : Type {
     private:
-    Type* M_returnType { nullptr };
-    vector<Type*> M_parameters;
-    string M_name;
+    vector<Pointer<Type>> M_parameters { };
+    string                M_name       { "" };
+    Pointer<Type>         M_returnType { nullptr };
 
     private:
-    FunctionType(Type& returnType, vector<Type*> paramsTypes) noexcept;
+    FunctionType(Type& returnType, vector<Pointer<Type>> paramsTypes) noexcept;
 
     public:
-    static auto get(Type& returnType, vector<Type*> paramsTypes) noexcept -> Type*;
+    ~FunctionType() override = default;
 
-    auto getParameterType(u64 index) const -> Type*;
-    auto getParametersTypes() const noexcept -> vector<Type*> const&;
-    auto getParametersCount() const noexcept -> u64;
-    auto getReturnType() const noexcept -> Type*;
-    auto getLLVMType(llvm::LLVMContext& ctx) const noexcept -> llvm::Type* override;
-    auto getName() const noexcept -> string const& override;
+    public:
+    static auto get(Type& returnType, vector<Pointer<Type>> paramsTypes) noexcept -> Pointer<Type>;
+
+    auto get_param_type(u64 index) const -> Pointer<Type>;
+    auto get_params_types() const noexcept -> vector<Pointer<Type>> const&;
+    auto params_size() const noexcept -> u64;
+    auto get_return_type() const noexcept -> Pointer<Type>;
+    auto to_llvm_type(llvm::LLVMContext& ctx) const noexcept -> Pointer<llvm::Type> override;
+    auto get_name() const noexcept -> string_view override;
   };
 }

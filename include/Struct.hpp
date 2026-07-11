@@ -10,38 +10,43 @@ namespace friday::inline api::inline typesystem {
 
   struct Namespace;
 
-  struct Struct : ISymbol, Type, SymbolTable<Variable, Overload> {
+  struct FRIDAY_API Struct : ISymbol, Type, SymbolTable<Variable, Overload> {
     private:
-    string M_name;
-    Namespace* M_declaryingNamespace { nullptr };
+    string             M_name                { "" };
+    Pointer<Namespace> M_declaryingNamespace { nullptr };
 
     public:
     Struct(Namespace& parent, string name) noexcept;
+    ~Struct() override = default;
 
-    auto getField(string const& name, Variable* defaultValue = nullptr) noexcept -> Variable*;
-    auto getMethod(string const& name, Overload* defaultValue = nullptr) noexcept -> Overload*;
-    auto getName() const noexcept -> string const& override;
-    auto getLLVMType(llvm::LLVMContext& ctx) const noexcept -> llvm::Type* override;
-    auto getQualifiedId() const -> string override;
-    auto getFullQualifiedId() const -> string override;
-    auto getMangledId() const -> string override;
-    auto getAttributes() const -> Attributes override;
-    auto getParent() -> ISymbolTable* override;
-    auto getDeclaringSymbolTable() -> ISymbolTable* override;
+    auto find_field(string_view name, weak<Variable> defaultValue = {}) noexcept -> weak<Variable>;
+    auto find_method(string_view name, weak<Overload> defaultValue = {}) noexcept -> weak<Overload>;
+    auto get_name() const noexcept -> string_view override;
+    auto to_llvm_type(llvm::LLVMContext& ctx) const noexcept -> Pointer<llvm::Type> override;
+    auto get_qualified_id() const -> string override;
+    auto get_full_qualified_id() const -> string override;
+    auto get_mangled_id() const -> string override;
+    auto get_attributes() const -> Attributes override;
+    auto get_parent() -> Pointer<ISymbolTable> override;
+    auto get_declaring_symbol_table() -> Pointer<ISymbolTable> override;
+
+    static auto is_struct(Pointer<ISymbol> symbol) -> bool;
+    static auto to_struct(Pointer<ISymbol> symbol) -> Pointer<Struct>;
+
   };
 }
 
 template<>
-struct json::stringify<friday::Struct> {
+struct FRIDAY_API json::stringify<friday::Struct> {
   auto operator()(friday::Struct const& self) -> string {
-    auto name = self.getQualifiedId();
-    auto symbols = self.getSymbols();
+    auto name = self.get_qualified_id();
+    auto symbols = self.get_symbols();
 
     // TODO grammar must implement global variables
     auto var2str = json::stringify<friday::Variable>{};
     auto ovl2str = json::stringify<friday::Overload>{};
 
-    auto sym2str = [&](friday::ISymbol* symbol) {
+    auto sym2str = [&](Pointer<friday::ISymbol> symbol) {
       if(auto asVar = friday::rtti::cast<friday::Variable>(symbol)) 
         return var2str(*asVar);
       else if(auto asOverload = friday::rtti::cast<friday::Overload>(symbol)) 
@@ -53,6 +58,8 @@ struct json::stringify<friday::Struct> {
       "{{\"kind\": \"struct\", \"name\": \"{}\", \"symbols\": [{}]}}",
       name,
       symbols 
+      | views::filter([](weak<friday::ISymbol> ref) { return not ref.expired(); })
+      | views::transform([](weak<friday::ISymbol> ref) { return ref.lock().get(); })
       | views::transform(sym2str)
       | views::join_with(", "sv)
       | ranges::to<string>()

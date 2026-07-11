@@ -15,7 +15,7 @@ namespace friday::inline core::inline IO {
   const string Console::Color::RESET = "\033[0m";
   const string Console::Color::BOLD = "\033[1m";
 
-  auto Console::setDebugEnabled(bool enabled) noexcept -> void {
+  auto Console::set_debug_enabled(bool enabled) noexcept -> void {
     Console::S_debugEnabled = enabled;
   }
 

@@ -4,12 +4,12 @@
 
 namespace friday::inline core::inline IO {
 
-  struct Console final {
+  struct FRIDAY_API Console final {
     private:
     constexpr Console() noexcept = default;
 
     public:
-    struct Color final {
+    struct FRIDAY_API Color final {
 
       private:
       constexpr inline Color() noexcept = default;
@@ -29,7 +29,7 @@ namespace friday::inline core::inline IO {
     };
 
     public:
-    static auto setDebugEnabled(bool enabled) noexcept -> void;
+    static auto set_debug_enabled(bool enabled) noexcept -> void;
 
     static auto log(string message) noexcept -> void;
     static auto note(string message) noexcept -> void;

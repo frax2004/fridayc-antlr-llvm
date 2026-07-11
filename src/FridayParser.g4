@@ -5,11 +5,10 @@ options {
   language = Cpp;
 }
 
-@parser::postinclude {
-#include "Type.hpp"
-#include "SymbolTable.hpp"
-#include "VisibilityModifier.hpp"
 
+@parser::postinclude {
+#include "Namespace.hpp"
+#include "Scope.hpp"
 }
 
 ///////////////////////////////////////////////////
@@ -20,14 +19,15 @@ options {
   /// Abstract statements
   ///
   //////////////////////////////
-  program: topLevelStatement* EOF;
+  translationUnit
+  : topLevelStatement*? EOF
+  ;
 
   topLevelStatement
   : usingStatement
   | namespaceStatement
   | structStatement
   | functionStatement
-  | nativeFunctionStatement
   ;
   //////////////////////////////
   //////////////////////////////
@@ -40,25 +40,36 @@ options {
   /// Top level statements
   ///
   //////////////////////////////
-  nativeFunctionStatement returns [friday::ISymbolTable* definingScope = nullptr, friday::Type* typeId = nullptr, friday::VisibilityModifier visibility = friday::VisibilityModifier::PUBLIC, bool isStatic = false, FridayParser::FunctionScopeContext* initialBlock = nullptr]
-  : accessModifier = (PRIVATE | PUBLIC)? NATIVE FN name = IDENTIFIER LEFT_PAREN (
-    paramsNames += IDENTIFIER COL paramsTypes += type (COMMA paramsNames += IDENTIFIER COL paramsTypes += type)* 
-  )? RIGHT_PAREN ARROW returnType = type SEMI
+  namespaceStatement returns [weak<Namespace> namespaceDecl]
+  : NAMESPACE IDENTIFIER SEMI
   ;
 
-  namespaceStatement: NAMESPACE IDENTIFIER SEMI;
-  usingStatement: USING IDENTIFIER SEMI;
-
-  structStatement returns [friday::ISymbolTable* definigScope = nullptr]
-  : accessModifier = (PRIVATE | PUBLIC)? STRUCT structName = IDENTIFIER LEFT_CURLY 
-    ((accessModifier = (PRIVATE | PUBLIC)? fieldsNames += IDENTIFIER COL fieldsTypes += type SEMI) | methods += functionStatement)*
-  RIGHT_CURLY
+  usingStatement
+  : USING IDENTIFIER SEMI
   ;
 
-  functionStatement returns [friday::ISymbolTable* definingScope = nullptr, friday::Type* typeId = nullptr, friday::VisibilityModifier visibility = friday::VisibilityModifier::PUBLIC, bool isStatic = false, FridayParser::FunctionScopeContext* initialBlock = nullptr]
+
+  functionStatement returns [weak<Function> functionDecl, weak<Overload> overloadDecl]
   : accessModifier = (PRIVATE | PUBLIC)? FN name = IDENTIFIER LEFT_PAREN (
-    paramsNames += IDENTIFIER COL paramsTypes += type (COMMA paramsNames += IDENTIFIER COL paramsTypes += type)* 
-  )? RIGHT_PAREN ARROW returnType = type block = functionScope
+      paramsNames += IDENTIFIER 
+      COL 
+      paramsTypes += type 
+      (COMMA paramsNames += IDENTIFIER COL paramsTypes += type)* 
+    )? RIGHT_PAREN ARROW returnType = type block = functionScope                  # FreeFunctionStatement
+  | accessModifier = (PRIVATE | PUBLIC)? NATIVE FN name = IDENTIFIER LEFT_PAREN (
+      paramsNames += IDENTIFIER 
+      COL 
+      paramsTypes += type 
+      (COMMA paramsNames += IDENTIFIER COL paramsTypes += type)* 
+    )? RIGHT_PAREN ARROW returnType = type SEMI                                   # NativeFunctionStatement
+  ;
+
+  structStatement returns [weak<Struct> structDecl]
+  : accessModifier = (PRIVATE | PUBLIC)? STRUCT structName = IDENTIFIER LEFT_CURLY (
+      (accessModifier = (PRIVATE | PUBLIC)? fieldsNames += IDENTIFIER COL fieldsTypes += type SEMI) 
+      | methods += functionStatement
+    )*
+    RIGHT_CURLY
   ;
   //////////////////////////////
   //////////////////////////////
@@ -73,64 +84,16 @@ options {
   ///
   //////////////////////////////
   statement
-  : printStatement
-  | returnStatement
-  | expressionStatement
-  | ifStatement
-  | forStatement
-  | whileStatement
-  | declarationStatement
-  | scope
-  | deferStatement
+  : PRINT expression SEMI                                                                       # PrintStatement
+  | RETURN (expression?) SEMI                                                                   # ReturnStatement
+  | expression SEMI                                                                             # ExpressionStatement
+  | IF expression statement (ELIF expression statement)*? (ELSE statement)?                     # IfStatement
+  | FOR statement expression SEMI expression statement                                          # ForStatement
+  | WHILE expression statement                                                                  # WhileStatement
+  | declarator = (LET | CONST) id = IDENTIFIER (COL type)? ASSIGN initializer = expression SEMI # DeclarationStatement
+  | DEFER statement                                                                             # DeferStatement
+  | syntacticalScope                                                                            # ScopeStatement
   ;
-
-  deferrableStatement
-  : printStatement
-  | returnStatement
-  | expressionStatement
-  | ifStatement
-  | forStatement
-  | whileStatement
-  | declarationStatement
-  | scope
-  ;
-
-  declarationStatement
-  : declarator = (LET | CONST) id = IDENTIFIER (COL type)? ASSIGN initializer = expression SEMI
-  ;
-
-  ifStatement
-  : IF expression statement (ELIF expression statement)*? (ELSE statement)?
-  ;
-  
-  forStatement
-  : FOR statement expression SEMI expression statement
-  ;
-
-  whileStatement
-  : WHILE expression statement
-  ;
-
-  expressionStatement
-  : expression SEMI
-  ;
-  
-  deferStatement
-  : DEFER deferrableStatement
-  ;
-  
-  printStatement
-  : PRINT expression SEMI
-  ;
-  
-  scope
-  : LEFT_CURLY (statement*) RIGHT_CURLY
-  ;
-  
-  returnStatement
-  : RETURN (expression?) SEMI
-  ;
-  
   //////////////////////////////
   //////////////////////////////
   //////////////////////////////
@@ -142,14 +105,14 @@ options {
   /// Scope helpers
   ///
   //////////////////////////////
-  inlineScope
-  : FAT_ARROW expression SEMI
+  syntacticalScope returns [rc<Scope> scope]
+  : LEFT_CURLY (statement*) RIGHT_CURLY
   ;
-  
-  functionScope
-  : scope | inlineScope
+
+  functionScope returns [rc<Scope> scope]
+  : LEFT_CURLY (statement*) RIGHT_CURLY # BasicBlock
+  | FAT_ARROW expression SEMI           # TrailingBlock
   ;
-  
   //////////////////////////////
   //////////////////////////////
   //////////////////////////////
@@ -161,41 +124,55 @@ options {
 
 ///////////////////////////////////////////////////
 /// EXPRESSIONS
-expression returns [friday::Type* exprType = nullptr]
-: id = IDENTIFIER # IdentifierExpression
-| literal = INT_LIT # IntLiteralExpression
-| literal = CHAR_LIT # CharLiteralExpression
+expression returns [Type* typeId = ErrorType::get()]
+: id = IDENTIFIER      # IdentifierExpression
+| literal = INT_LIT    # IntLiteralExpression
+| literal = CHAR_LIT   # CharLiteralExpression
 | literal = STRING_LIT # stringLiteralExpression
-| literal = FLOAT_LIT # FloatLiteralExpression
-| literal = BOOL_LIT # BoolLiteralExpression
-| literal = NULL_LIT # NullLiteralExpression
-| NEW type LEFT_CURLY (fields += IDENTIFIER COL initializers += expression (COMMA fields += IDENTIFIER COL initializers += expression)*?)? RIGHT_CURLY # NewExpression
-| LEFT_SQUARE (expression (COMMA expression)*?)? RIGHT_SQUARE # ArrayLiteralExpression
-| expr = expression postfixOperator = (INCREMENT | DECREMENT) # UnaryPostfixExpression
-| func = expression LEFT_PAREN (args += expression (COMMA args += expression)*)? RIGHT_PAREN # CallExpression
-| array = expression LEFT_SQUARE index = expression RIGHT_SQUARE # SubscriptExpression
-| object = expression DOT member = IDENTIFIER # MemberAccessExpression
-| <assoc = right> unaryOperator = (PLUS | MINUS | NOT | TILDE | STAR | AMPERSAND) expression # UnaryPrefixExpression
-| <assoc = right> unaryOperator = (SIZEOF | ALIGNOF) (expression | type) # UnaryPrefixExpression
-| <assoc = right> expr = expression AS type # ExplicitCastExpression
-| left = expression binaryOperator = (STAR | SLASH | MODULO) right = expression # BinaryExpression
-| left = expression binaryOperator = (PLUS | MINUS) right = expression # BinaryExpression
-| left = expression binaryOperator = (LSHIFT | RSHIFT) right = expression # BinaryExpression
+| literal = FLOAT_LIT  # FloatLiteralExpression
+| literal = BOOL_LIT   # BoolLiteralExpression
+| literal = NULL_LIT   # NullLiteralExpression
+| NEW type LEFT_CURLY (
+    fields += IDENTIFIER COL initializers += expression 
+    (COMMA fields += IDENTIFIER COL initializers += expression)*?
+  )? RIGHT_CURLY                                                                                # NewExpression
+| LEFT_SQUARE (expression (COMMA expression)*?)? RIGHT_SQUARE                                   # ArrayLiteralExpression
+| expr = expression postfixOperator = (INCREMENT | DECREMENT)                                   # UnaryPostfixExpression
+| func = expression LEFT_PAREN (args += expression (COMMA args += expression)*)? RIGHT_PAREN    # CallExpression
+| array = expression LEFT_SQUARE index = expression RIGHT_SQUARE                                # SubscriptExpression
+| object = expression DOT member = IDENTIFIER                                                   # MemberAccessExpression
+| <assoc = right> unaryOperator = (PLUS | MINUS | NOT | TILDE | STAR | AMPERSAND) expression    # UnaryPrefixExpression
+| <assoc = right> unaryOperator = (SIZEOF | ALIGNOF) (expression | type)                        # UnaryPrefixExpression
+| <assoc = right> expr = expression AS type                                                     # ExplicitCastExpression
+| left = expression binaryOperator = (STAR | SLASH | MODULO) right = expression                 # BinaryExpression
+| left = expression binaryOperator = (PLUS | MINUS) right = expression                          # BinaryExpression
+| left = expression binaryOperator = (LSHIFT | RSHIFT) right = expression                       # BinaryExpression
 | left = expression binaryOperator = (LESS | LESS_EQ | GREATER | GREATER_EQ) right = expression # BinaryExpression
-| left = expression binaryOperator = (EQUALS | NOT_EQUALS) right = expression # BinaryExpression
-| left = expression binaryOperator = AMPERSAND right = expression # BinaryExpression
-| left = expression binaryOperator = PIPELINE right = expression # BinaryExpression
-| left = expression binaryOperator = AND right = expression # BinaryExpression
-| left = expression binaryOperator = OR right = expression # BinaryExpression
-| <assoc=right> left = expression binaryOperator = (ASSIGN | PLUS_ASSIGN | MINUS_ASSIGN | STAR_ASSIGN | SLASH_ASSIGN | MODULO_ASSIGN | LSHIFT_ASSIGN | RSHIFT_ASSIGN | AMPERSAND_ASSIGN | PIPELINE_ASSIGN) right = expression # BinaryExpression
+| left = expression binaryOperator = (EQUALS | NOT_EQUALS) right = expression                   # BinaryExpression
+| left = expression binaryOperator = AMPERSAND right = expression                               # BinaryExpression
+| left = expression binaryOperator = PIPELINE right = expression                                # BinaryExpression
+| left = expression binaryOperator = AND right = expression                                     # BinaryExpression
+| left = expression binaryOperator = OR right = expression                                      # BinaryExpression
+| <assoc=right> left = expression binaryOperator = (
+  ASSIGN 
+  | PLUS_ASSIGN 
+  | MINUS_ASSIGN 
+  | STAR_ASSIGN 
+  | SLASH_ASSIGN 
+  | MODULO_ASSIGN 
+  | LSHIFT_ASSIGN 
+  | RSHIFT_ASSIGN 
+  | AMPERSAND_ASSIGN 
+  | PIPELINE_ASSIGN
+  ) right = expression              # BinaryExpression
 | LEFT_PAREN expression RIGHT_PAREN # GroupingExpression
 ;
 
 
-type returns [friday::Type* typeId = nullptr]
-: IDENTIFIER # SimpleType
-| STAR+ pointedType = type # PointerType
-| (LEFT_SQUARE RIGHT_SQUARE)+ elementType = type # ArrayType
+type returns [Type* typeId = ErrorType::get()]
+: IDENTIFIER                                                                                            # SimpleType
+| STAR+ pointedType = type                                                                              # PointerType
+| (LEFT_SQUARE RIGHT_SQUARE)+ elementType = type                                                        # ArrayType
 | FN LEFT_PAREN (paramsTypes += type (COMMA paramsTypes += type)*)? RIGHT_PAREN ARROW returnType = type # FunctionType
 ;
 

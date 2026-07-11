@@ -4,7 +4,10 @@
 
 namespace friday::inline api::inline typesystem {
 
-  struct TypedEntity {
-    virtual auto getType() const -> Type* = 0;
+  struct FRIDAY_API TypedEntity : public NonCopyable {
+    constexpr TypedEntity() = default;
+    constexpr virtual ~TypedEntity() = default;
+
+    virtual auto get_type() const -> Pointer<Type> = 0;
   };
 }

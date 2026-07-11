@@ -5,13 +5,14 @@
 
 namespace friday::inline api::inline pipeline {
 
-  struct TypeChecker : StaticAnalyzer {
+  struct FRIDAY_API TypeCheckerVisitor final : StaticAnalyzer {
     private:
-    stack<ISymbolTable*> M_symbolTables { };
+    stack<weak<ISymbolTable>> M_symbolTables { };
 
     public:
-    TypeChecker(CompilationContext& ctx) noexcept;
-
+    TypeCheckerVisitor(CompilationContext& ctx) noexcept;
+    ~TypeCheckerVisitor() override = default;
+    
     public:
     auto visitDeclarationStatement(FridayParser::DeclarationStatementContext *ctx) -> any override;
     auto visitIfStatement(FridayParser::IfStatementContext *ctx) -> any override;
@@ -20,9 +21,10 @@ namespace friday::inline api::inline pipeline {
     auto visitExpressionStatement(FridayParser::ExpressionStatementContext *ctx) -> any override;
     auto visitDeferStatement(FridayParser::DeferStatementContext *ctx) -> any override;
     auto visitPrintStatement(FridayParser::PrintStatementContext *ctx) -> any override;
-    auto visitScope(FridayParser::ScopeContext *ctx) -> any override;
     auto visitReturnStatement(FridayParser::ReturnStatementContext *ctx) -> any override;
-    auto visitInlineScope(FridayParser::InlineScopeContext *ctx) -> any override;
+    auto visitScopeStatement(FridayParser::ScopeStatementContext *ctx) -> any override;
+    auto visitBasicBlock(FridayParser::BasicBlockContext *ctx) -> any override;
+    auto visitTrailingBlock(FridayParser::TrailingBlockContext *ctx) -> any override;
 
     auto visitMemberAccessExpression(FridayParser::MemberAccessExpressionContext *ctx) -> any override;
     auto visitArrayLiteralExpression(FridayParser::ArrayLiteralExpressionContext *ctx) -> any override;
@@ -41,21 +43,30 @@ namespace friday::inline api::inline pipeline {
     auto visitBoolLiteralExpression(FridayParser::BoolLiteralExpressionContext *ctx) -> any override;
     auto visitCharLiteralExpression(FridayParser::CharLiteralExpressionContext *ctx) -> any override;
     auto visitCallExpression(FridayParser::CallExpressionContext *ctx) -> any override;
+    
+    virtual auto on_unit_begin(TranslationUnit& unit) -> void final override;
+    virtual auto on_unit_end(TranslationUnit& unit) -> void final override;
 
     private:
-    auto push(ISymbolTable& scope) -> void;
-    auto pop() -> ISymbolTable*;
-    auto top() -> ISymbolTable*;
+    auto push(weak<ISymbolTable> scope) -> void;
+    auto pop() -> weak<ISymbolTable>;
+    auto top() -> weak<ISymbolTable>;
 
-    auto BYTE() -> Type*;
-    auto INT() -> Type*;
-    auto BOOL() -> Type*;
-    auto VOID() -> Type*;
-    auto FLOAT() -> Type*;
+    auto BYTE() -> Pointer<Type>;
+    auto INT() -> Pointer<Type>;
+    auto BOOL() -> Pointer<Type>;
+    auto VOID() -> Pointer<Type>;
+    auto FLOAT() -> Pointer<Type>;
 
     template<class T>
-    auto byVisiting() -> function<any (T*)> {
-      return [this](T* ctx) { return this->visit(ctx); };
+    auto by_visiting() -> function<any (Pointer<T>)> {
+      return [this](Pointer<T> ctx) { return this->visit(ctx); };
     }
+
+    auto find_binary_operator(
+      string_view name, 
+      Pointer<Type> lhs, 
+      Pointer<Type> rhs
+    ) -> weak<Function>;
   };
 }

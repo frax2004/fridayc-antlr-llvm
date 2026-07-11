@@ -1,6 +1,6 @@
 #include <OverloadSolverVisitor.hpp>
-#include <ErrorType.hpp>
 #include <OperationNotSupportedError.hpp>
+
 
 namespace friday::inline api::inline pipeline {
 
@@ -8,52 +8,42 @@ namespace friday::inline api::inline pipeline {
     : StaticAnalyzer { ctx }
   {}
 
-  auto OverloadSolverVisitor::beginUnit(TranslationUnit& unit) -> void {}
+  auto OverloadSolverVisitor::on_unit_begin(TranslationUnit& _) -> void {
+    (void)_;
+  }
 
-  auto OverloadSolverVisitor::endUnit(TranslationUnit& unit) -> void {}
+  auto OverloadSolverVisitor::on_unit_end(TranslationUnit& _) -> void {
+    (void)_;
+  }
 
-  auto OverloadSolverVisitor::visitFunctionStatement(FridayParser::FunctionStatementContext* ctx) -> any {
-    auto isOverload = [](ISymbol* symbol) { 
-      return rtti::instanceOf<Overload>(symbol); 
-    };
+  auto OverloadSolverVisitor::visitFreeFunctionStatement(FridayParser::FreeFunctionStatementContext *ctx) -> any {
 
-    auto isErrorType = [](Type* other) { 
-      return other == ErrorType::get(); 
-    };
-
-    auto toMetadata = [this](FridayParser::TypeContext* ctx) {
-      return ctx->typeId != nullptr ? ctx->typeId : ErrorType::get();
-    };
-
-    auto tup2pair = [](tuple<string, Type*> const& tup) {
+    auto tup2pair = [](tuple<string, Pointer<Type>> const& tup) {
       return make_pair(get<0>(tup), get<1>(tup));
     };
 
     auto toVisibility = [](u64 vis) {
       switch(vis) {
-        case FridayScanner::PUBLIC: return VisibilityModifier::PUBLIC;
-        case FridayScanner::PRIVATE: return VisibilityModifier::PRIVATE;
+        case FridayParser::PUBLIC: return VisibilityModifier::PUBLIC;
+        case FridayParser::PRIVATE: return VisibilityModifier::PRIVATE;
         default: throw InvalidArgumentError{"Invalid visibility modifier"};
       }
     };
+
+    (void)toVisibility;
     
     string overloadName = ctx->name->getText();
-    TranslationUnit* unit = this->getCurrentUnit();
- 
-    Overload* asOverload = rtti::cast<Overload>(ctx->definingScope->lookUpIf(overloadName, isOverload));
-
-    if(asOverload == nullptr) throw OperationNotSupportedError("Internal error.");
 
     auto paramsTypes = ctx->paramsTypes
-    | views::transform(toMetadata)
+    | views::transform(&FridayParser::TypeContext::typeId)
     | ranges::to<vector>();
 
-    auto retType = toMetadata(ctx->returnType);
+    auto retType = ctx->returnType->typeId;
     bool ok = true;
 
-    for(auto [i, type] : paramsTypes | views::filter(isErrorType) | views::enumerate) {
+    for(auto [i, type] : paramsTypes | views::filter(&ErrorType::is_error_type) | views::enumerate) {
       ok = false;
-      this->errorAt(
+      this->error_at(
         ctx->paramsTypes[i]->getStart(),
         "In function declaration, #{} parameter named \"{}\" is of an invalid error type \"{}\""_f.format(
           i,
@@ -63,9 +53,9 @@ namespace friday::inline api::inline pipeline {
       );
     }
 
-    if(retType == ErrorType::get()) {
+    if(ErrorType::is_error_type(retType)) {
       ok = false;
-      this->errorAt(
+      this->error_at(
         ctx->returnType->getStart(),
         "In function declaration, the return type is of an invalid error type \"{}\""_f.format(
           ctx->returnType->getText()
@@ -73,9 +63,12 @@ namespace friday::inline api::inline pipeline {
       );
     }
 
-    if(asOverload->hasMatch(paramsTypes)) {
+    if(ctx->overloadDecl.expired()) throw OperationNotSupportedError("Internal error.");
+    rc<Overload> asOverload = ctx->overloadDecl.lock();
+
+    if(asOverload->has_match(paramsTypes)) {
       ok = false;
-      this->errorAt(
+      this->error_at(
         ctx->name,
         "Redeclaration of function \"{}\" with the same parameters (two functions with the same type cannot be distinguished by the return type alone)"_f.format(
           ctx->name->getText()
@@ -87,65 +80,54 @@ namespace friday::inline api::inline pipeline {
 
     auto parameters = views::zip(
       ctx->paramsNames 
-      | views::transform(ant::Token::getText), 
+      | views::transform(&ant::Token::getText), 
       paramsTypes
     )
     | views::transform(tup2pair)
     | ranges::to<vector>();
 
-    auto function = new Function(*asOverload, overloadName, *retType, parameters);
+    rc<Function> function = make_shared<Function>(*asOverload, *retType, parameters);
     asOverload->add(paramsTypes, function);
 
-    ctx->typeId = function->getType();
-    ctx->visibility = toVisibility(ctx->accessModifier->getType());
-    ctx->isStatic = true;
-    ctx->initialBlock = ctx->block;
+    rc<Scope> scope = make_shared<Scope>(*asOverload->get_declaring_symbol_table());
+    for(auto [paramName, paramType] : parameters) {
+      scope->define(make_shared<Variable>(*scope, paramName, *paramType));
+    }
+
+    ctx->functionDecl = function;
+    ctx->block->scope = scope;
 
     return {};
   }
 
-  auto OverloadSolverVisitor::visitNativeFunctionStatement(FridayParser::NativeFunctionStatementContext* ctx) -> any {
-    auto isOverload = [](ISymbol* symbol) { 
-      return rtti::instanceOf<Overload>(symbol); 
-    };
+  auto OverloadSolverVisitor::visitNativeFunctionStatement(FridayParser::NativeFunctionStatementContext *ctx) -> any {
 
-    auto isErrorType = [](Type* other) { 
-      return other == ErrorType::get(); 
-    };
-
-    auto toMetadata = [this](FridayParser::TypeContext* ctx) {
-      return ctx->typeId != nullptr ? ctx->typeId : ErrorType::get();
-    };
-
-    auto tup2pair = [](tuple<string, Type*> const& tup) {
+    auto tup2pair = [](tuple<string, Pointer<Type>> const& tup) {
       return make_pair(get<0>(tup), get<1>(tup));
     };
 
     auto toVisibility = [](u64 vis) {
       switch(vis) {
-        case FridayScanner::PUBLIC: return VisibilityModifier::PUBLIC;
-        case FridayScanner::PRIVATE: return VisibilityModifier::PRIVATE;
+        case FridayParser::PUBLIC: return VisibilityModifier::PUBLIC;
+        case FridayParser::PRIVATE: return VisibilityModifier::PRIVATE;
         default: throw InvalidArgumentError{"Invalid visibility modifier"};
       }
     };
-    
-    string overloadName = ctx->name->getText();
-    TranslationUnit* unit = this->getCurrentUnit();
- 
-    Overload* asOverload = rtti::cast<Overload>(ctx->definingScope->lookUpIf(overloadName, isOverload));
 
-    if(asOverload == nullptr) throw OperationNotSupportedError("Internal error.");
+    (void)toVisibility;
+
+    string overloadName = ctx->name->getText();
 
     auto paramsTypes = ctx->paramsTypes
-    | views::transform(toMetadata)
+    | views::transform(&FridayParser::TypeContext::typeId)
     | ranges::to<vector>();
 
-    auto retType = toMetadata(ctx->returnType);
+    auto retType = ctx->returnType->typeId;
     bool ok = true;
 
-    for(auto [i, type] : paramsTypes | views::filter(isErrorType) | views::enumerate) {
+    for(auto [i, type] : paramsTypes | views::filter(&ErrorType::is_error_type) | views::enumerate) {
       ok = false;
-      this->errorAt(
+      this->error_at(
         ctx->paramsTypes[i]->getStart(),
         "In function declaration, #{} parameter named \"{}\" is of an invalid error type \"{}\""_f.format(
           i,
@@ -155,9 +137,9 @@ namespace friday::inline api::inline pipeline {
       );
     }
 
-    if(retType == ErrorType::get()) {
+    if(ErrorType::is_error_type(retType)) {
       ok = false;
-      this->errorAt(
+      this->error_at(
         ctx->returnType->getStart(),
         "In function declaration, the return type is of an invalid error type \"{}\""_f.format(
           ctx->returnType->getText()
@@ -165,9 +147,12 @@ namespace friday::inline api::inline pipeline {
       );
     }
 
-    if(asOverload->hasMatch(paramsTypes)) {
+    if(ctx->overloadDecl.expired()) throw OperationNotSupportedError("Internal error.");
+    rc<Overload> asOverload = ctx->overloadDecl.lock();
+
+    if(asOverload->has_match(paramsTypes)) {
       ok = false;
-      this->errorAt(
+      this->error_at(
         ctx->name,
         "Redeclaration of function \"{}\" with the same parameters (two functions with the same type cannot be distinguished by the return type alone)"_f.format(
           ctx->name->getText()
@@ -179,22 +164,18 @@ namespace friday::inline api::inline pipeline {
 
     auto parameters = views::zip(
       ctx->paramsNames 
-      | views::transform(ant::Token::getText), 
+      | views::transform(&ant::Token::getText), 
       paramsTypes
     )
     | views::transform(tup2pair)
     | ranges::to<vector>();
 
-    auto function = new Function(*asOverload, overloadName, *retType, parameters);
+    rc<Function> function = make_shared<Function>(*asOverload, *retType, parameters);
     asOverload->add(paramsTypes, function);
-    
-    ctx->typeId = function->getType();
-    ctx->visibility = toVisibility(ctx->accessModifier->getType());
-    ctx->isStatic = true;
-    ctx->initialBlock = nullptr;
+
+    ctx->functionDecl = function;
 
     return {};
-
   }
 
 }

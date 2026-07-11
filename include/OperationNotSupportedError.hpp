@@ -5,9 +5,10 @@
 namespace friday::inline core {
 
 
-  struct OperationNotSupportedError final : public Error<> {
+  struct FRIDAY_API OperationNotSupportedError final : public Error<> {
 
     constexpr inline OperationNotSupportedError(string info) noexcept;
+    constexpr ~OperationNotSupportedError() override = default;
     constexpr inline auto what() const noexcept -> string override;
 
     private:

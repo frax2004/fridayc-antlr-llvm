@@ -5,21 +5,24 @@
 namespace friday::inline api::inline typesystem {
 
 
-  struct PointerType final : public Type {
+  struct FRIDAY_API PointerType final : Type {
     private:
-    Type* M_pointedType { nullptr };
-    string M_name;
-    u64 M_dimensions;
+    string        M_name        { "" };
+    Pointer<Type> M_pointedType { nullptr };
+    u64           M_dimensions  { 0 };
 
     private:
     PointerType(Type& pointedType, u64 dimensions) noexcept;
 
     public:
-    static auto get(Type& pointedType, u64 dimensions) noexcept -> Type*;
+    ~PointerType() override = default;
 
-    auto getPointedType() const noexcept -> Type*;
-    auto getDimensions() const noexcept -> u64;
-    auto getName() const noexcept -> string const& override;
-    auto getLLVMType(llvm::LLVMContext& ctx) const noexcept -> llvm::Type* override;
+    public:
+    static auto get(Type& pointedType, u64 dimensions) noexcept -> Pointer<Type>;
+
+    auto get_pointed_type() const noexcept -> Pointer<Type>;
+    auto get_dimensions() const noexcept -> u64;
+    auto get_name() const noexcept -> string_view override;
+    auto to_llvm_type(llvm::LLVMContext& ctx) const noexcept -> Pointer<llvm::Type> override;
   };
 }
