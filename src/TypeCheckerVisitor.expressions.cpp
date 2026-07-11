@@ -11,13 +11,13 @@ namespace friday::inline api::inline pipeline {
 
     auto candidate = ctx->func->typeId;
 
-    if(candidate == ErrorType::get() or not rtti::instanceOf<Overload>(candidate)) {
-      Console::log("{} instanceof Overload :: {}"_f.format(ctx->func->getText(), rtti::instanceOf<Overload>(candidate)));
-      this->errorAt(
+    if(candidate == ErrorType::get() or not rtti::instance_of<Overload>(candidate)) {
+      Console::log("{} instanceof Overload :: {}"_f.format(ctx->func->getText(), rtti::instance_of<Overload>(candidate)));
+      this->error_at(
         ctx->getStart(),
         "The underlined expression '{}' of type '{}' is not a function and cannot be called."_f.format(
           ctx->func->getText(),
-          candidate->getName()
+          candidate->get_name()
         )
       );
       return {};
@@ -33,22 +33,22 @@ namespace friday::inline api::inline pipeline {
       argsTypes.insert(argsTypes.begin(), memberAccess->object->typeId);
     }
 
-    auto function = overload->tryMatch(argsTypes);
+    auto function = overload->try_match(argsTypes);
 
     if(function.expired()) {
-      this->errorAt(
+      this->error_at(
         ctx->func->getStart(),
         "No overload of function '{}' matches the given arguments ({}):\nAvailable overloads:\n{}"_f.format(
-          overload->getQualifiedId(),
+          overload->get_qualified_id(),
           argsTypes 
-          | views::transform(&Type::getName)
+          | views::transform(&Type::get_name)
           | views::join_with(", "s)
           | ranges::to<string>(),
-          overload->getFunctions()
+          overload->get_functions()
           | views::transform(&weak<Function>::lock)
           | views::transform(&rc<Function>::get)
-          | views::transform(&Function::getType)
-          | views::transform(&Type::getName)
+          | views::transform(&Function::get_type)
+          | views::transform(&Type::get_name)
           | views::join_with("\n"s)
           | ranges::to<string>()
         )
@@ -56,40 +56,40 @@ namespace friday::inline api::inline pipeline {
       return {};
     }
 
-    auto funcType = rtti::cast<FunctionType>(function.lock()->getType());
+    auto funcType = rtti::cast<FunctionType>(function.lock()->get_type());
 
     bool ok = true;
-    if(funcType->getParametersCount() != argsTypes.size()) {
+    if(funcType->params_size() != argsTypes.size()) {
       ok = false;
-      this->errorAt(
+      this->error_at(
         ctx->getStart(),
         "In function call '{}' of type '{}' : the function expects {} arguments but {} were given."_f.format(
           ctx->func->getText(),
-          funcType->getName(),
-          funcType->getParametersCount(),
+          funcType->get_name(),
+          funcType->params_size(),
           argsTypes.size()
         )
       );
     }
 
-    for(u64 i = 0; i < min(argsTypes.size(), funcType->getParametersCount()); i++) {
+    for(u64 i = 0; i < min(argsTypes.size(), funcType->params_size()); i++) {
       Pointer<Type> T = argsTypes[i];
 
-      if(T != funcType->getParameterType(i)) {
+      if(T != funcType->get_param_type(i)) {
         ok = false;
-        this->errorAt(
+        this->error_at(
           ctx->args[i]->getStart(),
           "In function call '{}' of type '{}' : argument type mismatch. Expected '{}', got '{}'"_f.format(
             ctx->getText(),
-            funcType->getName(),
-            funcType->getParameterType(i)->getName(),
-            T->getName()
+            funcType->get_name(),
+            funcType->get_param_type(i)->get_name(),
+            T->get_name()
           )
         );
       }
     }
 
-    if(ok) ctx->typeId = funcType->getReturnType();
+    if(ok) ctx->typeId = funcType->get_return_type();
 
     return {};
   }
@@ -101,18 +101,18 @@ namespace friday::inline api::inline pipeline {
     weak<ISymbolTable> scope = this->top();
     if(scope.expired()) throw OperationNotSupportedError("Internal error.");
 
-    weak<ISymbol> symbol = scope.lock()->lookUp(id, {});
+    weak<ISymbol> symbol = scope.lock()->look_up(id, {});
 
     if(symbol.expired()) {
       // auto toSuggestion = [](string const& message) {
       //   return format(" Did you mean '{}'?", message);
       // };
 
-      // string suggestion = this->top()->mostSimilar(id, isVariableOrFunction, 3);
+      // string suggestion = this->top()->most_similar(id, isVariableOrFunction, 3);
       // .transform(toSuggestion)
       string suggestion = "";
 
-      this->errorAt(
+      this->error_at(
         ctx->getStart(),
         "There is no object named '{}' in the current scope.{}"_f.format(
           id,
@@ -121,9 +121,9 @@ namespace friday::inline api::inline pipeline {
       );
     } else {
       rc<ISymbol> ref = symbol.lock();
-      if(rtti::instanceOf<Variable>(ref.get())) ctx->typeId = dynamic_pointer_cast<Variable>(ref)->getType();
-      else if(rtti::instanceOf<Struct>(ref.get())) ctx->typeId = dynamic_pointer_cast<Type>(ref).get();
-      else if(rtti::instanceOf<Overload>(ref.get())) ctx->typeId = dynamic_pointer_cast<Type>(ref).get();
+      if(rtti::instance_of<Variable>(ref.get())) ctx->typeId = dynamic_pointer_cast<Variable>(ref)->get_type();
+      else if(rtti::instance_of<Struct>(ref.get())) ctx->typeId = dynamic_pointer_cast<Type>(ref).get();
+      else if(rtti::instance_of<Overload>(ref.get())) ctx->typeId = dynamic_pointer_cast<Type>(ref).get();
       else throw InvalidArgumentError{"Invalid symbol kind in identifier expression"};
     }
     
@@ -180,30 +180,30 @@ namespace friday::inline api::inline pipeline {
     if(
       asArrayType == nullptr
       or rtti::cast<Type>(asArrayType) == ErrorType::get()  
-      or asArrayType->getElementType() == this->VOID()
+      or asArrayType->get_element_type() == this->VOID()
     ) {
       ok = false;
-      this->errorAt(
+      this->error_at(
         ctx->array->getStart(),
         "Array expression '{}' of type '{}' is not a valid array or pointer that can be dereferenced."_f.format(
           ctx->array->getText(),
-          arrayType->getName()
+          arrayType->get_name()
         )
       );
     }
 
     if(indexType != this->INT()) {
       ok = false;
-      this->errorAt(
+      this->error_at(
         ctx->index->getStart(),
         "Array subcript index expression '{}' of type '{}' is not convertible to int. Implicit cast are not permitted, if this is the problem, try adding an explicit cast."_f.format(
           ctx->index->getText(),
-          indexType->getName()
+          indexType->get_name()
         )
       );
     }
 
-    if(ok) ctx->typeId = asArrayType->getElementType();
+    if(ok) ctx->typeId = asArrayType->get_element_type();
     return {};
   }
 
@@ -215,7 +215,7 @@ namespace friday::inline api::inline pipeline {
     Pointer<Type> rhsType = ctx->right->typeId;
 
     string operatorName = "operator{}"_f.format(ctx->binaryOperator->getText());
-    weak<Function> function = this->findBinaryOperator(operatorName, lhsType, rhsType);
+    weak<Function> function = this->find_binary_operator(operatorName, lhsType, rhsType);
 
     string suggestion = "";
 
@@ -223,16 +223,16 @@ namespace friday::inline api::inline pipeline {
       if(lhsType == rhsType) {
         suggestion = " Implicit casts are not permitted so, if this is a cast problem, try adding an explicit cast.";
       }
-      this->errorAt(
+      this->error_at(
         ctx->binaryOperator,
         "No matching function for call to '{}' with operands of types '{}' and '{}'.{}"_f.format(
           operatorName,
-          lhsType->getName(),
-          rhsType->getName(),
+          lhsType->get_name(),
+          rhsType->get_name(),
           suggestion
         )
       );
-    } else ctx->typeId = function.lock()->getReturnType();
+    } else ctx->typeId = function.lock()->get_return_type();
 
     return {};
   }
@@ -242,17 +242,17 @@ namespace friday::inline api::inline pipeline {
     this->visitChildren(ctx);
     
     // Pointer<Type> type = any_cast<Pointer<Type>>(this->visit(ctx->expression()));
-    // u64 oper = ctx->unaryOperator->getType();
+    // u64 oper = ctx->unaryOperator->get_type();
     // string unaryOperatorName = Type::getUnaryPrefixExpressionOperatorName(oper, type);
 
 
     // if(Pointer<Struct> asStruct = type->as<Struct>()) {
-    //   if(const Pointer<Function> unaryOperator = asStruct->getMethod(unaryOperatorName)) {
-    //     ctx->typeId = unaryOperator->getType()->as<const FunctionType>()->getReturnType();
+    //   if(const Pointer<Function> unaryOperator = asStruct->find_method(unaryOperatorName)) {
+    //     ctx->typeId = unaryOperator->get_type()->as<const FunctionType>()->get_return_type();
     //   }
     // }
 
-    // this->errorAt(
+    // this->error_at(
     //   ctx->unaryOperator,
     //   "No matching function for call to '{}' with operand of type '{}'"_f.format(
     //     unaryOperatorName,
@@ -271,20 +271,20 @@ namespace friday::inline api::inline pipeline {
 
     Pointer<Struct> asStruct = rtti::cast<Struct>(ctx->object->typeId);
     if(asStruct == nullptr) {
-      this->errorAt(
+      this->error_at(
         ctx->object->getStart(),
-        "Expression of type '{}' is not a struct"_f.format(ctx->object->typeId->getName())
+        "Expression of type '{}' is not a struct"_f.format(ctx->object->typeId->get_name())
       );
-    } else if(not asStruct->isDefined(memberName)) {
-      this->errorAt(
+    } else if(not asStruct->is_defined(memberName)) {
+      this->error_at(
         ctx->IDENTIFIER()->getSymbol(),
-        "Struct '{}' has no field or method called '{}'"_f.format(asStruct->getName(), memberName)
+        "Struct '{}' has no field or method called '{}'"_f.format(asStruct->get_name(), memberName)
       );
     } else {
-      auto member = asStruct->lookUp(memberName, {}).lock().get();
-      if(rtti::instanceOf<Variable>(member)) {
-        ctx->typeId = rtti::cast<Variable>(member)->getType();
-      } else if(rtti::instanceOf<Overload>(member)) {
+      auto member = asStruct->look_up(memberName, {}).lock().get();
+      if(rtti::instance_of<Variable>(member)) {
+        ctx->typeId = rtti::cast<Variable>(member)->get_type();
+      } else if(rtti::instance_of<Overload>(member)) {
         ctx->typeId = rtti::cast<Type>(member);
       }
     } 

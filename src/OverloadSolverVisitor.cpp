@@ -8,11 +8,11 @@ namespace friday::inline api::inline pipeline {
     : StaticAnalyzer { ctx }
   {}
 
-  auto OverloadSolverVisitor::beginUnit(TranslationUnit& _) -> void {
+  auto OverloadSolverVisitor::on_unit_begin(TranslationUnit& _) -> void {
     (void)_;
   }
 
-  auto OverloadSolverVisitor::endUnit(TranslationUnit& _) -> void {
+  auto OverloadSolverVisitor::on_unit_end(TranslationUnit& _) -> void {
     (void)_;
   }
 
@@ -47,7 +47,7 @@ namespace friday::inline api::inline pipeline {
 
     for(auto [i, type] : paramsTypes | views::filter(isErrorType) | views::enumerate) {
       ok = false;
-      this->errorAt(
+      this->error_at(
         ctx->paramsTypes[i]->getStart(),
         "In function declaration, #{} parameter named \"{}\" is of an invalid error type \"{}\""_f.format(
           i,
@@ -59,7 +59,7 @@ namespace friday::inline api::inline pipeline {
 
     if(retType == ErrorType::get()) {
       ok = false;
-      this->errorAt(
+      this->error_at(
         ctx->returnType->getStart(),
         "In function declaration, the return type is of an invalid error type \"{}\""_f.format(
           ctx->returnType->getText()
@@ -70,9 +70,9 @@ namespace friday::inline api::inline pipeline {
     if(ctx->overloadDecl.expired()) throw OperationNotSupportedError("Internal error.");
     rc<Overload> asOverload = ctx->overloadDecl.lock();
 
-    if(asOverload->hasMatch(paramsTypes)) {
+    if(asOverload->has_match(paramsTypes)) {
       ok = false;
-      this->errorAt(
+      this->error_at(
         ctx->name,
         "Redeclaration of function \"{}\" with the same parameters (two functions with the same type cannot be distinguished by the return type alone)"_f.format(
           ctx->name->getText()
@@ -93,7 +93,7 @@ namespace friday::inline api::inline pipeline {
     rc<Function> function = make_shared<Function>(*asOverload, *retType, parameters);
     asOverload->add(paramsTypes, function);
 
-    rc<Scope> scope = make_shared<Scope>(*asOverload->getDeclaringSymbolTable());
+    rc<Scope> scope = make_shared<Scope>(*asOverload->get_declaring_symbol_table());
     for(auto [paramName, paramType] : parameters) {
       scope->define(make_shared<Variable>(*scope, paramName, *paramType));
     }
@@ -134,7 +134,7 @@ namespace friday::inline api::inline pipeline {
 
     for(auto [i, type] : paramsTypes | views::filter(isErrorType) | views::enumerate) {
       ok = false;
-      this->errorAt(
+      this->error_at(
         ctx->paramsTypes[i]->getStart(),
         "In function declaration, #{} parameter named \"{}\" is of an invalid error type \"{}\""_f.format(
           i,
@@ -146,7 +146,7 @@ namespace friday::inline api::inline pipeline {
 
     if(retType == ErrorType::get()) {
       ok = false;
-      this->errorAt(
+      this->error_at(
         ctx->returnType->getStart(),
         "In function declaration, the return type is of an invalid error type \"{}\""_f.format(
           ctx->returnType->getText()
@@ -157,9 +157,9 @@ namespace friday::inline api::inline pipeline {
     if(ctx->overloadDecl.expired()) throw OperationNotSupportedError("Internal error.");
     rc<Overload> asOverload = ctx->overloadDecl.lock();
 
-    if(asOverload->hasMatch(paramsTypes)) {
+    if(asOverload->has_match(paramsTypes)) {
       ok = false;
-      this->errorAt(
+      this->error_at(
         ctx->name,
         "Redeclaration of function \"{}\" with the same parameters (two functions with the same type cannot be distinguished by the return type alone)"_f.format(
           ctx->name->getText()

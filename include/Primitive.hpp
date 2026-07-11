@@ -8,10 +8,10 @@ namespace friday::inline api::inline typesystem {
     Primitive(Namespace& global, string name, Pointer<llvm::Type> T);
     ~Primitive() override = default;
 
-    auto getLLVMType(llvm::LLVMContext& ctx) const noexcept -> Pointer<llvm::Type> override;
+    auto to_llvm_type(llvm::LLVMContext& ctx) const noexcept -> Pointer<llvm::Type> override;
 
     private:
-    string M_name;
+    string              M_name { "" };
     Pointer<llvm::Type> M_type { nullptr };
   };
 }

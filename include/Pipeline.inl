@@ -6,7 +6,7 @@
 namespace friday::inline api::inline pipeline {
 
   template<derived_from<StaticAnalyzer> T>
-  auto Pipeline::andThen() -> Pipeline& {
+  auto Pipeline::and_then() -> Pipeline& {
 
     this->M_context = M_context
     .and_then([](Pointer<CompilationContext> ctx) -> optional<Pointer<CompilationContext>> {

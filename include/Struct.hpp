@@ -12,26 +12,26 @@ namespace friday::inline api::inline typesystem {
 
   struct FRIDAY_API Struct : ISymbol, Type, SymbolTable<Variable, Overload> {
     private:
-    string M_name;
+    string             M_name                { "" };
     Pointer<Namespace> M_declaryingNamespace { nullptr };
 
     public:
     Struct(Namespace& parent, string name) noexcept;
     ~Struct() override = default;
 
-    auto getField(string const& name, weak<Variable> defaultValue = {}) noexcept -> weak<Variable>;
-    auto getMethod(string const& name, weak<Overload> defaultValue = {}) noexcept -> weak<Overload>;
-    auto getName() const noexcept -> string const& override;
-    auto getLLVMType(llvm::LLVMContext& ctx) const noexcept -> Pointer<llvm::Type> override;
-    auto getQualifiedId() const -> string override;
-    auto getFullQualifiedId() const -> string override;
-    auto getMangledId() const -> string override;
-    auto getAttributes() const -> Attributes override;
-    auto getParent() -> Pointer<ISymbolTable> override;
-    auto getDeclaringSymbolTable() -> Pointer<ISymbolTable> override;
+    auto find_field(string_view name, weak<Variable> defaultValue = {}) noexcept -> weak<Variable>;
+    auto find_method(string_view name, weak<Overload> defaultValue = {}) noexcept -> weak<Overload>;
+    auto get_name() const noexcept -> string_view override;
+    auto to_llvm_type(llvm::LLVMContext& ctx) const noexcept -> Pointer<llvm::Type> override;
+    auto get_qualified_id() const -> string override;
+    auto get_full_qualified_id() const -> string override;
+    auto get_mangled_id() const -> string override;
+    auto get_attributes() const -> Attributes override;
+    auto get_parent() -> Pointer<ISymbolTable> override;
+    auto get_declaring_symbol_table() -> Pointer<ISymbolTable> override;
 
-    static auto isStruct(Pointer<ISymbol> symbol) -> bool;
-    static auto toStruct(Pointer<ISymbol> symbol) -> Pointer<Struct>;
+    static auto is_struct(Pointer<ISymbol> symbol) -> bool;
+    static auto to_struct(Pointer<ISymbol> symbol) -> Pointer<Struct>;
 
   };
 }
@@ -39,8 +39,8 @@ namespace friday::inline api::inline typesystem {
 template<>
 struct FRIDAY_API json::stringify<friday::Struct> {
   auto operator()(friday::Struct const& self) -> string {
-    auto name = self.getQualifiedId();
-    auto symbols = self.getSymbols();
+    auto name = self.get_qualified_id();
+    auto symbols = self.get_symbols();
 
     // TODO grammar must implement global variables
     auto var2str = json::stringify<friday::Variable>{};

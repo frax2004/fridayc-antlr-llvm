@@ -24,23 +24,22 @@ namespace friday::inline api::inline pipeline {
     return this->ownedNamespace.lock()->define(symbol);
   }
 
-  auto TranslationUnit::isDefined(string const& id) -> bool {
-    return this->ownedNamespace.lock()->isDefined(id);
+  auto TranslationUnit::is_defined(string_view id) -> bool {
+    return this->ownedNamespace.lock()->is_defined(id);
   }
 
-  auto TranslationUnit::mostSimilar(string const& name, Predicate<Pointer<ISymbol>> filter, u64 maxEditDistance) noexcept -> weak<ISymbol> {
+  auto TranslationUnit::most_similar(string_view name, Predicate<Pointer<ISymbol>> filter, u64 maxEditDistance) noexcept -> weak<ISymbol> {
     (void)name;
     (void)filter;
     (void)maxEditDistance;
     return {};
   }
 
-  auto TranslationUnit::getSymbols() const -> vector<weak<ISymbol>> {
-    return this->ownedNamespace.lock()->getSymbols();
+  auto TranslationUnit::get_symbols() const -> vector<weak<ISymbol>> {
+    return this->ownedNamespace.lock()->get_symbols();
   }
 
-  auto TranslationUnit::lookUp(string const& name, weak<ISymbol> defaultValue) -> weak<ISymbol> {
-    Console::debug("(TranslationUnit) Searching '{}'..."_f.format(name));
+  auto TranslationUnit::look_up(string_view name, weak<ISymbol> defaultValue) -> weak<ISymbol> {
     auto global = this->globalContext->global.get();
 
     auto notExpired = [](weak<Namespace> wr) { return not wr.expired(); };
@@ -49,31 +48,24 @@ namespace friday::inline api::inline pipeline {
     | views::transform(&weak<Namespace>::lock);
 
     if(not this->ownedNamespace.expired()) {
-      if(auto candidate = this->ownedNamespace.lock()->lookUp(name, defaultValue); not candidate.expired()) {
-        Console::debug("(Translation Unit) Found");
+      if(auto candidate = this->ownedNamespace.lock()->look_up(name, defaultValue); not candidate.expired()) {
         return candidate;
       }
     }
-    Console::debug("(Translation Unit) Not Found. Looking in used namespaces for '{}'..."_f.format(name));
     for(auto nsp : this->usedNamespaces | toNamespaces) {
-      if(auto candidate = nsp->lookUp(name, defaultValue); not candidate.expired()) {
-        Console::debug("(Translation Unit) Found");
+      if(auto candidate = nsp->look_up(name, defaultValue); not candidate.expired()) {
         return candidate;
       }
     }
 
-    Console::debug("(Translation Unit) Not Found. Looking Upwards for '{}'..."_f.format(name));
-    if(auto candidate = global->lookUp(name, defaultValue); not candidate.expired()) {
-      Console::debug("(Translation Unit) Found");
+    if(auto candidate = global->look_up(name, defaultValue); not candidate.expired()) {
       return candidate;
     }
-    Console::debug("(Translation Unit) Not Found (predicate is false)");
 
     return defaultValue;
   }
 
-  auto TranslationUnit::lookUpIf(string const& name, Predicate<Pointer<ISymbol>> predicate, weak<ISymbol> defaultValue) -> weak<ISymbol> {
-    Console::debug("(TranslationUnit - Predicate) Searching '{}'..."_f.format(name));
+  auto TranslationUnit::look_up_if(string_view name, Predicate<Pointer<ISymbol>> predicate, weak<ISymbol> defaultValue) -> weak<ISymbol> {
 
     auto global = this->globalContext->global.get();
 
@@ -83,54 +75,48 @@ namespace friday::inline api::inline pipeline {
     | views::transform(&weak<Namespace>::lock);
 
     if(not this->ownedNamespace.expired()) {
-      if(auto candidate = this->ownedNamespace.lock()->lookUpIf(name, predicate, defaultValue); not candidate.expired()) {
-        Console::debug("(Translation Unit - Predicate) Found");
+      if(auto candidate = this->ownedNamespace.lock()->look_up_if(name, predicate, defaultValue); not candidate.expired()) {
         return candidate;
       }
     }
-    Console::debug("(Translation Unit) Not Found. Looking in used namespaces for '{}'..."_f.format(name));
     for(auto nsp : this->usedNamespaces | toNamespaces) {
-      if(auto candidate = nsp->lookUpIf(name, predicate, defaultValue); not candidate.expired()) {
-        Console::debug("(Translation Unit) Found (predicate is true)");
+      if(auto candidate = nsp->look_up_if(name, predicate, defaultValue); not candidate.expired()) {
         return candidate;
       }
     }
 
-    Console::debug("(Translation Unit) Not Found. Looking Upwards for '{}'..."_f.format(name));
-    if(auto candidate = global->lookUpIf(name, predicate, defaultValue); not candidate.expired()) {
-      Console::debug("(Translation Unit) Found (predicate is true)");
+    if(auto candidate = global->look_up_if(name, predicate, defaultValue); not candidate.expired()) {
       return candidate;
     }
-    Console::debug("(Translation Unit) Not Found (predicate is false)");
 
     return defaultValue;
   }
 
-  auto TranslationUnit::getPath() const -> string {
+  auto TranslationUnit::get_path() const -> string {
     return this->path;
   }
 
-  auto TranslationUnit::getParent() -> Pointer<ISymbolTable> {
+  auto TranslationUnit::get_parent() -> Pointer<ISymbolTable> {
     return rtti::cast<ISymbolTable>(this->ownedNamespace.lock().get());
   }
 
-  auto TranslationUnit::getParseTree() const -> Pointer<ant::tree::ParseTree> {
+  auto TranslationUnit::get_parse_tree() const -> Pointer<ant::tree::ParseTree> {
     return this->ast;
   }
 
   auto TranslationUnit::use(rc<Namespace> nsp) -> void {
-    this->usedNamespaces.try_emplace(nsp->getQualifiedId(), nsp);
+    this->usedNamespaces.try_emplace(nsp->get_qualified_id(), nsp);
   }
 
-  auto TranslationUnit::getOwnedNamespace() const -> weak<Namespace> {
+  auto TranslationUnit::get_owned_namespace() const -> weak<Namespace> {
     return this->ownedNamespace;
   }
 
-  auto TranslationUnit::setOwnedNamespace(rc<Namespace> nsp) -> void {
+  auto TranslationUnit::set_owned_namespace(rc<Namespace> nsp) -> void {
     this->ownedNamespace = nsp;
   }
 
-  auto TranslationUnit::getContext() -> Pointer<CompilationContext> {
+  auto TranslationUnit::comp_context() -> Pointer<CompilationContext> {
     return this->globalContext;
   }
   

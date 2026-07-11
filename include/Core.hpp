@@ -38,4 +38,12 @@ struct FRIDAY_API hash<vector<Pointer<T>>> {
   auto operator()(vector<Pointer<T>> const& vec) const noexcept -> size_t;
 };
 
+struct FRIDAY_API transparent_string_hash {
+  auto operator()(string_view s) const -> u64;
+  auto operator()(string const& s) const -> u64;
+  auto operator()(const i8* s) const -> u64;
+
+  typedef __is_transparent is_transparent;
+};
+
 #include <Core.inl>

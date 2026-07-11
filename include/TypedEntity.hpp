@@ -8,6 +8,6 @@ namespace friday::inline api::inline typesystem {
     constexpr TypedEntity() = default;
     constexpr virtual ~TypedEntity() = default;
 
-    virtual auto getType() const -> Pointer<Type> = 0;
+    virtual auto get_type() const -> Pointer<Type> = 0;
   };
 }

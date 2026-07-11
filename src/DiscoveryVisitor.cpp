@@ -13,43 +13,43 @@ namespace friday::inline api::inline pipeline {
     return this->M_currentSymbolTable;
   }
   
-  auto DiscoveryVisitor::beginUnit(TranslationUnit& unit) -> void {
+  auto DiscoveryVisitor::on_unit_begin(TranslationUnit& unit) -> void {
     this->M_currentSymbolTable = &unit;
   }
 
-  auto DiscoveryVisitor::endUnit(TranslationUnit& _) -> void {
+  auto DiscoveryVisitor::on_unit_end(TranslationUnit& _) -> void {
     (void)_;
     this->M_currentSymbolTable = nullptr;
   }
 
   auto DiscoveryVisitor::visitNamespaceStatement(FridayParser::NamespaceStatementContext *ctx) -> any {
-    auto unit = this->getCurrentUnit();
+    auto unit = this->get_current_unit();
     auto token = ctx->IDENTIFIER()->getSymbol();
 
-    if(auto owned = unit->getOwnedNamespace(); not owned.expired() and owned.lock() != this->getCompilationContext().global) {
-      this->errorAt(
+    if(auto owned = unit->get_owned_namespace(); not owned.expired() and owned.lock() != this->comp_context().global) {
+      this->error_at(
         token, 
-        NAMESPACE_REDECLARATION.format(unit->getOwnedNamespace().lock()->getQualifiedId())
+        NAMESPACE_REDECLARATION.format(unit->get_owned_namespace().lock()->get_qualified_id())
       );
       return {};
     }
 
     string identifier = token->getText();
-    auto& namespaces = this->getCompilationContext().namespaces;
+    auto& namespaces = this->comp_context().namespaces;
 
     if(auto it = namespaces.find(identifier); it != namespaces.end()) {
-      unit->setOwnedNamespace(it->second);
+      unit->set_owned_namespace(it->second);
     } else {
       auto [iter, ok] = namespaces.emplace(
         identifier, 
-        make_shared<Namespace>(*this->getCompilationContext().global, identifier)
+        make_shared<Namespace>(*this->comp_context().global, identifier)
       );
 
-      unit->setOwnedNamespace(iter->second);
+      unit->set_owned_namespace(iter->second);
       ctx->namespaceDecl = iter->second;
     }
 
-    this->M_currentSymbolTable = unit->getOwnedNamespace().lock().get();
+    this->M_currentSymbolTable = unit->get_owned_namespace().lock().get();
 
     return {};
   }
@@ -57,8 +57,8 @@ namespace friday::inline api::inline pipeline {
   auto DiscoveryVisitor::visitStructStatement(FridayParser::StructStatementContext *ctx) -> any {
     auto name = ctx->structName->getText();
 
-    if(not this->current()->lookUpIf(name, Struct::isStruct, {}).expired()) {
-      this->errorAt(
+    if(not this->current()->look_up_if(name, Struct::is_struct, {}).expired()) {
+      this->error_at(
         ctx->structName,
         STRUCT_REDECLARATION.format(name)
       );
@@ -82,7 +82,7 @@ namespace friday::inline api::inline pipeline {
   auto DiscoveryVisitor::visitFunctionStatement(FridayParser::FunctionStatementContext *ctx) -> any {
     auto name = ctx->name->getText();
 
-    weak<ISymbol> candidate = this->M_currentSymbolTable->lookUpIf(name, Overload::isOverload, {});
+    weak<ISymbol> candidate = this->M_currentSymbolTable->look_up_if(name, Overload::is_overload, {});
     if(candidate.expired()) {
       rc<Overload> overload = make_shared<Overload>(*this->current(), name);
       ctx->overloadDecl = overload;
@@ -95,7 +95,7 @@ namespace friday::inline api::inline pipeline {
   auto DiscoveryVisitor::visitNativeFunctionStatement(FridayParser::NativeFunctionStatementContext *ctx) -> any {
     auto name = ctx->name->getText();
 
-    weak<ISymbol> candidate = this->current()->lookUpIf(name, Overload::isOverload, {});
+    weak<ISymbol> candidate = this->current()->look_up_if(name, Overload::is_overload, {});
     if(candidate.expired()) {
       rc<Overload> overload = make_shared<Overload>(*this->current(), name);
       ctx->overloadDecl = overload;

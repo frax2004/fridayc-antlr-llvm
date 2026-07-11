@@ -25,7 +25,7 @@ struct FRIDAY_API Pointer final {
   constexpr auto operator->(this auto&& self) -> decltype(auto);
 
   private:
-  pointer_type M_pointer;
+  pointer_type M_pointer { nullptr };
 };
 
 #include <Pointer.inl>

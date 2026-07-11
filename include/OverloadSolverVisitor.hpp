@@ -9,8 +9,8 @@ namespace friday::inline api::inline pipeline {
     OverloadSolverVisitor(CompilationContext& ctx);
     ~OverloadSolverVisitor() override = default;
 
-    auto beginUnit(TranslationUnit& unit) -> void override;
-    auto endUnit(TranslationUnit& unit) -> void override;
+    auto on_unit_begin(TranslationUnit& unit) -> void override;
+    auto on_unit_end(TranslationUnit& unit) -> void override;
     
     auto visitFunctionStatement(FridayParser::FunctionStatementContext *ctx) -> any override;
     auto visitNativeFunctionStatement(FridayParser::NativeFunctionStatementContext *ctx) -> any override;

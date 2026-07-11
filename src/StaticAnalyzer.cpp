@@ -5,30 +5,30 @@
 
 namespace friday::inline api::inline pipeline {
   StaticAnalyzer::StaticAnalyzer(CompilationContext& ctx)
-    : context { &ctx }
+    : M_context { &ctx }
   {}
 
   auto StaticAnalyzer::errors() -> vector<SemanticError> {
     return this->M_errors;
   }
 
-  auto StaticAnalyzer::getCompilationContext() -> CompilationContext& {
-    return *this->context;
+  auto StaticAnalyzer::comp_context() -> CompilationContext& {
+    return *this->M_context;
   }
 
   auto StaticAnalyzer::analyze() -> StaticAnalyzer& {
-    for(auto& unit: this->context->units) {
-      this->setCurrentUnit(unit.get());
-      this->beginUnit(*unit);
-      this->visit(unit->getParseTree());
-      this->endUnit(*unit);
-      this->setCurrentUnit(nullptr);
+    for(auto& unit: this->M_context->units) {
+      this->set_current_unit(unit.get());
+      this->on_unit_begin(*unit);
+      this->visit(unit->get_parse_tree());
+      this->on_unit_end(*unit);
+      this->set_current_unit(nullptr);
     }
 
     return *this;
   }
 
-  auto StaticAnalyzer::errorAt(Pointer<ant::Token> token, string message) -> void {
+  auto StaticAnalyzer::error_at(Pointer<ant::Token> token, string message) -> void {
     if(not this->M_currentUnit) {
       throw NullPointerError{};
     }
@@ -36,7 +36,7 @@ namespace friday::inline api::inline pipeline {
     this->M_errors.push_back(
       SemanticError{
         SourceLocation {
-          this->M_currentUnit->getPath(),
+          this->M_currentUnit->get_path(),
           token->getLine(),
           token->getCharPositionInLine()+1
         },
@@ -45,11 +45,11 @@ namespace friday::inline api::inline pipeline {
     );
   }
 
-  auto StaticAnalyzer::setCurrentUnit(Pointer<TranslationUnit> unit) -> void {
+  auto StaticAnalyzer::set_current_unit(Pointer<TranslationUnit> unit) -> void {
     this->M_currentUnit = unit;
   }
 
-  auto StaticAnalyzer::getCurrentUnit() -> Pointer<TranslationUnit> {
+  auto StaticAnalyzer::get_current_unit() -> Pointer<TranslationUnit> {
     return this->M_currentUnit;
   }
 

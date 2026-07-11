@@ -44,8 +44,8 @@ namespace friday::inline api::inline pipeline {
     auto visitCharLiteralExpression(FridayParser::CharLiteralExpressionContext *ctx) -> any override;
     auto visitCallExpression(FridayParser::CallExpressionContext *ctx) -> any override;
     
-    virtual auto beginUnit(TranslationUnit& unit) -> void final override;
-    virtual auto endUnit(TranslationUnit& unit) -> void final override;
+    virtual auto on_unit_begin(TranslationUnit& unit) -> void final override;
+    virtual auto on_unit_end(TranslationUnit& unit) -> void final override;
 
     private:
     auto push(weak<ISymbolTable> scope) -> void;
@@ -59,10 +59,14 @@ namespace friday::inline api::inline pipeline {
     auto FLOAT() -> Pointer<Type>;
 
     template<class T>
-    auto byVisiting() -> function<any (Pointer<T>)> {
+    auto by_visiting() -> function<any (Pointer<T>)> {
       return [this](Pointer<T> ctx) { return this->visit(ctx); };
     }
 
-    auto findBinaryOperator(string operatorName, Pointer<Type> lhs, Pointer<Type> rhs) -> weak<Function>;
+    auto find_binary_operator(
+      string_view name, 
+      Pointer<Type> lhs, 
+      Pointer<Type> rhs
+    ) -> weak<Function>;
   };
 }

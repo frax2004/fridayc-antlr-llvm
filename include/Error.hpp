@@ -20,7 +20,7 @@ namespace friday::inline core {
     virtual constexpr inline auto trace() const noexcept -> string final;
 
     private:
-    stacktrace M_trace;
+    stacktrace M_trace { };
   };
 }
 

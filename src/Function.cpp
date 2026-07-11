@@ -18,23 +18,23 @@ namespace friday::inline api::inline typesystem {
     );
   }
 
-  auto Function::getParameterName(u64 index) const -> string const& {
+  auto Function::get_param_name(u64 index) const -> string_view {
     return this->M_parameters.at(index);
   }
 
-  auto Function::getParameter(u64 index) const -> pair<string, Pointer<Type>> {
+  auto Function::get_param(u64 index) const -> pair<string_view, Pointer<Type>> {
     return make_pair(
       this->M_parameters.at(index),
-      this->M_signature->getParameterType(index)
+      this->M_signature->get_param_type(index)
     );
   }
 
-  auto Function::getType() const -> Pointer<Type> {
+  auto Function::get_type() const -> Pointer<Type> {
     return rtti::cast<Type>(this->M_signature);
   }
 
-  auto Function::getReturnType() const -> Pointer<Type> {
-    return this->M_signature->getReturnType();
+  auto Function::get_return_type() const -> Pointer<Type> {
+    return this->M_signature->get_return_type();
   }
 
 }

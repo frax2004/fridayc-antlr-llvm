@@ -5,7 +5,7 @@ namespace friday::inline api::inline pipeline {
     : M_name { name }
   {}
 
-  auto BinaryOperatorBuilder::inside(ISymbolTable& parent) -> BinaryOperatorBuilder& {
+  auto BinaryOperatorBuilder::within(ISymbolTable& parent) -> BinaryOperatorBuilder& {
     this->M_parent = &parent;
     return *this;
   }

@@ -12,13 +12,13 @@ namespace friday::inline api::inline typesystem {
     constexpr ~ErrorType() override = default;
 
     public:
-    auto getName() const noexcept -> string const& override;
-    auto getLLVMType(llvm::LLVMContext& ctx) const noexcept -> Pointer<llvm::Type> override;
+    auto get_name() const noexcept -> string_view override;
+    auto to_llvm_type(llvm::LLVMContext& ctx) const noexcept -> Pointer<llvm::Type> override;
     
     static auto get() -> Pointer<Type>;
 
     private:
-    string M_name = "<error-type>"s;
+    string M_name { "<error-type>" };
   };
 
 }

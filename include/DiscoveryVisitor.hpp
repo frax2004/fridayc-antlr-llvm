@@ -12,8 +12,8 @@ namespace friday::inline api::inline pipeline {
     DiscoveryVisitor(CompilationContext& ctx);
     ~DiscoveryVisitor() override = default;
 
-    auto beginUnit(TranslationUnit& unit) -> void override;
-    auto endUnit(TranslationUnit& unit) -> void override;
+    auto on_unit_begin(TranslationUnit& unit) -> void override;
+    auto on_unit_end(TranslationUnit& unit) -> void override;
 
     auto visitNamespaceStatement(FridayParser::NamespaceStatementContext *ctx) -> any override;
     auto visitStructStatement(FridayParser::StructStatementContext *ctx) -> any override;

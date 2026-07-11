@@ -6,7 +6,7 @@ namespace friday::inline api::inline typesystem {
     , M_type { T }
   {}
 
-  auto Primitive::getLLVMType(llvm::LLVMContext& _) const noexcept -> Pointer<llvm::Type> {
+  auto Primitive::to_llvm_type(llvm::LLVMContext& _) const noexcept -> Pointer<llvm::Type> {
     (void)_;
     return this->M_type;
   }

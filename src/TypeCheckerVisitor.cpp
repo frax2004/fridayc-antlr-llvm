@@ -23,47 +23,47 @@ namespace friday::inline api::inline pipeline {
   }
 
   auto TypeCheckerVisitor::BYTE() -> Pointer<Type> {
-    return rtti::cast<Type>(this->getCurrentUnit()->getContext()->global->getStruct("byte").lock().get());
+    return rtti::cast<Type>(this->get_current_unit()->comp_context()->global->find_struct("byte").lock().get());
   }
 
   auto TypeCheckerVisitor::INT() -> Pointer<Type> {
-    return rtti::cast<Type>(this->getCurrentUnit()->getContext()->global->getStruct("int").lock().get());
+    return rtti::cast<Type>(this->get_current_unit()->comp_context()->global->find_struct("int").lock().get());
   }
 
   auto TypeCheckerVisitor::BOOL() -> Pointer<Type> {
-    return rtti::cast<Type>(this->getCurrentUnit()->getContext()->global->getStruct("bool").lock().get());
+    return rtti::cast<Type>(this->get_current_unit()->comp_context()->global->find_struct("bool").lock().get());
   }
 
   auto TypeCheckerVisitor::VOID() -> Pointer<Type> {
-    return rtti::cast<Type>(this->getCurrentUnit()->getContext()->global->getStruct("void").lock().get());
+    return rtti::cast<Type>(this->get_current_unit()->comp_context()->global->find_struct("void").lock().get());
   }
 
   auto TypeCheckerVisitor::FLOAT() -> Pointer<Type> {
-    return rtti::cast<Type>(this->getCurrentUnit()->getContext()->global->getStruct("float").lock().get());
+    return rtti::cast<Type>(this->get_current_unit()->comp_context()->global->find_struct("float").lock().get());
   }
 
-  auto TypeCheckerVisitor::findBinaryOperator(string operatorName, Pointer<Type> lhsType, Pointer<Type> rhsType) -> weak<Function> {
+  auto TypeCheckerVisitor::find_binary_operator(string_view name, Pointer<Type> lhsType, Pointer<Type> rhsType) -> weak<Function> {
     auto toOptional = []<typename T>(weak<T> ref) { 
       return not ref.expired() ? make_optional(ref) : nullopt; 
     };
 
-    auto isOverload = [](Pointer<ISymbol> symbol) { 
-      return rtti::instanceOf<Overload>(symbol); 
+    auto is_overload = [](Pointer<ISymbol> symbol) { 
+      return rtti::instance_of<Overload>(symbol); 
     };
 
-    auto toOverload = [](rc<ISymbol> ref) { 
+    auto to_overload = [](rc<ISymbol> ref) { 
       return dynamic_pointer_cast<Overload>(ref); 
     };
 
-    auto tryMatch = [lhsType, rhsType, toOptional](rc<Overload> ref) { 
-      return toOptional(ref->tryMatch({lhsType, rhsType})); 
+    auto try_match = [lhsType, rhsType, toOptional](rc<Overload> ref) { 
+      return toOptional(ref->try_match({lhsType, rhsType})); 
     };
 
-    weak<ISymbol> candidate = this->getCurrentUnit()->lookUpIf(operatorName, isOverload, {});
+    weak<ISymbol> candidate = this->get_current_unit()->look_up_if(name, is_overload, {});
 
-    auto searchInStruct = [lhsType, candidate, operatorName, toOptional]() -> optional<weak<ISymbol>> {
+    auto searchInStruct = [lhsType, candidate, name, toOptional]() -> optional<weak<ISymbol>> {
       if(auto lhsAsStruct = rtti::cast<Struct>(lhsType); candidate.expired() and lhsAsStruct != nullptr) {
-        return toOptional(lhsAsStruct->getMethod(operatorName));
+        return toOptional(lhsAsStruct->find_method(name));
       } else return nullopt;
     };
 
@@ -72,17 +72,17 @@ namespace friday::inline api::inline pipeline {
     // Attempt to find a matching operator within lhs' struct
     .or_else(searchInStruct)
     .transform(&weak<ISymbol>::lock)
-    .transform(toOverload)
+    .transform(to_overload)
     // Attempt to match the operator with the operands
-    .and_then(tryMatch)
+    .and_then(try_match)
     .value_or({});
   }
   
-  auto TypeCheckerVisitor::beginUnit(TranslationUnit& _) -> void {
+  auto TypeCheckerVisitor::on_unit_begin(TranslationUnit& _) -> void {
     (void)_;
   }
 
-  auto TypeCheckerVisitor::endUnit(TranslationUnit& _) -> void {
+  auto TypeCheckerVisitor::on_unit_end(TranslationUnit& _) -> void {
     (void)_;
   }
 

@@ -8,11 +8,11 @@ namespace friday::inline api::inline pipeline {
     : StaticAnalyzer { ctx }
   {}
 
-  auto NamespaceBindingVisitor::beginUnit(TranslationUnit& _) -> void {
+  auto NamespaceBindingVisitor::on_unit_begin(TranslationUnit& _) -> void {
     (void)_;
   }
 
-  auto NamespaceBindingVisitor::endUnit(TranslationUnit& _) -> void {
+  auto NamespaceBindingVisitor::on_unit_end(TranslationUnit& _) -> void {
     (void)_;
   }
 
@@ -20,18 +20,18 @@ namespace friday::inline api::inline pipeline {
     auto token = ctx->IDENTIFIER()->getSymbol();
     auto name = token->getText();
 
-    auto& namespaces = this->getCompilationContext().namespaces; 
+    auto& namespaces = this->comp_context().namespaces; 
     auto it = namespaces.find(name);
     
     if(it == namespaces.end()) {
-      this->errorAt(
+      this->error_at(
         token,
         USE_OF_UNDECLARED_NAMESPACE.format(name)
       );
       return {};
     }
 
-    this->getCurrentUnit()->use(it->second);
+    this->get_current_unit()->use(it->second);
     
     return {};
   }

@@ -24,8 +24,8 @@ namespace friday::inline core::inline util {
     constexpr auto path() const noexcept -> string_ref;
 
     private:
-    u64 M_line { 0 };
-    u64 M_column { 0 };
+    u64    M_line     { 0 };
+    u64    M_column   { 0 };
     string M_filePath { "" };
   };
 }

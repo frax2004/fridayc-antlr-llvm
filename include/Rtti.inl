@@ -10,7 +10,7 @@ namespace friday::inline core::inline rtti {
   }
 
   template<class Other, class This>
-  auto instanceOf(Pointer<This> object) -> bool {
+  auto instance_of(Pointer<This> object) -> bool {
     return cast<Other>(object) != nullptr;
   }
 }

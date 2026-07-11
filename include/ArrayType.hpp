@@ -18,10 +18,10 @@ namespace friday::inline api::inline typesystem {
     public:
     static auto get(Type& elementType, u64 length) noexcept -> Pointer<Type>;
 
-    auto getElementType() const noexcept -> Pointer<Type>;
-    auto getLength() const noexcept -> u64;
-    auto getName() const noexcept -> string const& override;
-    auto getLLVMType(llvm::LLVMContext& ctx) const noexcept -> Pointer<llvm::Type> override;
+    auto get_element_type() const noexcept -> Pointer<Type>;
+    auto get_length() const noexcept -> u64;
+    auto get_name() const noexcept -> string_view override;
+    auto to_llvm_type(llvm::LLVMContext& ctx) const noexcept -> Pointer<llvm::Type> override;
   };
 }
 

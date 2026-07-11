@@ -11,13 +11,13 @@ namespace friday::inline api::inline typesystem {
     public:
     constexpr ~UnresolvedOverloadType() override = default;
 
-    auto getName() const noexcept -> string const& override;
-    auto getLLVMType(llvm::LLVMContext& ctx) const noexcept -> Pointer<llvm::Type> override;
+    auto get_name() const noexcept -> string_view override;
+    auto to_llvm_type(llvm::LLVMContext& ctx) const noexcept -> Pointer<llvm::Type> override;
     
     static auto get() -> Pointer<Type>;
 
     private:
-    string M_name = "<unresolved-overload-type>"s;
+    string M_name { "<unresolved-overload-type>" };
   };
 
 }

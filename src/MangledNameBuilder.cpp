@@ -18,7 +18,7 @@ namespace friday::inline api::inline typesystem {
   }
 
   auto MangledNameBuilder::build() -> string {
-    auto mangle = [](string const& name) {
+    auto mangle = [](string_view name) {
       return "{}{}"_f.format(name.length(), name);
     };
 
@@ -30,7 +30,7 @@ namespace friday::inline api::inline typesystem {
       | ranges::to<string>(),
       this->M_names.size() > 1 ? "E" : "",
       this->M_argsTypes
-      | views::transform(&Type::getName)
+      | views::transform(&Type::get_name)
       | views::transform(mangle)
       | views::join_with(""s)
       | ranges::to<string>()

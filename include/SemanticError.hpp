@@ -14,7 +14,7 @@ namespace friday::inline api::inline parser {
     auto where() const noexcept -> SourceLocation;
 
     private:
-    SourceLocation M_location;
-    string M_message;
+    SourceLocation M_location { };
+    string         M_message  { "" };
   };
 }

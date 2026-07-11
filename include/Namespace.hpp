@@ -13,23 +13,23 @@ namespace friday::inline api::inline typesystem {
   struct FRIDAY_API Namespace final : ISymbol, SymbolTable<Variable, Struct, Overload> {
     private:
     Pointer<Namespace> M_parentNamespace { nullptr };
-    string M_name;
+    string             M_name            { "" };
 
     public:
     Namespace(string name);
     Namespace(Namespace& parent, string name);
     ~Namespace() override = default;
 
-    auto getFunction(string const& id, weak<Overload> defaultValue = {}) -> weak<Overload>;
-    auto getStruct(string const& id, weak<Struct> defaultValue = {}) -> weak<Struct>;
-    auto getVariable(string const& id, weak<Variable> defaultValue = {}) -> weak<Variable>;
+    auto find_function(string_view id, weak<Overload> defaultValue = {}) -> weak<Overload>;
+    auto find_struct(string_view id, weak<Struct> defaultValue = {}) -> weak<Struct>;
+    auto find_variable(string_view id, weak<Variable> defaultValue = {}) -> weak<Variable>;
 
-    auto getQualifiedId() const -> string override;
-    auto getFullQualifiedId() const -> string override;
-    auto getMangledId() const -> string override;
-    auto getDeclaringSymbolTable() -> Pointer<ISymbolTable> override;
-    auto getParent() -> Pointer<ISymbolTable> override;
-    auto getAttributes() const -> Attributes override;
+    auto get_qualified_id() const -> string override;
+    auto get_full_qualified_id() const -> string override;
+    auto get_mangled_id() const -> string override;
+    auto get_declaring_symbol_table() -> Pointer<ISymbolTable> override;
+    auto get_parent() -> Pointer<ISymbolTable> override;
+    auto get_attributes() const -> Attributes override;
   };
 }
 
@@ -37,8 +37,8 @@ namespace friday::inline api::inline typesystem {
 template<>
 struct FRIDAY_API json::stringify<friday::Namespace> {
   auto operator()(friday::Namespace const& self) -> string {
-    auto name = self.getQualifiedId();
-    auto symbols = self.getSymbols();
+    auto name = self.get_qualified_id();
+    auto symbols = self.get_symbols();
 
     // TODO grammar must implement global variables
     auto var2str = json::stringify<friday::Variable>{};

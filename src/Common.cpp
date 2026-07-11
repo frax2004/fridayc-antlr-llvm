@@ -20,7 +20,7 @@ namespace friday::inline core::inline rtti {
   }
 #endif
 
-  auto nameOf(type_info const& info) noexcept -> string {
+  auto name_of(type_info const& info) noexcept -> string {
     return demangle(info.name());
   }
 

@@ -4,7 +4,7 @@
 
 namespace friday::inline core {
   struct FRIDAY_API FormatString final {
-    const i8* fmt { nullptr };
+    const i8* fmt { "" };
 
     template<class ... Args>
     constexpr auto format(Args &&... args) const noexcept -> string;

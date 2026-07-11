@@ -101,9 +101,9 @@ namespace friday::inline api::inline pipeline {
     this->visitChildren(ctx);
     // Pointer<Type> actual = any_cast<Pointer<Type>>(this->visit(ctx->expression()));
     // if(actual == ErrorType::get() or actual != this->M_currentFunctionReturnType) {
-    //   this->errorAt(
+    //   this->error_at(
     //     ctx->expression()->getStart(),
-    //     RETURN_TYPE_MISMATCH.format(actual->getName(), this->M_currentFunctionReturnType->getName())
+    //     RETURN_TYPE_MISMATCH.format(actual->get_name(), this->M_currentFunctionReturnType->get_name())
     //   );
     //   return (Pointer<Type>)ErrorType::get();
     // } else return (Pointer<Type>)this->M_currentScope->resolve("void")->as<Struct>();
@@ -118,9 +118,9 @@ namespace friday::inline api::inline pipeline {
     // Pointer<Type> actual = any_cast<Pointer<Type>>(this->visit(ctx->expr()));
 
     // if(expected != actual) {
-    //   this->errorAt(
+    //   this->error_at(
     //     ctx->expr()->getStart(),
-    //     EXPRESSION_NOT_CONVERTIBLE.format(actual->getName(), expected->getName())
+    //     EXPRESSION_NOT_CONVERTIBLE.format(actual->get_name(), expected->get_name())
     //   );
     //   return (Pointer<Type>)ErrorType::get();
     // } else return (Pointer<Type>)this->M_currentScope->resolve("void")->as<Struct>();

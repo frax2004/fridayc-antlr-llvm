@@ -12,13 +12,13 @@ namespace friday::inline api::inline pipeline {
 
   struct FRIDAY_API Pipeline final {
     private:
-    optional<Pointer<CompilationContext>> M_context;
+    optional<Pointer<CompilationContext>> M_context { nullopt };
 
     public:
     Pipeline(CompilationContext& context);
 
     template<derived_from<StaticAnalyzer> T>
-    auto andThen() -> Pipeline&;
+    auto and_then() -> Pipeline&;
 
     template<invocable<Pointer<CompilationContext>> Fn>
     auto peek(Fn&& fn) -> Pipeline&;

@@ -11,7 +11,7 @@ namespace friday::inline core {
     constexpr inline auto what() const noexcept -> string override;
 
     private:
-    string M_message = "Illegal Memory Access.\n";
+    string M_message { "Illegal Memory Access.\n" };
   };
 }
 
