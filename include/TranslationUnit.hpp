@@ -35,7 +35,7 @@ namespace friday::inline api::inline pipeline {
     auto comp_context() -> CompilationContext&;
 
     auto define(rc<ISymbol> symbol) -> bool override;
-    auto is_defined(string_view id) -> bool override;
+    auto is_defined(string_view id, Predicate<Pointer<ISymbol>> predicate) -> bool override;
     auto get_symbols() const -> vector<weak<ISymbol>> override;
     auto get_parent() -> Pointer<ISymbolTable> override;
 

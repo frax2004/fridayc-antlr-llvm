@@ -38,5 +38,12 @@ namespace friday::inline api::inline typesystem {
       .get()
     );
   }
+  
+  auto PointerType::to_pointer(Pointer<Type> type) -> Pointer<PointerType> {
+    return rtti::cast<PointerType>(type);
+  }
 
+  auto PointerType::is_pointer(Pointer<Type> type) -> bool {
+    return rtti::instance_of<PointerType>(type);
+  }
 }

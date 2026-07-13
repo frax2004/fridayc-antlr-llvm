@@ -47,7 +47,7 @@ namespace friday::inline api::inline pipeline {
     weak<ISymbol> candidate = this->get_current_unit()->look_up_if(name, &Overload::is_overload, {});
 
     auto try_match = [lhsType, rhsType](Overload* ref) { 
-      return ref->try_match({lhsType, rhsType}).to_optional();
+      return ref->try_match(vector{ lhsType, rhsType }).to_optional();
     };
 
     auto search_within_left_struct = [lhsType, candidate, name]() -> optional<weak<ISymbol>> {

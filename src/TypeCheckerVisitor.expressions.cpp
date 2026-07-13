@@ -5,13 +5,18 @@
 #include <ArrayType.hpp>
 
 namespace friday::inline api::inline pipeline {
+  
   auto TypeCheckerVisitor::visitCallExpression(FridayParser::CallExpressionContext *ctx) -> any {
     Console::debug("CallExpressionContext: {}"_f.format(ctx->getText()));
     this->visitChildren(ctx);
 
+    static constexpr auto to_member_access_expr = [](Pointer<FridayParser::ExpressionContext> expr) {
+      return rtti::cast<FridayParser::MemberAccessExpressionContext>(expr);
+    };
+
     auto candidate = ctx->func->typeId;
 
-    if(candidate == ErrorType::get() or not rtti::instance_of<Overload>(candidate)) {
+    if(ErrorType::is_error_type(candidate) or not rtti::instance_of<Overload>(candidate)) {
       this->error_at(
         ctx->getStart(),
         "The underlined expression '{}' of type '{}' is not a function and cannot be called."_f.format(
@@ -24,22 +29,46 @@ namespace friday::inline api::inline pipeline {
 
     auto overload = rtti::cast<Overload>(candidate);
 
-    auto argsTypes = ctx->args
-    | views::transform(&FridayParser::ExpressionContext::typeId)
-    | ranges::to<vector>();
-
-    if(auto memberAccess = rtti::cast<FridayParser::MemberAccessExpressionContext>(ctx->func)) {
-      argsTypes.insert(argsTypes.begin(), memberAccess->object->typeId);
+    weak<Function> function = {};
+    if(auto memberAccess = to_member_access_expr(ctx->func); memberAccess != nullptr) {
+      auto params_with_this = [memberAccess, ctx] -> generator<Pointer<Type>> {
+        co_yield PointerType::get(*memberAccess->object->typeId, 1);
+        for(auto arg : ctx->args) co_yield arg->typeId;
+      };
+      
+      function = overload->try_match(params_with_this() | ranges::to<vector>());
     }
+    
+    auto try_static = [ctx, &overload]() {
+      return overload
+      ->try_match(
+        ctx->args 
+        | views::transform(&FridayParser::ExpressionContext::typeId)
+        | ranges::to<vector>()
+      )
+      .to_optional();
+    };
 
-    auto function = overload->try_match(argsTypes);
+    function = function
+    .to_optional()
+    .or_else(try_static)
+    .value_or({});
+
+    if(function.expired()) {
+      function = overload->try_match(
+        ctx->args
+        | views::transform(&FridayParser::ExpressionContext::typeId)
+        | ranges::to<vector>()
+      );
+    }
 
     if(function.expired()) {
       this->error_at(
         ctx->func->getStart(),
         "No overload of function '{}' matches the given arguments ({}):\nAvailable overloads:\n{}"_f.format(
           overload->get_qualified_id(),
-          argsTypes 
+          ctx->args
+          | views::transform(&FridayParser::ExpressionContext::typeId)
           | views::transform(&Type::get_name)
           | views::join_with(", "s)
           | ranges::to<string>(),
@@ -56,39 +85,7 @@ namespace friday::inline api::inline pipeline {
     }
 
     auto funcType = rtti::cast<FunctionType>(function.lock()->get_type());
-
-    bool ok = true;
-    if(funcType->params_size() != argsTypes.size()) {
-      ok = false;
-      this->error_at(
-        ctx->getStart(),
-        "In function call '{}' of type '{}' : the function expects {} arguments but {} were given."_f.format(
-          ctx->func->getText(),
-          funcType->get_name(),
-          funcType->params_size(),
-          argsTypes.size()
-        )
-      );
-    }
-
-    for(u64 i = 0; i < min(argsTypes.size(), funcType->params_size()); i++) {
-      Pointer<Type> T = argsTypes[i];
-
-      if(T != funcType->get_param_type(i)) {
-        ok = false;
-        this->error_at(
-          ctx->args[i]->getStart(),
-          "In function call '{}' of type '{}' : argument type mismatch. Expected '{}', got '{}'"_f.format(
-            ctx->getText(),
-            funcType->get_name(),
-            funcType->get_param_type(i)->get_name(),
-            T->get_name()
-          )
-        );
-      }
-    }
-
-    if(ok) ctx->typeId = funcType->get_return_type();
+    ctx->typeId = funcType->get_return_type();
 
     return {};
   }
@@ -274,7 +271,7 @@ namespace friday::inline api::inline pipeline {
         ctx->object->getStart(),
         "Expression of type '{}' is not a struct"_f.format(ctx->object->typeId->get_name())
       );
-    } else if(not asStruct->is_defined(memberName)) {
+    } else if(not asStruct->is_defined(memberName, [](Pointer<ISymbol> symbol) { return true; })) {
       this->error_at(
         ctx->IDENTIFIER()->getSymbol(),
         "Struct '{}' has no field or method called '{}'"_f.format(asStruct->get_name(), memberName)

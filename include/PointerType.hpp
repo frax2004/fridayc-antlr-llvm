@@ -24,5 +24,8 @@ namespace friday::inline api::inline typesystem {
     auto get_dimensions() const noexcept -> u64;
     auto get_name() const noexcept -> string_view override;
     auto to_llvm_type(llvm::LLVMContext& ctx) const noexcept -> Pointer<llvm::Type> override;
+
+    static auto to_pointer(Pointer<Type> type) -> Pointer<PointerType>;
+    static auto is_pointer(Pointer<Type> type) -> bool;
   };
 }

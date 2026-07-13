@@ -9,16 +9,41 @@ namespace friday::inline api::inline typesystem {
 
   struct FRIDAY_API Overload final : ISymbol, TypedEntity, Type {
     private:
-    Pointer<ISymbolTable>                              M_declaringSymbolTable { nullptr };
-    string                                             M_name                 { "" };
-    unordered_map<vector<Pointer<Type>>, rc<Function>> M_overloads            { };
+    struct FRIDAY_API less_by_signature {
+      auto operator()(Pointer<FunctionType> const& self, vector<Pointer<Type>> const& rhs) const -> bool {
+        auto lhs = ranges::subrange(self->param_begin(), self->param_end());
+        return ranges::lexicographical_compare(lhs, rhs);
+      }
+
+      auto operator()(vector<Pointer<Type>> const& rhs, Pointer<FunctionType> const& self) const -> bool {
+        auto lhs = ranges::subrange(self->param_begin(), self->param_end());
+        return ranges::lexicographical_compare(lhs, rhs);
+      }
+      
+      auto operator()(Pointer<FunctionType> const& lhs, Pointer<FunctionType> const& rhs) const -> bool {
+        return ranges::lexicographical_compare(
+          ranges::subrange(lhs->param_begin(), lhs->param_end()),
+          ranges::subrange(rhs->param_begin(), rhs->param_end())
+        );
+      }
+
+      typedef __is_transparent is_transparent;
+    };
+
+    private:
+    using SignatureMap = map<Pointer<FunctionType>, rc<Function>, less_by_signature>;
+
+    private:
+    Pointer<ISymbolTable> M_declaringSymbolTable { nullptr };
+    string                M_name                 { "" };
+    SignatureMap          M_overloads            { };
 
     public:
     Overload(ISymbolTable& parent, string name);
     ~Overload() override = default;
 
     auto get_functions() const -> vector<weak<Function>>;
-    auto add(vector<Pointer<Type>> argsTypes, rc<Function> function) -> void;
+    auto add(rc<Function> function) -> void;
     auto try_match(vector<Pointer<Type>> const& argsTypes) -> weak<Function>;
     auto has_match(vector<Pointer<Type>> const& argsTypes) const -> bool;
 
@@ -55,3 +80,5 @@ struct FRIDAY_API json::stringify<friday::Overload> {
     );
   }
 };
+
+#include <Overload.inl>

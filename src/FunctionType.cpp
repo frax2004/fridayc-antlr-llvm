@@ -63,4 +63,20 @@ namespace friday::inline api::inline typesystem {
     return this->M_returnType;
   }
 
+  auto FunctionType::param_begin() const -> vector<Pointer<Type>>::const_iterator {
+    return this->M_parameters.begin();
+  }
+
+  auto FunctionType::param_end() const -> vector<Pointer<Type>>::const_iterator {
+    return this->M_parameters.end();
+  }
+
+  auto FunctionType::to_function(Pointer<Type> type) -> Pointer<FunctionType> {
+    return rtti::cast<FunctionType>(type);
+  }
+
+  auto FunctionType::is_function(Pointer<Type> type) -> bool {
+    return rtti::instance_of<FunctionType>(type);
+  }
+
 }

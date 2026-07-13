@@ -24,8 +24,8 @@ namespace friday::inline api::inline pipeline {
     return this->ownedNamespace.lock()->define(symbol);
   }
 
-  auto TranslationUnit::is_defined(string_view id) -> bool {
-    return this->ownedNamespace.lock()->is_defined(id);
+  auto TranslationUnit::is_defined(string_view id, Predicate<Pointer<ISymbol>> predicate) -> bool {
+    return this->ownedNamespace.lock()->is_defined(id, predicate);
   }
 
   auto TranslationUnit::most_similar(string_view name, Predicate<Pointer<ISymbol>> filter, u64 maxEditDistance) noexcept -> weak<ISymbol> {

@@ -1,5 +1,8 @@
 #include <Function.hpp>
 #include <SymbolTable.hpp>
+#include <Overload.hpp>
+#include <Struct.hpp>
+#include <PointerType.hpp>
 
 namespace friday::inline api::inline typesystem {
   
@@ -37,4 +40,27 @@ namespace friday::inline api::inline typesystem {
     return this->M_signature->get_return_type();
   }
 
+  auto Function::is_nonstatic_method() const -> bool {
+    auto as_struct = rtti::cast<Struct>(this->M_owner->get_declaring_symbol_table());
+    auto as_type = rtti::cast<Type>(as_struct);
+
+    return 
+    // parent is a struct
+    as_struct != nullptr
+    // method has at least 1 param
+    and this->M_signature->params_size() > 0
+    // first param is a pointer type
+    and PointerType::is_pointer(this->M_signature->get_param_type(0))
+    // the pointed type is the struct
+    and PointerType::to_pointer(this->M_signature->get_param_type(0))->get_pointed_type() == as_type;
+
+
+  }
+
+  auto Function::is_static_method() const -> bool {
+    return rtti::instance_of<Struct>(this->M_owner->get_declaring_symbol_table()) 
+    and not this->is_nonstatic_method();
+  }
+
+  
 }

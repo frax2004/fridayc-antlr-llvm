@@ -20,8 +20,10 @@ namespace friday::inline api::inline typesystem {
     auto get_param_name(u64 index) const -> string_view;
     auto get_param(u64 index) const -> pair<string_view, Pointer<Type>>;
     auto get_return_type() const -> Pointer<Type>;
-
     auto get_type() const -> Pointer<Type> override;
+
+    auto is_nonstatic_method() const -> bool;
+    auto is_static_method() const -> bool;
   };
 }
 

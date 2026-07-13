@@ -35,9 +35,11 @@ namespace friday::inline api::inline typesystem {
   }
 
   template<derived_from<ISymbol>... Ts>
-  auto SymbolTable<Ts...>::is_defined(string_view id) -> bool {
+  auto SymbolTable<Ts...>::is_defined(string_view id, Predicate<Pointer<ISymbol>> predicate) -> bool {
     auto it = this->M_symbols.find(id);
-    return it != this->M_symbols.end() and SymbolTable::assert_valid_type<Ts...>(it->second);
+    return it != this->M_symbols.end() 
+    and SymbolTable::assert_valid_type<Ts...>(it->second) 
+    and predicate(it->second.get());
   }
 
   template<derived_from<ISymbol>... Ts>

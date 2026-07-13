@@ -27,7 +27,7 @@ namespace friday::inline api::inline typesystem {
     ) noexcept -> weak<ISymbol> = 0;
 
     virtual auto define(rc<ISymbol> symbol) -> bool = 0;
-    virtual auto is_defined(string_view id) -> bool = 0;
+    virtual auto is_defined(string_view id, Predicate<Pointer<ISymbol>> predicate) -> bool = 0;
     virtual auto get_parent() -> Pointer<ISymbolTable> = 0;
     virtual auto get_symbols() const -> vector<weak<ISymbol>> = 0;
   };
@@ -64,7 +64,7 @@ namespace friday::inline api::inline typesystem {
     ) noexcept -> weak<ISymbol> final override;
 
     virtual auto define(rc<ISymbol> symbol) -> bool final override;
-    virtual auto is_defined(string_view id) -> bool final override;
+    virtual auto is_defined(string_view id, Predicate<Pointer<ISymbol>> predicate) -> bool final override;
     virtual auto get_symbols() const -> vector<weak<ISymbol>> final override;
   };
 }

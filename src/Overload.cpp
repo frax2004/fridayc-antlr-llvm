@@ -20,8 +20,11 @@ namespace friday::inline api::inline typesystem {
     | ranges::to<vector>();
   }
 
-  auto Overload::add(vector<Pointer<Type>> argsTypes, rc<Function> function) -> void {
-    this->M_overloads.try_emplace(move(argsTypes), function);
+  auto Overload::add(rc<Function> function) -> void {
+    this->M_overloads.try_emplace(
+      FunctionType::to_function(function->get_type()), 
+      function
+    );
   }
 
   auto Overload::try_match(vector<Pointer<Type>> const& argsTypes) -> weak<Function> {

@@ -28,10 +28,6 @@ namespace friday::inline api::inline pipeline {
   auto BinaryOperatorBuilder::build() -> rc<Overload> {
     rc<Overload> overload = make_shared<Overload>(*this->M_parent, this->M_name);
     overload->add(
-      vector{
-        this->M_lhs.lock().get(), 
-        this->M_rhs.lock().get()
-      }, 
       make_shared<Function>(
         *overload, 
         *this->M_ret.lock(), 

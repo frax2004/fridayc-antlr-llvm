@@ -46,11 +46,12 @@ namespace friday::inline api::inline pipeline {
   auto DiscoveryVisitor::visitStructStatement(FridayParser::StructStatementContext *ctx) -> any {
     auto name = ctx->structName->getText();
 
-    if(not this->current()->look_up_if(name, &Struct::is_struct, {}).expired()) {
+    if(this->current()->is_defined(name, &Struct::is_struct)) {
       this->error_at(
         ctx->structName,
         STRUCT_REDECLARATION.format(name)
       );
+
       return {};
     }
 
@@ -71,12 +72,13 @@ namespace friday::inline api::inline pipeline {
   auto DiscoveryVisitor::visitFreeFunctionStatement(FridayParser::FreeFunctionStatementContext *ctx) -> any {
     auto name = ctx->name->getText();
 
-    weak<ISymbol> candidate = this->M_currentSymbolTable->look_up_if(name, &Overload::is_overload, {});
-    if(candidate.expired()) {
+    if(not this->M_currentSymbolTable->is_defined(name, &Overload::is_overload)) {
       rc<Overload> overload = make_shared<Overload>(*this->current(), name);
       ctx->overloadDecl = overload;
       this->current()->define(overload);
-    } else ctx->overloadDecl = dynamic_pointer_cast<Overload>(candidate.lock());
+    } else ctx->overloadDecl = dynamic_pointer_cast<Overload>(
+      this->M_currentSymbolTable->look_up_if(name, &Overload::is_overload, {}).lock()
+    );
 
     return {};
   }
@@ -84,12 +86,13 @@ namespace friday::inline api::inline pipeline {
   auto DiscoveryVisitor::visitNativeFunctionStatement(FridayParser::NativeFunctionStatementContext *ctx) -> any {
     auto name = ctx->name->getText();
 
-    weak<ISymbol> candidate = this->current()->look_up_if(name, &Overload::is_overload, {});
-    if(candidate.expired()) {
+    if(not this->M_currentSymbolTable->is_defined(name, &Overload::is_overload)) {
       rc<Overload> overload = make_shared<Overload>(*this->current(), name);
       ctx->overloadDecl = overload;
       this->current()->define(overload);
-    } else ctx->overloadDecl = dynamic_pointer_cast<Overload>(candidate.lock());
+    } else ctx->overloadDecl = dynamic_pointer_cast<Overload>(
+      this->M_currentSymbolTable->look_up_if(name, &Overload::is_overload, {}).lock()
+    );
 
     return {};
   }

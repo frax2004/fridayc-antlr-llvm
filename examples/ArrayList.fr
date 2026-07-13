@@ -8,11 +8,15 @@ public fn main() -> void {
   const x: int = 0;
   const y: float = 0.0;
 
-  a.push(&x as *void);
-  a.push(&y as *void);
-  a.push(&y as *void);
+  // const z: *void = null;
+  // a.push(z);
+  // a.push(z);
+  // a.push(z);
 
-  a.pop();
+  // a.pop();
+
+  a.get(2);
+  a.size();
 
   for let i = 0; i < a.size(); i += 1 {
     print a.get(i);

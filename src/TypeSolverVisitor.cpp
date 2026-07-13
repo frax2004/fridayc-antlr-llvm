@@ -58,10 +58,10 @@ namespace friday::inline api::inline pipeline {
     );
 
     for(u64 i = 0; auto [fieldName, fieldType] : fields) {
-      if(asStruct->is_defined(fieldName)) {
+      if(asStruct->is_defined(fieldName, &Variable::is_variable)) {
         this->error_at(
           ctx->fieldsNames[i],
-          "In definition of struct \"{}\", redeclaration of entity \"{}\" already defined in the current scope."_f.format(
+          "In definition of struct \"{}\", redeclaration of field \"{}\"."_f.format(
             structName,
             fieldName
           )

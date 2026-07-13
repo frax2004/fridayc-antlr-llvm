@@ -15,8 +15,8 @@ auto Main(vector<string> paths) -> void {
   .and_then<NamespaceBindingVisitor>()
   .and_then<TypeSolverVisitor>()
   .and_then<OverloadSolverVisitor>()
+  .peek(&CompilationContext::print)
   .and_then<TypeCheckerVisitor>()
-  .peek(CompilationContext::print)
   ;
 
 }

@@ -4,6 +4,103 @@
     "name": "",
     "symbols": [
       {
+        "kind": "overload",
+        "name": "main",
+        "signatures": [
+          "void()"
+        ]
+      },
+      {
+        "kind": "overload",
+        "name": "get",
+        "signatures": [
+          "ArrayList()"
+        ]
+      },
+      {
+        "kind": "struct",
+        "name": "float",
+        "symbols": [
+          {
+            "kind": "overload",
+            "name": "operator>",
+            "signatures": [
+              "bool(float, float)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator<=",
+            "signatures": [
+              "bool(float, float)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator<",
+            "signatures": [
+              "bool(float, float)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator!=",
+            "signatures": [
+              "float(float, float)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator>=",
+            "signatures": [
+              "bool(float, float)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator%",
+            "signatures": [
+              "float(float, float)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator/",
+            "signatures": [
+              "float(float, float)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator*",
+            "signatures": [
+              "float(float, float)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator-",
+            "signatures": [
+              "float(float, float)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator==",
+            "signatures": [
+              "float(float, float)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator+",
+            "signatures": [
+              "float(float, float)"
+            ]
+          }
+        ]
+      },
+      {
         "kind": "struct",
         "name": "bool",
         "symbols": [
@@ -29,49 +126,7 @@
         "symbols": [
           {
             "kind": "overload",
-            "name": "operator!=",
-            "signatures": [
-              "byte(byte, byte)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator%",
-            "signatures": [
-              "byte(byte, byte)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator*",
-            "signatures": [
-              "byte(byte, byte)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator+",
-            "signatures": [
-              "byte(byte, byte)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator-",
-            "signatures": [
-              "byte(byte, byte)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator/",
-            "signatures": [
-              "byte(byte, byte)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator<",
+            "name": "operator>",
             "signatures": [
               "bool(byte, byte)"
             ]
@@ -85,16 +140,16 @@
           },
           {
             "kind": "overload",
-            "name": "operator==",
+            "name": "operator<",
             "signatures": [
-              "byte(byte, byte)"
+              "bool(byte, byte)"
             ]
           },
           {
             "kind": "overload",
-            "name": "operator>",
+            "name": "operator!=",
             "signatures": [
-              "bool(byte, byte)"
+              "byte(byte, byte)"
             ]
           },
           {
@@ -102,92 +157,56 @@
             "name": "operator>=",
             "signatures": [
               "bool(byte, byte)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator%",
+            "signatures": [
+              "byte(byte, byte)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator/",
+            "signatures": [
+              "byte(byte, byte)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator*",
+            "signatures": [
+              "byte(byte, byte)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator-",
+            "signatures": [
+              "byte(byte, byte)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator==",
+            "signatures": [
+              "byte(byte, byte)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator+",
+            "signatures": [
+              "byte(byte, byte)"
             ]
           }
         ]
       },
       {
         "kind": "struct",
-        "name": "float",
-        "symbols": [
-          {
-            "kind": "overload",
-            "name": "operator!=",
-            "signatures": [
-              "float(float, float)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator%",
-            "signatures": [
-              "float(float, float)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator*",
-            "signatures": [
-              "float(float, float)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator+",
-            "signatures": [
-              "float(float, float)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator-",
-            "signatures": [
-              "float(float, float)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator/",
-            "signatures": [
-              "float(float, float)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator<",
-            "signatures": [
-              "bool(float, float)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator<=",
-            "signatures": [
-              "bool(float, float)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator==",
-            "signatures": [
-              "float(float, float)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator>",
-            "signatures": [
-              "bool(float, float)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator>=",
-            "signatures": [
-              "bool(float, float)"
-            ]
-          }
-        ]
+        "name": "void",
+        "symbols": []
       },
       {
         "kind": "struct",
@@ -195,49 +214,7 @@
         "symbols": [
           {
             "kind": "overload",
-            "name": "operator!=",
-            "signatures": [
-              "int(int, int)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator%",
-            "signatures": [
-              "int(int, int)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator*",
-            "signatures": [
-              "int(int, int)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator+",
-            "signatures": [
-              "int(int, int)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator-",
-            "signatures": [
-              "int(int, int)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator/",
-            "signatures": [
-              "int(int, int)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator<",
+            "name": "operator>",
             "signatures": [
               "bool(int, int)"
             ]
@@ -251,16 +228,16 @@
           },
           {
             "kind": "overload",
-            "name": "operator==",
+            "name": "operator<",
             "signatures": [
-              "int(int, int)"
+              "bool(int, int)"
             ]
           },
           {
             "kind": "overload",
-            "name": "operator>",
+            "name": "operator!=",
             "signatures": [
-              "bool(int, int)"
+              "int(int, int)"
             ]
           },
           {
@@ -269,141 +246,48 @@
             "signatures": [
               "bool(int, int)"
             ]
-          }
-        ]
-      },
-      {
-        "kind": "overload",
-        "name": "main",
-        "signatures": [
-          "void()"
-        ]
-      },
-      {
-        "kind": "struct",
-        "name": "void",
-        "symbols": []
-      }
-    ]
-  },
-  {
-    "kind": "namespace",
-    "name": "collections",
-    "symbols": [
-      {
-        "kind": "struct",
-        "name": "A",
-        "symbols": [
-          {
-            "kind": "variable",
-            "name": "a",
-            "type": "B"
-          }
-        ]
-      },
-      {
-        "kind": "struct",
-        "name": "ArrayList",
-        "symbols": [
-          {
-            "kind": "variable",
-            "name": "capacity",
-            "type": "int"
-          },
-          {
-            "kind": "variable",
-            "name": "count",
-            "type": "int"
           },
           {
             "kind": "overload",
-            "name": "create",
+            "name": "operator%",
             "signatures": [
-              "ArrayList()"
-            ]
-          },
-          {
-            "kind": "variable",
-            "name": "data",
-            "type": "**void"
-          },
-          {
-            "kind": "overload",
-            "name": "destroy",
-            "signatures": [
-              "void(*ArrayList)"
+              "int(int, int)"
             ]
           },
           {
             "kind": "overload",
-            "name": "get",
+            "name": "operator/",
             "signatures": [
-              "*void(*ArrayList, int)"
+              "int(int, int)"
             ]
           },
           {
             "kind": "overload",
-            "name": "grow",
+            "name": "operator*",
             "signatures": [
-              "void(*ArrayList)"
+              "int(int, int)"
             ]
           },
           {
             "kind": "overload",
-            "name": "max_size",
+            "name": "operator-",
             "signatures": [
-              "int(*ArrayList)"
+              "int(int, int)"
             ]
           },
           {
             "kind": "overload",
-            "name": "pop",
+            "name": "operator==",
             "signatures": [
-              "void(*ArrayList)"
+              "int(int, int)"
             ]
           },
           {
             "kind": "overload",
-            "name": "push",
+            "name": "operator+",
             "signatures": [
-              "void(*ArrayList, *void)"
+              "int(int, int)"
             ]
-          },
-          {
-            "kind": "overload",
-            "name": "set",
-            "signatures": [
-              "void(*ArrayList, int, *void)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "size",
-            "signatures": [
-              "int(*ArrayList)"
-            ]
-          }
-        ]
-      },
-      {
-        "kind": "struct",
-        "name": "B",
-        "symbols": [
-          {
-            "kind": "variable",
-            "name": "a",
-            "type": "C"
-          }
-        ]
-      },
-      {
-        "kind": "struct",
-        "name": "C",
-        "symbols": [
-          {
-            "kind": "variable",
-            "name": "a",
-            "type": "*A"
           }
         ]
       }
@@ -422,16 +306,139 @@
       },
       {
         "kind": "overload",
-        "name": "malloc",
+        "name": "realloc",
         "signatures": [
-          "*void(int)"
+          "*void(*void, int)"
         ]
       },
       {
         "kind": "overload",
-        "name": "realloc",
+        "name": "malloc",
         "signatures": [
-          "*void(*void, int)"
+          "*void(int)"
+        ]
+      }
+    ]
+  },
+  {
+    "kind": "namespace",
+    "name": "collections",
+    "symbols": [
+      {
+        "kind": "struct",
+        "name": "B",
+        "symbols": [
+          {
+            "kind": "variable",
+            "name": "a",
+            "type": "C"
+          }
+        ]
+      },
+      {
+        "kind": "struct",
+        "name": "ArrayList",
+        "symbols": [
+          {
+            "kind": "variable",
+            "name": "count",
+            "type": "int"
+          },
+          {
+            "kind": "overload",
+            "name": "grow",
+            "signatures": [
+              "void(*ArrayList)"
+            ]
+          },
+          {
+            "kind": "variable",
+            "name": "data",
+            "type": "**void"
+          },
+          {
+            "kind": "overload",
+            "name": "destroy",
+            "signatures": [
+              "void(*ArrayList)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "push",
+            "signatures": [
+              "void(*ArrayList, *void)"
+            ]
+          },
+          {
+            "kind": "variable",
+            "name": "capacity",
+            "type": "int"
+          },
+          {
+            "kind": "overload",
+            "name": "create",
+            "signatures": [
+              "ArrayList()"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "pop",
+            "signatures": [
+              "void(*ArrayList)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "max_size",
+            "signatures": [
+              "int(*ArrayList)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "size",
+            "signatures": [
+              "int(*ArrayList)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "set",
+            "signatures": [
+              "void(*ArrayList, int, *void)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "get",
+            "signatures": [
+              "*void(*ArrayList, int)"
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "struct",
+        "name": "C",
+        "symbols": [
+          {
+            "kind": "variable",
+            "name": "a",
+            "type": "*A"
+          }
+        ]
+      },
+      {
+        "kind": "struct",
+        "name": "A",
+        "symbols": [
+          {
+            "kind": "variable",
+            "name": "a",
+            "type": "B"
+          }
         ]
       }
     ]

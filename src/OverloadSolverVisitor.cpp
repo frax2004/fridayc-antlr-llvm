@@ -87,7 +87,7 @@ namespace friday::inline api::inline pipeline {
     | ranges::to<vector>();
 
     rc<Function> function = make_shared<Function>(*asOverload, *retType, parameters);
-    asOverload->add(paramsTypes, function);
+    asOverload->add(function);
 
     rc<Scope> scope = make_shared<Scope>(*asOverload->get_declaring_symbol_table());
     for(auto [paramName, paramType] : parameters) {
@@ -171,7 +171,7 @@ namespace friday::inline api::inline pipeline {
     | ranges::to<vector>();
 
     rc<Function> function = make_shared<Function>(*asOverload, *retType, parameters);
-    asOverload->add(paramsTypes, function);
+    asOverload->add(function);
 
     ctx->functionDecl = function;
 

@@ -18,7 +18,11 @@ namespace friday::inline api::inline typesystem {
 
     public:
     static auto get(Type& returnType, vector<Pointer<Type>> paramsTypes) noexcept -> Pointer<Type>;
+    static auto is_function(Pointer<Type> type) -> bool;
+    static auto to_function(Pointer<Type> type) -> Pointer<FunctionType>;
 
+    auto param_begin() const -> vector<Pointer<Type>>::const_iterator;
+    auto param_end() const -> vector<Pointer<Type>>::const_iterator;
     auto get_param_type(u64 index) const -> Pointer<Type>;
     auto get_params_types() const noexcept -> vector<Pointer<Type>> const&;
     auto params_size() const noexcept -> u64;
