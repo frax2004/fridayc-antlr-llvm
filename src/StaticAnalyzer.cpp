@@ -28,10 +28,11 @@ namespace friday::inline api::inline pipeline {
     return *this;
   }
 
-  auto StaticAnalyzer::error_at(Pointer<ant::Token> token, string message) -> void {
+  auto StaticAnalyzer::error_at(Pointer<ant::ParserRuleContext> ctx, Pointer<ant::Token> token, string message) -> void {
     if(not this->M_currentUnit) {
       throw NullPointerError{};
     }
+
 
     this->M_errors.push_back(
       SemanticError{
@@ -40,7 +41,16 @@ namespace friday::inline api::inline pipeline {
           token->getLine(),
           token->getCharPositionInLine()+1
         },
-        message
+        " {:>4} | {}\n {:>4} |\n{}Note{}: {}{}{}"_f.format(
+          ctx->getStart()->getLine(),
+          token->getInputStream()->getText(ant::misc::Interval{ctx->getStart()->getStartIndex(), ctx->getStop()->getStopIndex()}),
+          "",
+          Console::Color::BLUE,
+          Console::Color::RESET,
+          Console::Color::rgb(171, 171, 171),
+          message,
+          Console::Color::RESET
+        )
       }
     );
   }

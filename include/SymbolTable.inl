@@ -7,31 +7,16 @@
 namespace friday::inline api::inline typesystem {
 
   template<derived_from<ISymbol>... Ts>
-  auto SymbolTable<Ts...>::look_up(string_view id, weak<ISymbol> defaultValue) -> weak<ISymbol> {
-    if(auto it = this->M_symbols.find(id); it != this->M_symbols.end()) {
-      return it->second;
-    } else if(auto parent = this->get_parent(); parent != nullptr) {
-      return parent->look_up(id, defaultValue);
-    }
-
-    return defaultValue;
+  auto SymbolTable<Ts...>::retrieve(string_view id) -> weak<ISymbol> {
+    auto it = this->M_symbols.find(id);
+    return it != this->M_symbols.end() ? weak<ISymbol>{ it->second } : weak<ISymbol>{};
   }
 
   template<derived_from<ISymbol>... Ts>
-  auto SymbolTable<Ts...>::look_up_if(string_view id, Predicate<Pointer<ISymbol>> predicate, weak<ISymbol> defaultValue) -> weak<ISymbol> {
-
-    if(auto it = this->M_symbols.find(id); it != this->M_symbols.end()) {
-      rc<ISymbol> candidate = it->second;
-      if(predicate(candidate.get())) {
-        return candidate;
-      } else {
-        return defaultValue; // TODO POTENTIAL BUG, IN THIS CASE THE LOOKUP SHOULD BE DONE UPWARDS
-      }
-    } else if(auto parent = this->get_parent(); parent != nullptr) {
-      return parent->look_up_if(id, predicate, defaultValue);
-    }
-
-    return defaultValue;
+  auto SymbolTable<Ts...>::retrieve_if(string_view id, Predicate<Pointer<ISymbol>> predicate) -> weak<ISymbol> {
+    auto it = this->M_symbols.find(id);
+    return it != this->M_symbols.end() and predicate(it->second.get()) ? 
+      weak<ISymbol>{ it->second } : weak<ISymbol>{};
   }
 
   template<derived_from<ISymbol>... Ts>

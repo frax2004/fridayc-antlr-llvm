@@ -14,7 +14,8 @@ namespace friday::inline api::inline pipeline {
   }
   
   auto DiscoveryVisitor::on_unit_begin(TranslationUnit& unit) -> void {
-    this->M_currentSymbolTable = &unit;
+    (void)unit;
+    this->M_currentSymbolTable = this->comp_context().get_global().get();
   }
 
   auto DiscoveryVisitor::on_unit_end(TranslationUnit& _) -> void {
@@ -28,6 +29,7 @@ namespace friday::inline api::inline pipeline {
 
     if(unit->owns_namespace()) {
       this->error_at(
+        ctx,
         token, 
         NAMESPACE_REDECLARATION.format(unit->get_owned_namespace().lock()->get_qualified_id())
       );
@@ -48,6 +50,7 @@ namespace friday::inline api::inline pipeline {
 
     if(this->current()->is_defined(name, &Struct::is_struct)) {
       this->error_at(
+        ctx,
         ctx->structName,
         STRUCT_REDECLARATION.format(name)
       );
@@ -72,12 +75,12 @@ namespace friday::inline api::inline pipeline {
   auto DiscoveryVisitor::visitFreeFunctionStatement(FridayParser::FreeFunctionStatementContext *ctx) -> any {
     auto name = ctx->name->getText();
 
-    if(not this->M_currentSymbolTable->is_defined(name, &Overload::is_overload)) {
+    if(not this->current()->is_defined(name, &Overload::is_overload)) {
       rc<Overload> overload = make_shared<Overload>(*this->current(), name);
       ctx->overloadDecl = overload;
       this->current()->define(overload);
     } else ctx->overloadDecl = dynamic_pointer_cast<Overload>(
-      this->M_currentSymbolTable->look_up_if(name, &Overload::is_overload, {}).lock()
+      this->current()->retrieve_if(name, &Overload::is_overload).lock()
     );
 
     return {};
@@ -91,7 +94,7 @@ namespace friday::inline api::inline pipeline {
       ctx->overloadDecl = overload;
       this->current()->define(overload);
     } else ctx->overloadDecl = dynamic_pointer_cast<Overload>(
-      this->M_currentSymbolTable->look_up_if(name, &Overload::is_overload, {}).lock()
+      this->current()->retrieve_if(name, &Overload::is_overload).lock()
     );
 
     return {};

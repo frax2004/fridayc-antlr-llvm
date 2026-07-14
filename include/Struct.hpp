@@ -19,8 +19,8 @@ namespace friday::inline api::inline typesystem {
     Struct(Namespace& parent, string name) noexcept;
     ~Struct() override = default;
 
-    auto find_field(string_view name, weak<Variable> defaultValue = {}) noexcept -> weak<Variable>;
-    auto find_method(string_view name, weak<Overload> defaultValue = {}) noexcept -> weak<Overload>;
+    auto find_field(string_view name) noexcept -> weak<Variable>;
+    auto find_method(string_view name) noexcept -> weak<Overload>;
     auto get_name() const noexcept -> string_view override;
     auto to_llvm_type(llvm::LLVMContext& ctx) const noexcept -> Pointer<llvm::Type> override;
     auto get_qualified_id() const -> string override;

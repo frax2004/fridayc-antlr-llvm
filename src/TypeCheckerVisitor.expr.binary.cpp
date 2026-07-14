@@ -10,6 +10,7 @@ namespace friday::inline api::inline pipeline {
   }
 
   auto TypeCheckerVisitor::visitCallExpression(FridayParser::CallExpressionContext *ctx) -> any {
+    Console::debug("TypeCheckerVisitor::visitCallExpression({})"_f.format(ctx->getText()));
     this->visitChildren(ctx);
 
     const auto candidate = ctx->func->value
@@ -18,6 +19,7 @@ namespace friday::inline api::inline pipeline {
 
     if(candidate.expired()) {
       this->error_at(
+        ctx,
         ctx->getStart(),
         "The underlined expression '{}' of type '{}' is not a function and cannot be called."_f.format(
           ctx->func->getText(),
@@ -66,6 +68,7 @@ namespace friday::inline api::inline pipeline {
 
     if(function.expired()) {
       this->error_at(
+        ctx,
         ctx->func->getStart(),
         "No overload of function '{}' matches the given arguments ({}):\nAvailable overloads:\n{}"_f.format(
           overload->get_qualified_id(),
@@ -94,6 +97,7 @@ namespace friday::inline api::inline pipeline {
   }
 
   auto TypeCheckerVisitor::visitGroupingExpression(FridayParser::GroupingExpressionContext *ctx) -> any {
+    Console::debug("TypeCheckerVisitor::visitGroupingExpression({})"_f.format(ctx->getText()));
     this->visitChildren(ctx);
     ctx->value = Value::from_value(ctx->expression()->value.get_type(), nullptr);
 
@@ -101,6 +105,7 @@ namespace friday::inline api::inline pipeline {
   }
 
   auto TypeCheckerVisitor::visitSubscriptExpression(FridayParser::SubscriptExpressionContext *ctx) -> any {
+    Console::debug("TypeCheckerVisitor::visitSubscriptExpression({})"_f.format(ctx->getText()));
     this->visitChildren(ctx);
 
     Pointer<Type> arrayType = ctx->array->value.get_type();
@@ -110,6 +115,7 @@ namespace friday::inline api::inline pipeline {
     if(not ArrayType::is_array(arrayType) or ArrayType::to_array(arrayType)->get_element_type() == this->VOID()) {
       ok = false;
       this->error_at(
+        ctx,
         ctx->array->getStart(),
         "Array expression '{}' of type '{}' is not a valid array or pointer that can be dereferenced."_f.format(
           ctx->array->getText(),
@@ -121,6 +127,7 @@ namespace friday::inline api::inline pipeline {
     if(indexType != this->INT()) {
       ok = false;
       this->error_at(
+        ctx,
         ctx->index->getStart(),
         "Array subcript index expression '{}' of type '{}' is not convertible to int. Implicit cast are not permitted, if this is the problem, try adding an explicit cast."_f.format(
           ctx->index->getText(),
@@ -141,6 +148,7 @@ namespace friday::inline api::inline pipeline {
   }
 
   auto TypeCheckerVisitor::visitBinaryExpression(FridayParser::BinaryExpressionContext *ctx) -> any {
+    Console::debug("TypeCheckerVisitor::visitBinaryExpression({})"_f.format(ctx->getText()));
     this->visitChildren(ctx);
 
     Pointer<Type> lhsType = ctx->left->value.get_type();
@@ -156,6 +164,7 @@ namespace friday::inline api::inline pipeline {
         suggestion = " Implicit casts are not permitted so, if this is a cast problem, try adding an explicit cast.";
       }
       this->error_at(
+        ctx,
         ctx->binaryOperator,
         "No matching function for call to '{}' with operands of types '{}' and '{}'.{}"_f.format(
           operatorName,
@@ -170,6 +179,7 @@ namespace friday::inline api::inline pipeline {
   }
 
   auto TypeCheckerVisitor::visitMemberAccessExpression(FridayParser::MemberAccessExpressionContext *ctx) -> any {
+    Console::debug("TypeCheckerVisitor::visitMemberAccessExpression({})"_f.format(ctx->getText()));
     this->visitChildren(ctx);
 
     auto memberName = ctx->member->getText();
@@ -189,6 +199,7 @@ namespace friday::inline api::inline pipeline {
 
     if(not ok) {
       this->error_at(
+        ctx,
         ctx->object->getStart(),
         "The underlined expression '{}' of type '{}' is not an instance of a struct or a struct or a namespace"_f.format(
           ctx->object->getText(),
@@ -199,47 +210,52 @@ namespace friday::inline api::inline pipeline {
 
     if(is_value(ctx->object->value)) {
       auto asStruct = rtti::cast<Struct>(ctx->object->value.get_type());
+      // attempt auto dereference
       if(not asStruct) asStruct = rtti::cast<Struct>(PointerType::to_pointer(ctx->object->value.get_type())->get_pointed_type());
 
       if(not asStruct->is_defined(memberName, always)) {
         this->error_at(
+          ctx,
           ctx->IDENTIFIER()->getSymbol(),
           "Struct '{}' has no field or method called '{}'"_f.format(asStruct->get_name(), memberName)
         );
-      } else ctx->value = Value::from_symbol(asStruct->look_up(memberName, {}));
+      } else ctx->value = Value::from_symbol(asStruct->retrieve(memberName));
     }
 
     if(ctx->object->value.is_struct()) {
-      auto asStruct = ctx->object->value.to_struct().value().lock();
+      auto asStruct = ctx->object->value.to_struct()->lock();
       if(not asStruct->is_defined(memberName, always)) {
         this->error_at(
+          ctx,
           ctx->IDENTIFIER()->getSymbol(),
           "Struct '{}' has no field or method called '{}'"_f.format(asStruct->get_name(), memberName)
         );
-      } else ctx->value = Value::from_symbol(asStruct->look_up(memberName, {}));
+      } else ctx->value = Value::from_symbol(asStruct->retrieve(memberName));
     }
 
     if(ctx->object->value.is_namespace()) {
-      auto asNamespace = ctx->object->value.to_struct().value().lock();
+      auto asNamespace = ctx->object->value.to_namespace()->lock();
       if(not asNamespace->is_defined(memberName, always)) {
         this->error_at(
+          ctx,
           ctx->IDENTIFIER()->getSymbol(),
           "Namespace '{}' has no variable or function or struct called '{}'"_f.format(asNamespace->get_qualified_id(), memberName)
         );
-      } else ctx->value = Value::from_symbol(asNamespace->look_up(memberName, {}));
+      } else ctx->value = Value::from_symbol(asNamespace->retrieve(memberName));
     }
-
 
     return {};
   }
 
   auto TypeCheckerVisitor::visitExplicitCastExpression(FridayParser::ExplicitCastExpressionContext *ctx) -> any {
+    Console::debug("TypeCheckerVisitor::visitExplicitCastExpression({})"_f.format(ctx->getText()));
     this->visitChildren(ctx);
 
     return {};
   }
 
   auto TypeCheckerVisitor::visitNewExpression(FridayParser::NewExpressionContext *ctx) -> any {
+    Console::debug("TypeCheckerVisitor::visitNewExpression({})"_f.format(ctx->getText()));
     this->visitChildren(ctx);
 
     Pointer<Type> type = ctx->type()->typeId;
@@ -257,10 +273,11 @@ namespace friday::inline api::inline pipeline {
       for(auto [i, field_and_type] : views::zip(fieldsNames, initializers) | views::enumerate) {
         auto [name, actual] = field_and_type;
 
-        auto field = asStruct->find_field(name, {});
+        auto field = asStruct->find_field(name);
         if(field.expired()) {
           ok = false;
           this->error_at(
+            ctx,
             ctx->fields[i],
             "In new expression (#{}-th field), struct '{}' has no field named '{}'"_f.format(
               i, 
@@ -275,6 +292,7 @@ namespace friday::inline api::inline pipeline {
         if(expected != actual) {
           ok = false;
           this->error_at(
+            ctx,
             ctx->initializers[i]->getStart(),
             "In new expression, in the assignment of field '{}' requires an expression of type '{}' but got a value of type '{}'"_f.format(
               name,
@@ -291,6 +309,7 @@ namespace friday::inline api::inline pipeline {
 
     } else {
       this->error_at(
+        ctx,
         ctx->type()->getStart(),
         "In new expression '{}', cannot create instance of type '{}'"_f.format(
           ctx->getText(),

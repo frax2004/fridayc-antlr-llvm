@@ -8,15 +8,12 @@ public fn main() -> void {
   const x: int = 0;
   const y: float = 0.0;
 
-  // const z: *void = null;
-  // a.push(z);
-  // a.push(z);
-  // a.push(z);
+  const z: *void = null;
+  a.push(z);
+  a.push(z);
+  a.push(z);
 
-  // a.pop();
-
-  a.get(2);
-  a.size();
+  a.pop();
 
   for let i = 0; i < a.size(); i += 1 {
     print a.get(i);
@@ -78,7 +75,7 @@ public struct ArrayList {
     } else {
       this.capacity *= 2;
     }
-    this.data = realloc(this.data, this.capacity * sizeof *void);
+    this.data = libc.reallocc(this.data, this.capacity * sizeof *void);
   }
 }
 

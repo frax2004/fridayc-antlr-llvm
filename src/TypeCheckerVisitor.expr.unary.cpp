@@ -7,6 +7,7 @@
 namespace friday::inline api::inline pipeline {
 
   auto TypeCheckerVisitor::visitUnaryPrefixExpression(FridayParser::UnaryPrefixExpressionContext *ctx) -> any {
+    Console::debug("TypeCheckerVisitor::visitUnaryPrefixExpression({})"_f.format(ctx->getText()));
     this->visitChildren(ctx);
 
     Pointer<Type> type = ctx->expression()->value.get_type();
@@ -18,6 +19,7 @@ namespace friday::inline api::inline pipeline {
 
     if(function.expired()) {
       this->error_at(
+        ctx,
         ctx->unaryOperator,
         "No matching function for call to '{}' with operand of type '{}'. Implicit casts are not permitted so, if this is a cast problem, try adding an explicit cast."_f.format(
           operatorName,
@@ -31,6 +33,7 @@ namespace friday::inline api::inline pipeline {
 
 
   auto TypeCheckerVisitor::visitUnaryPostfixExpression(FridayParser::UnaryPostfixExpressionContext *ctx) -> any {
+    Console::debug("TypeCheckerVisitor::visitUnaryPostfixExpression({})"_f.format(ctx->getText()));
     this->visitChildren(ctx);
 
     Pointer<Type> type = ctx->expression()->value.get_type();
@@ -42,6 +45,7 @@ namespace friday::inline api::inline pipeline {
 
     if(function.expired()) {
       this->error_at(
+        ctx,
         ctx->postfixOperator,
         "No matching function for call to '{}' with operand of type '{}'. Implicit casts are not permitted so, if this is a cast problem, try adding an explicit cast."_f.format(
           operatorName,

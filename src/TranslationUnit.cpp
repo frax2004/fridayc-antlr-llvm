@@ -20,86 +20,68 @@ namespace friday::inline api::inline pipeline {
     return make_shared<TranslationUnit>(ctx, path);
   }
 
-  auto TranslationUnit::define(rc<ISymbol> symbol) -> bool {
-    return this->ownedNamespace.lock()->define(symbol);
-  }
+  auto TranslationUnit::look_up(string_view name, Pointer<ISymbolTable> current, weak<ISymbol> defaultValue) -> weak<ISymbol> {
+    if(current == nullptr) return defaultValue;
 
-  auto TranslationUnit::is_defined(string_view id, Predicate<Pointer<ISymbol>> predicate) -> bool {
-    return this->ownedNamespace.lock()->is_defined(id, predicate);
-  }
-
-  auto TranslationUnit::most_similar(string_view name, Predicate<Pointer<ISymbol>> filter, u64 maxEditDistance) noexcept -> weak<ISymbol> {
-    (void)name;
-    (void)filter;
-    (void)maxEditDistance;
-    return {};
-  }
-
-  auto TranslationUnit::get_symbols() const -> vector<weak<ISymbol>> {
-    return this->ownedNamespace.lock()->get_symbols();
-  }
-
-  auto TranslationUnit::look_up(string_view name, weak<ISymbol> defaultValue) -> weak<ISymbol> {
-    Console::log("TranslationUnit::look_up({})"_f.format(name));
-    
-    if(not this->ownedNamespace.expired()) {
-      if(auto candidate = this->ownedNamespace.lock()->look_up(name, defaultValue); not candidate.expired()) {
-        return candidate;
+    // If current is the global namespace
+    if(current == rtti::cast<ISymbolTable>(this->comp_context().get_global().get())) {
+      // Search the symbol as a used namespace
+      if(auto it = this->usedNamespaces.find(name); it != this->usedNamespaces.end() and not it->second.expired()) {
+        return it->second;
       }
-    }
 
-    auto notExpired = [](weak<Namespace> wr) { return not wr.expired(); };
-    auto toNamespaces = views::values 
-    | views::filter(notExpired) 
-    | views::transform(&weak<Namespace>::lock);
-
-    for(auto nsp : this->usedNamespaces | toNamespaces) {
-      if(auto candidate = nsp->look_up(name, defaultValue); not candidate.expired()) {
+      // If not, search the symbol inside the global scope
+      if(auto candidate = current->retrieve(name); not candidate.expired()) 
         return candidate;
-      }
+
+      // The symbol is not defined
+      return defaultValue;
     }
 
-    auto global = this->comp_context().get_global().get();
-    if(auto candidate = global->look_up(name, defaultValue); not candidate.expired()) {
-      return candidate;
-    }
 
-    return defaultValue;
+    // If not, do standard recursive search
+    weak<ISymbol> candidate = current->retrieve(name);
+    return not candidate.expired() ? candidate : this->look_up(
+      name, 
+      current->get_parent(), 
+      defaultValue
+    );
   }
 
-  auto TranslationUnit::look_up_if(string_view name, Predicate<Pointer<ISymbol>> predicate, weak<ISymbol> defaultValue) -> weak<ISymbol> {
-    if(name == "realloc") Console::log("searching for realloc");
-    if(not this->ownedNamespace.expired()) {
-      if(auto candidate = this->ownedNamespace.lock()->look_up_if(name, predicate, defaultValue); not candidate.expired()) {
+  auto TranslationUnit::look_up_if(string_view name, Pointer<ISymbolTable> current, Predicate<Pointer<ISymbol>> predicate, weak<ISymbol> defaultValue) -> weak<ISymbol> {
+    if(current == nullptr) return defaultValue;
+
+    // If current is the global namespace
+    if(current == rtti::cast<ISymbolTable>(this->comp_context().get_global().get())) {
+      // Search the symbol as a used namespace
+      if(
+        auto it = this->usedNamespaces.find(name); 
+        it != this->usedNamespaces.end() 
+        and not it->second.expired()
+        and predicate(it->second.lock().get())
+      ) return it->second;
+
+      // If not, search the symbol inside the global scope
+      if(auto candidate = current->retrieve(name); not candidate.expired() and predicate(candidate.lock().get())) 
         return candidate;
-      }
+
+      // The symbol is not defined
+      return defaultValue;
     }
 
-    auto notExpired = [](weak<Namespace> wr) { return not wr.expired(); };
-    auto toNamespaces = views::values 
-    | views::filter(notExpired) 
-    | views::transform(&weak<Namespace>::lock);
 
-    for(auto nsp : this->usedNamespaces | toNamespaces) {
-      if(auto candidate = nsp->look_up_if(name, predicate, defaultValue); not candidate.expired()) {
-        return candidate;
-      }
-    }
-
-    auto global = this->comp_context().get_global().get();
-    if(auto candidate = global->look_up_if(name, predicate, defaultValue); not candidate.expired()) {
-      return candidate;
-    }
-
-    return defaultValue;
+    // If not, do standard recursive search
+    weak<ISymbol> candidate = current->retrieve(name);
+    return not candidate.expired() and predicate(candidate.lock().get()) ? candidate : this->look_up_if(
+      name, 
+      current->get_parent(), 
+      predicate,
+      defaultValue
+    );
   }
 
   auto TranslationUnit::get_path() const -> string {
     return this->path;
-  }
-
-  auto TranslationUnit::get_parent() -> Pointer<ISymbolTable> {
-    return rtti::cast<ISymbolTable>(this->ownedNamespace.lock().get());
   }
 
   auto TranslationUnit::get_parse_tree() const -> Pointer<ant::tree::ParseTree> {

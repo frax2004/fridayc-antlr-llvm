@@ -8,18 +8,18 @@ namespace friday::inline api::inline pipeline {
 
   struct CompilationContext;
 
-  struct FRIDAY_API TranslationUnit final : ISymbolTable {
+  struct FRIDAY_API TranslationUnit final : NonCopyable {
     private:
-    weak<Namespace>               ownedNamespace { };
-    map<string, weak<Namespace>>  usedNamespaces { };
-    Pointer<CompilationContext>   globalContext { nullptr };
-    string                        path = "";
-    ifstream                      inputStream;
-    ant::ANTLRInputStream         input;
-    FridayScanner                 lexer;
-    ant::CommonTokenStream        tokens;
-    FridayParser                  parser;
-    Pointer<ant::tree::ParseTree> ast { nullptr };
+    weak<Namespace>                      ownedNamespace { };
+    map<string, weak<Namespace>, less<>> usedNamespaces { };
+    Pointer<CompilationContext>          globalContext { nullptr };
+    string                               path = "";
+    ifstream                             inputStream;
+    ant::ANTLRInputStream                input;
+    FridayScanner                        lexer;
+    ant::CommonTokenStream               tokens;
+    FridayParser                         parser;
+    Pointer<ant::tree::ParseTree>        ast { nullptr };
 
     public:
     TranslationUnit(CompilationContext& ctx, string path);
@@ -34,27 +34,18 @@ namespace friday::inline api::inline pipeline {
     auto set_owned_namespace(rc<Namespace> nsp) -> void;
     auto comp_context() -> CompilationContext&;
 
-    auto define(rc<ISymbol> symbol) -> bool override;
-    auto is_defined(string_view id, Predicate<Pointer<ISymbol>> predicate) -> bool override;
-    auto get_symbols() const -> vector<weak<ISymbol>> override;
-    auto get_parent() -> Pointer<ISymbolTable> override;
-
-    auto most_similar(
-      string_view name, 
-      Predicate<Pointer<ISymbol>> filter, 
-      u64 maxEditDistance = 0
-    ) noexcept -> weak<ISymbol> override;
-    
     auto look_up(
       string_view name, 
+      Pointer<ISymbolTable> deepest,
       weak<ISymbol> defaultValue
-    ) -> weak<ISymbol> override;
-    
+    ) -> weak<ISymbol>;
+
     auto look_up_if(
       string_view name, 
+      Pointer<ISymbolTable> deepest,
       Predicate<Pointer<ISymbol>> predicate, 
       weak<ISymbol> defaultValue
-    ) -> weak<ISymbol> override;
+    ) -> weak<ISymbol>;
 
     static auto parse(CompilationContext& ctx, string path) -> rc<TranslationUnit>;
   };

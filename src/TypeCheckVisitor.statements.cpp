@@ -103,6 +103,7 @@ namespace friday::inline api::inline pipeline {
     // Pointer<Type> actual = any_cast<Pointer<Type>>(this->visit(ctx->expression()));
     // if(actual == ErrorType::get() or actual != this->M_currentFunctionReturnType) {
     //   this->error_at(
+    //     ctx,
     //     ctx->expression()->getStart(),
     //     RETURN_TYPE_MISMATCH.format(actual->get_name(), this->M_currentFunctionReturnType->get_name())
     //   );
@@ -120,6 +121,7 @@ namespace friday::inline api::inline pipeline {
 
     // if(expected != actual) {
     //   this->error_at(
+    //     ctx,
     //     ctx->expr()->getStart(),
     //     EXPRESSION_NOT_CONVERTIBLE.format(actual->get_name(), expected->get_name())
     //   );

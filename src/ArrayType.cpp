@@ -2,25 +2,22 @@
 #include <OperationNotSupportedError.hpp>
 
 namespace friday::inline api::inline typesystem {
-  ArrayType::ArrayType(Type& elementType, u64 length) noexcept {
+  ArrayType::ArrayType(Type& elementType, u64 length, string name) noexcept {
     this->M_elementType = &elementType;
     this->M_length = length;
-    this->M_name = "[]{}"_f.format(elementType.get_name());
+    this->M_name = name;
   }
 
   auto ArrayType::get(Type& elementType, u64 length) noexcept -> Pointer<Type> {
     static map<string, rc<ArrayType>> S_arrayTypes = {};
+
+    if(length > 1) return ArrayType::get(*ArrayType::get(elementType, length-1), 1);
     
-    rc<ArrayType> T {new ArrayType(elementType, length)};
-    return rtti::cast<Type>(
-      S_arrayTypes.try_emplace(
-        string{ T->get_name() }, 
-        T
-      )
-      .first
-      ->second
-      .get()
-    );
+    string name = "[]{}"_f.format(elementType.get_name());
+    if(S_arrayTypes.contains(name)) return rtti::cast<Type>(S_arrayTypes.at(name).get());
+    rc<ArrayType> type = S_arrayTypes[name] = rc<ArrayType>(new ArrayType{elementType, length, name});
+    return rtti::cast<Type>(type.get());
+
   }
 
   auto ArrayType::get_element_type() const noexcept -> Pointer<Type> {

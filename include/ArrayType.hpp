@@ -10,13 +10,13 @@ namespace friday::inline api::inline typesystem {
     u64           M_length      { 0 };
 
     private:
-    ArrayType(Type& elementType, u64 length) noexcept;
+    ArrayType(Type& elementType, u64 length, string name) noexcept;
 
     public:
     ~ArrayType() override = default;
 
     public:
-    static auto get(Type& elementType, u64 length) noexcept -> Pointer<Type>;
+    static auto get(Type& elementType, u64 lengt) noexcept -> Pointer<Type>;
 
     auto get_element_type() const noexcept -> Pointer<Type>;
     auto get_length() const noexcept -> u64;

@@ -26,7 +26,7 @@ namespace friday::inline api::inline pipeline {
     protected:
     auto set_current_unit(Pointer<TranslationUnit> unit) -> void;
     auto get_current_unit() -> Pointer<TranslationUnit>;
-    auto error_at(Pointer<ant::Token> token, string message) -> void;
+    auto error_at(Pointer<ant::ParserRuleContext> ctx, Pointer<ant::Token> end, string message) -> void;
 
   };
 }

@@ -11,31 +11,19 @@ namespace friday::inline api::inline typesystem {
     , M_name { name }
   {}
 
-  auto Namespace::find_function(string_view id, weak<Overload> defaultValue) -> weak<Overload> {
-    constexpr auto is_overload = [](Pointer<ISymbol> symbol) {
-      return dynamic_cast<Pointer<Overload>>(symbol) != nullptr;
-    };
-
-    weak<ISymbol> candidate = look_up_if(id, is_overload, defaultValue);
-    return not candidate.expired() ? dynamic_pointer_cast<Overload>(candidate.lock()) : defaultValue;
+  auto Namespace::find_function(string_view id) -> weak<Overload> {
+    weak<ISymbol> candidate = this->retrieve_if(id, &Overload::is_overload);
+    return not candidate.expired() ? weak<Overload>{ dynamic_pointer_cast<Overload>(candidate.lock()) } : weak<Overload>{};
   }
 
-  auto Namespace::find_struct(string_view id, weak<Struct> defaultValue) -> weak<Struct> {
-    constexpr auto is_struct = [](Pointer<ISymbol> symbol) {
-      return dynamic_cast<Pointer<Struct>>(symbol) != nullptr;
-    };
-
-    weak<ISymbol> candidate = look_up_if(id, is_struct, defaultValue);
-    return not candidate.expired() ? dynamic_pointer_cast<Struct>(candidate.lock()) : defaultValue;
+  auto Namespace::find_struct(string_view id) -> weak<Struct> {
+    weak<ISymbol> candidate = this->retrieve_if(id, &Struct::is_struct);
+    return not candidate.expired() ? weak<Struct>{ dynamic_pointer_cast<Struct>(candidate.lock()) } : weak<Struct>{};
   }
 
-  auto Namespace::find_variable(string_view id, weak<Variable> defaultValue) -> weak<Variable> {
-    constexpr auto is_variable = [](Pointer<ISymbol> symbol) {
-      return dynamic_cast<Pointer<Variable>>(symbol) != nullptr;
-    };
-
-    weak<ISymbol> candidate = look_up_if(id, is_variable, defaultValue);
-    return not candidate.expired() ? dynamic_pointer_cast<Variable>(candidate.lock()) : defaultValue;
+  auto Namespace::find_variable(string_view id) -> weak<Variable> {
+    weak<ISymbol> candidate = this->retrieve_if(id, &Variable::is_variable);
+    return not candidate.expired() ? weak<Variable>{ dynamic_pointer_cast<Variable>(candidate.lock()) } : weak<Variable>{};
   }
 
   auto Namespace::get_qualified_id() const -> string {

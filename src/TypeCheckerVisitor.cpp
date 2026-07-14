@@ -44,7 +44,13 @@ namespace friday::inline api::inline pipeline {
 
   auto TypeCheckerVisitor::find_binary_operator(string_view name, Pointer<Type> lhsType, Pointer<Type> rhsType) -> weak<Function> {
 
-    weak<ISymbol> candidate = this->get_current_unit()->look_up_if(name, &Overload::is_overload, {});
+    auto unit = this->get_current_unit();
+    weak<ISymbol> candidate = unit->look_up_if(
+      name, 
+      rtti::cast<ISymbolTable>(unit->get_owned_namespace().lock().get()), 
+      &Overload::is_overload, 
+      {}
+    );
 
     auto try_match = [lhsType, rhsType](Overload* ref) { 
       return ref->try_match(vector{ lhsType, rhsType }).to_optional();
@@ -67,8 +73,14 @@ namespace friday::inline api::inline pipeline {
   }
 
   auto TypeCheckerVisitor::find_unary_operator(string_view name, Pointer<Type> type) -> weak<Function> {
-
-    weak<ISymbol> candidate = this->get_current_unit()->look_up_if(name, &Overload::is_overload, {});
+    
+    auto unit = this->get_current_unit();
+    weak<ISymbol> candidate = unit->look_up_if(
+      name, 
+      rtti::cast<ISymbolTable>(unit->get_owned_namespace().lock().get()), 
+      &Overload::is_overload, 
+      {}
+    );
 
     auto try_match = [type](Overload* ref) { 
       return ref->try_match(vector{ type }).to_optional();
@@ -91,10 +103,11 @@ namespace friday::inline api::inline pipeline {
   }
 
   auto TypeCheckerVisitor::on_unit_begin(TranslationUnit& unit) -> void {
-    this->push(&unit);
+    this->push(unit.get_owned_namespace().lock().get());
   }
 
   auto TypeCheckerVisitor::on_unit_end(TranslationUnit& _) -> void {
+    (void)_;
     this->pop();
   }
 

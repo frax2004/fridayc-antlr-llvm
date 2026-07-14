@@ -12,7 +12,7 @@ namespace friday::inline api::inline typesystem {
     u64           M_dimensions  { 0 };
 
     private:
-    PointerType(Type& pointedType, u64 dimensions) noexcept;
+    PointerType(Type& pointedType, u64 dimensions, string name) noexcept;
 
     public:
     ~PointerType() override = default;

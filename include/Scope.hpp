@@ -12,7 +12,7 @@ namespace friday::inline api::inline typesystem {
     Scope(ISymbolTable& parent);
     ~Scope() override = default;
 
-    auto find_variable(string_view id, weak<Variable> defaultValue = {}) -> weak<Variable>;
+    auto find_variable(string_view id) -> weak<Variable>;
     auto get_parent() -> Pointer<ISymbolTable> override;
   };
 }

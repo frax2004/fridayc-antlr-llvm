@@ -9,22 +9,14 @@ namespace friday::inline api::inline typesystem {
     this->M_name = name;
   }
 
-  auto Struct::find_field(string_view name, weak<Variable> defaultValue) noexcept -> weak<Variable> {
-    constexpr auto is_variable = [](Pointer<ISymbol> symbol) {
-      return dynamic_cast<Pointer<Variable>>(symbol) != nullptr;
-    };
-
-    weak<ISymbol> candidate = look_up_if(name, is_variable, defaultValue);
-    return not candidate.expired() ? dynamic_pointer_cast<Variable>(candidate.lock()) : defaultValue;
+  auto Struct::find_field(string_view name) noexcept -> weak<Variable> {
+    weak<ISymbol> candidate = this->retrieve_if(name, &Variable::is_variable);
+    return not candidate.expired() ? weak<Variable>{ dynamic_pointer_cast<Variable>(candidate.lock()) } : weak<Variable>{};
   }
 
-  auto Struct::find_method(string_view name, weak<Overload> defaultValue) noexcept -> weak<Overload> {
-    constexpr auto isMethod = [](Pointer<ISymbol> symbol) {
-      return dynamic_cast<Pointer<Overload>>(symbol) != nullptr;
-    };
-
-    weak<ISymbol> candidate = look_up_if(name, isMethod, defaultValue);
-    return not candidate.expired() ? dynamic_pointer_cast<Overload>(candidate.lock()) : defaultValue;
+  auto Struct::find_method(string_view name) noexcept -> weak<Overload> {
+    weak<ISymbol> candidate = this->retrieve_if(name, &Overload::is_overload);
+    return not candidate.expired() ? weak<Overload>{ dynamic_pointer_cast<Overload>(candidate.lock()) } : weak<Overload>{};
   }
 
   auto Struct::get_name() const noexcept -> string_view {

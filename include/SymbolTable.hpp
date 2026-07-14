@@ -9,16 +9,8 @@ namespace friday::inline api::inline typesystem {
     constexpr virtual ~ISymbolTable() override = default;
 
     public:
-    virtual auto look_up(
-      string_view id, 
-      weak<ISymbol> defaultValue
-    ) -> weak<ISymbol> = 0;
-
-    virtual auto look_up_if(
-      string_view id, 
-      Predicate<Pointer<ISymbol>> predicate, 
-      weak<ISymbol> defaultValue
-    ) -> weak<ISymbol> = 0;
+    virtual auto retrieve(string_view id) -> weak<ISymbol> = 0;
+    virtual auto retrieve_if(string_view id, Predicate<Pointer<ISymbol>> predicate) -> weak<ISymbol> = 0;
 
     virtual auto most_similar(
       string_view name, 
@@ -46,16 +38,8 @@ namespace friday::inline api::inline typesystem {
     virtual ~SymbolTable() override = default;
 
     public:
-    virtual auto look_up(
-      string_view id, 
-      weak<ISymbol> defaultValue
-    ) -> weak<ISymbol> override;
-
-    virtual auto look_up_if(
-      string_view id, 
-      Predicate<Pointer<ISymbol>> predicate, 
-      weak<ISymbol> defaultValue
-    ) -> weak<ISymbol> override;
+    virtual auto retrieve(string_view id) -> weak<ISymbol> override;
+    virtual auto retrieve_if(string_view id, Predicate<Pointer<ISymbol>> predicate) -> weak<ISymbol> override;
 
     virtual auto most_similar(
       string_view id, 

@@ -2,8 +2,8 @@
 
 namespace friday::inline api::inline typesystem {
 
-  PointerType::PointerType(Type& pointedType, u64 dimensions) noexcept {
-    this->M_name = "{:*>{}}{}"_f.format("", dimensions, pointedType.get_name());
+  PointerType::PointerType(Type& pointedType, u64 dimensions, string name) noexcept {
+    this->M_name = name;
     this->M_pointedType = &pointedType;
     this->M_dimensions = dimensions;
   }
@@ -25,18 +25,14 @@ namespace friday::inline api::inline typesystem {
   }
 
   auto PointerType::get(Type& elementType, u64 dimensions) noexcept -> Pointer<Type> {
-    static map<string, rc<PointerType>> S_PointerTypes = {};
+    static map<string, rc<PointerType>> S_pointerTypes = {};
 
-    rc<PointerType> type {new PointerType(elementType, dimensions)};
-    return rtti::cast<Type>(
-      S_PointerTypes.try_emplace(
-        string{ type->get_name() }, 
-        type
-      )
-      .first
-      ->second
-      .get()
-    );
+    if(dimensions > 1) return PointerType::get(*PointerType::get(elementType, dimensions-1), 1);
+    
+    string name = "{:*>{}}{}"_f.format("", dimensions, elementType.get_name());
+    if(S_pointerTypes.contains(name)) return rtti::cast<Type>(S_pointerTypes.at(name).get());
+    rc<PointerType> type = S_pointerTypes[name] = rc<PointerType>(new PointerType{elementType, dimensions, name});
+    return rtti::cast<Type>(type.get());
   }
   
   auto PointerType::to_pointer(Pointer<Type> type) -> Pointer<PointerType> {

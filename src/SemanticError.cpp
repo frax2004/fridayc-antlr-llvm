@@ -18,7 +18,7 @@ namespace friday::inline api::inline parser {
 
   auto SemanticError::report() const noexcept -> void {
     Console::error(
-      "in file {}{}{}:{}:{}{} :\n{}{}{}{}"_f.format(
+      "in file {}{}{}:{}:{}{} :\n{}{}{}{}\n"_f.format(
         Console::Color::rgb(150, 150, 150),
         Console::Color::BOLD,
         this->M_location.path(), 

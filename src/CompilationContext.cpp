@@ -9,11 +9,14 @@ namespace friday::inline api::inline pipeline {
 
     auto parse = [this](string path) {
       return async(launch::async, [this, path]() {
+        Console::log("Parsing '{}'"_f.format(path));
+        flush(cout);
         return TranslationUnit::parse(*this, path);
       });
     };
 
     auto futures = paths
+    | views::transform([](string const& s) { return filesystem::absolute(s).generic_string(); })
     | views::transform(parse)
     | ranges::to<vector>();
 

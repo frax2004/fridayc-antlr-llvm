@@ -22,7 +22,7 @@ namespace friday::inline api::inline pipeline {
     weak<Namespace> nsp   = this->comp_context().find_namespace(name);
 
     if(nsp.expired()) {
-      this->error_at(token, USE_OF_UNDECLARED_NAMESPACE.format(name));
+      this->error_at(ctx, token, USE_OF_UNDECLARED_NAMESPACE.format(name));
       return {};
     } else this->get_current_unit()->use(nsp.lock());
 

@@ -20,9 +20,9 @@ namespace friday::inline api::inline typesystem {
     Namespace(Namespace& parent, string name);
     ~Namespace() override = default;
 
-    auto find_function(string_view id, weak<Overload> defaultValue = {}) -> weak<Overload>;
-    auto find_struct(string_view id, weak<Struct> defaultValue = {}) -> weak<Struct>;
-    auto find_variable(string_view id, weak<Variable> defaultValue = {}) -> weak<Variable>;
+    auto find_function(string_view id) -> weak<Overload>;
+    auto find_struct(string_view id) -> weak<Struct>;
+    auto find_variable(string_view id) -> weak<Variable>;
 
     auto get_qualified_id() const -> string override;
     auto get_full_qualified_id() const -> string override;

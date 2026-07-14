@@ -24,6 +24,7 @@ namespace friday::inline api::inline pipeline {
       auto fieldToken = this->M_properties.at(field);
 
       this->error_at(
+        fieldToken,
         fieldToken->getStart(),
         "Note: struct \"{}\" depends from struct \"{}\""_f.format(
           strct->get_qualified_id(),
@@ -34,6 +35,7 @@ namespace friday::inline api::inline pipeline {
     
     auto reportCycle = [&](vector<Pointer<Struct>> const& cycle) {
       this->error_at(
+        this->M_properties[cycle[0]],
         this->M_properties[cycle[0]]->getStart(),
         "In declaration of struct \"{}\", detected cyclic struct dependency."_f.format(
           cycle[0]->get_qualified_id()
@@ -60,6 +62,7 @@ namespace friday::inline api::inline pipeline {
     for(u64 i = 0; auto [fieldName, fieldType] : fields) {
       if(asStruct->is_defined(fieldName, &Variable::is_variable)) {
         this->error_at(
+          ctx,
           ctx->fieldsNames[i],
           "In definition of struct \"{}\", redeclaration of field \"{}\"."_f.format(
             structName,
@@ -68,6 +71,7 @@ namespace friday::inline api::inline pipeline {
         );
       } else if(ErrorType::is_error_type(fieldType)) {
         this->error_at(
+          ctx,
           ctx->fieldsTypes[i]->getStart(),
           "In definition of struct \"{}\", field named \"{}\" as an invalid error type \"{}\""_f.format(
             structName,
@@ -93,22 +97,21 @@ namespace friday::inline api::inline pipeline {
 
   auto TypeSolverVisitor::visitSimpleType(FridayParser::SimpleTypeContext *ctx) -> any {
 
-    auto is_struct = static_cast<bool(*)(Pointer<ISymbol>)>(&rtti::instance_of<Struct>);
-
     Pointer<TranslationUnit> unit = this->get_current_unit();
     Pointer<ant::Token> token = ctx->IDENTIFIER()->getSymbol();
     string id = token->getText();
 
-    weak<ISymbol> candidate = unit->look_up_if(id, is_struct, {});
+    weak<ISymbol> candidate = unit->look_up_if(
+      id, 
+      rtti::cast<ISymbolTable>(unit->get_owned_namespace().lock().get()), 
+      &Struct::is_struct, 
+      {}
+    );
 
     if(not candidate.expired()) {
       ctx->typeId = rtti::cast<Type>(candidate.lock().get());
     } else {
-      // auto toSuggestion = [](string const& message) {
-      //   return format(" Did you mean '{}'?", message);
-      // };
-
-      this->error_at(token, "There is no type named '{}' in the current scope."_f.format(id));
+      this->error_at(ctx, token, "There is no type named '{}' in the current scope."_f.format(id));
     }
 
     return {};
@@ -129,6 +132,7 @@ namespace friday::inline api::inline pipeline {
     for(auto [i, T] : paramsTypes | views::filter(isErrorType) | views::enumerate) {
       ok = false;
       this->error_at(
+        ctx,
         ctx->paramsTypes[i]->getStart(),
         "The function-type '{}' has an invalid parameter-type '{}' for the {}-th parameter"_f.format(
           ctx->getText(),
@@ -142,6 +146,7 @@ namespace friday::inline api::inline pipeline {
     if(retType == ErrorType::get()) {
       ok = false;
       this->error_at(
+        ctx,
         ctx->returnType->getStart(),
         "The function-type '{}' has an invalid return-type '{}'"_f.format(
           ctx->getText(),
@@ -164,6 +169,7 @@ namespace friday::inline api::inline pipeline {
 
     if(type == ErrorType::get()) {
       this->error_at(
+        ctx,
         ctx->pointedType->getStart(), 
         "Cannot form {}-th dimensional pointer '{}' from non-existent pointed-type '{}'"_f.format(
           dimensions,
@@ -186,6 +192,7 @@ namespace friday::inline api::inline pipeline {
 
     if(type == ErrorType::get()) {
       this->error_at(
+        ctx,
         ctx->elementType->getStart(), 
         "Cannot form {}-th dimensional array type '{}' from non-existent element-type '{}'"_f.format(
           length,

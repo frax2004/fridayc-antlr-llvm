@@ -9,7 +9,7 @@ namespace friday::inline api::inline pipeline {
   auto Pipeline::and_then() -> Pipeline& {
 
     this->M_context = M_context
-    .and_then([](Pointer<CompilationContext> ctx) -> optional<Pointer<CompilationContext>> {
+    .and_then([](Pointer<CompilationContext> ctx) -> optional<Pointer<CompilationContext>> {      
       auto analyzer = T{*ctx};
       analyzer.analyze();
       auto errors = analyzer.errors();
