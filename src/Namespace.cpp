@@ -60,5 +60,14 @@ namespace friday::inline api::inline typesystem {
 
   auto Namespace::get_parent() -> Pointer<ISymbolTable> {
     return rtti::cast<ISymbolTable>(this->M_parentNamespace);
-  }  
+  }
+  
+  auto Namespace::to_namespace(Pointer<ISymbol> symbol) -> Pointer<Namespace> {
+    return rtti::cast<Namespace>(symbol);
+  }
+
+  auto Namespace::is_namespace(Pointer<ISymbol> symbol) -> bool {
+    return rtti::instance_of<Namespace>(symbol);
+  }
+
 }

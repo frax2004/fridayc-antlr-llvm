@@ -7,19 +7,19 @@ namespace friday::inline api::inline pipeline {
     : StaticAnalyzer { ctx }
   {}
 
-  auto TypeCheckerVisitor::push(weak<ISymbolTable> scope) -> void {
+  auto TypeCheckerVisitor::push(Pointer<ISymbolTable> scope) -> void {
     this->M_symbolTables.push(scope);
   }
 
-  auto TypeCheckerVisitor::pop() -> weak<ISymbolTable> {
-    if(this->M_symbolTables.empty()) return {};
-    weak<ISymbolTable> x = this->top();
+  auto TypeCheckerVisitor::pop() -> Pointer<ISymbolTable> {
+    if(this->M_symbolTables.empty()) return nullptr;
+    Pointer<ISymbolTable> x = this->top();
     this->M_symbolTables.pop();
     return x;
   }
 
-  auto TypeCheckerVisitor::top() -> weak<ISymbolTable> {
-    return not this->M_symbolTables.empty() ? this->M_symbolTables.top() : weak<ISymbolTable>{};
+  auto TypeCheckerVisitor::top() -> Pointer<ISymbolTable> {
+    return not this->M_symbolTables.empty() ? this->M_symbolTables.top() : nullptr;
   }
 
   auto TypeCheckerVisitor::BYTE() -> Pointer<Type> {
@@ -65,13 +65,37 @@ namespace friday::inline api::inline pipeline {
     .and_then(try_match)
     .value_or({});
   }
-  
-  auto TypeCheckerVisitor::on_unit_begin(TranslationUnit& _) -> void {
-    (void)_;
+
+  auto TypeCheckerVisitor::find_unary_operator(string_view name, Pointer<Type> type) -> weak<Function> {
+
+    weak<ISymbol> candidate = this->get_current_unit()->look_up_if(name, &Overload::is_overload, {});
+
+    auto try_match = [type](Overload* ref) { 
+      return ref->try_match(vector{ type }).to_optional();
+    };
+
+    auto search_within_left_struct = [type, candidate, name]() -> optional<weak<ISymbol>> {
+      if(auto lhsAsStruct = rtti::cast<Struct>(type); candidate.expired() and lhsAsStruct != nullptr) {
+        return lhsAsStruct->find_method(name).to_optional();
+      } else return nullopt;
+    };
+
+    return candidate
+    .to_optional()
+    .or_else(search_within_left_struct)
+    .transform(&weak<ISymbol>::lock)
+    .transform(&rc<ISymbol>::get)
+    .transform(&Overload::to_overload)
+    .and_then(try_match)
+    .value_or({});
+  }
+
+  auto TypeCheckerVisitor::on_unit_begin(TranslationUnit& unit) -> void {
+    this->push(&unit);
   }
 
   auto TypeCheckerVisitor::on_unit_end(TranslationUnit& _) -> void {
-    (void)_;
+    this->pop();
   }
 
 }

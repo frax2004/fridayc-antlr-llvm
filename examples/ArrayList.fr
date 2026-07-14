@@ -67,7 +67,7 @@ public struct ArrayList {
 
 
   public fn destroy(this: *ArrayList) -> void {
-    free(this.data);
+    libc.free(this.data);
     this.count = 0;
     this.capacity = 0;
   }

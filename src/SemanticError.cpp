@@ -4,8 +4,7 @@
 
 namespace friday::inline api::inline parser {
   SemanticError::SemanticError(SourceLocation location, string message)
-    : Error<> { }
-    , M_location { move(location) }
+    : M_location { move(location) }
     , M_message { move(message) }
   {}
 

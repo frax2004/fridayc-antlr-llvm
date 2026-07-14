@@ -7,7 +7,7 @@ namespace friday::inline api::inline pipeline {
 
   struct FRIDAY_API TypeCheckerVisitor final : StaticAnalyzer {
     private:
-    stack<weak<ISymbolTable>> M_symbolTables { };
+    stack<Pointer<ISymbolTable>> M_symbolTables { };
 
     public:
     TypeCheckerVisitor(CompilationContext& ctx) noexcept;
@@ -48,9 +48,9 @@ namespace friday::inline api::inline pipeline {
     virtual auto on_unit_end(TranslationUnit& unit) -> void final override;
 
     private:
-    auto push(weak<ISymbolTable> scope) -> void;
-    auto pop() -> weak<ISymbolTable>;
-    auto top() -> weak<ISymbolTable>;
+    auto push(Pointer<ISymbolTable> scope) -> void;
+    auto pop() -> Pointer<ISymbolTable>;
+    auto top() -> Pointer<ISymbolTable>;
 
     auto BYTE() -> Pointer<Type>;
     auto INT() -> Pointer<Type>;
@@ -67,6 +67,11 @@ namespace friday::inline api::inline pipeline {
       string_view name, 
       Pointer<Type> lhs, 
       Pointer<Type> rhs
+    ) -> weak<Function>;
+
+    auto find_unary_operator(
+      string_view name, 
+      Pointer<Type> type
     ) -> weak<Function>;
   };
 }

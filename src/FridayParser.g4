@@ -9,6 +9,7 @@ options {
 @parser::postinclude {
 #include "Namespace.hpp"
 #include "Scope.hpp"
+#include "Value.hpp"
 }
 
 ///////////////////////////////////////////////////
@@ -124,7 +125,7 @@ options {
 
 ///////////////////////////////////////////////////
 /// EXPRESSIONS
-expression returns [Type* typeId = ErrorType::get()]
+expression returns [Value value = Value::error_value()]
 : id = IDENTIFIER      # IdentifierExpression
 | literal = INT_LIT    # IntLiteralExpression
 | literal = CHAR_LIT   # CharLiteralExpression
@@ -136,7 +137,7 @@ expression returns [Type* typeId = ErrorType::get()]
     fields += IDENTIFIER COL initializers += expression 
     (COMMA fields += IDENTIFIER COL initializers += expression)*?
   )? RIGHT_CURLY                                                                                # NewExpression
-| LEFT_SQUARE (expression (COMMA expression)*?)? RIGHT_SQUARE                                   # ArrayLiteralExpression
+| LEFT_SQUARE (values += expression (COMMA values += expression)*?)? RIGHT_SQUARE               # ArrayLiteralExpression
 | expr = expression postfixOperator = (INCREMENT | DECREMENT)                                   # UnaryPostfixExpression
 | func = expression LEFT_PAREN (args += expression (COMMA args += expression)*)? RIGHT_PAREN    # CallExpression
 | array = expression LEFT_SQUARE index = expression RIGHT_SQUARE                                # SubscriptExpression
@@ -169,7 +170,7 @@ expression returns [Type* typeId = ErrorType::get()]
 ;
 
 
-type returns [Type* typeId = ErrorType::get()]
+type returns [Pointer<Type> typeId = ErrorType::get()]
 : IDENTIFIER                                                                                            # SimpleType
 | STAR+ pointedType = type                                                                              # PointerType
 | (LEFT_SQUARE RIGHT_SQUARE)+ elementType = type                                                        # ArrayType

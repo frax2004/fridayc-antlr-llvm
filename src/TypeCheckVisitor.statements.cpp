@@ -14,13 +14,14 @@ namespace friday::inline api::inline pipeline {
   auto TypeCheckerVisitor::visitScopeStatement(FridayParser::ScopeStatementContext *ctx) -> any {
     Console::debug("ScopeStatementContext: {}"_f.format(ctx->getText()));
 
-    weak<ISymbolTable> parent = this->top();
-    if(parent.expired()) throw OperationNotSupportedError("Internal error.");
+    Pointer<ISymbolTable> parent = this->top();
 
-    rc<Scope> current = make_shared<Scope>(*parent.lock());
+    if(not parent) throw OperationNotSupportedError("Internal error.");
+
+    rc<Scope> current = make_shared<Scope>(*parent);
     ctx->syntacticalScope()->scope = current;
 
-    this->push(current);
+    this->push(current.get());
     this->visitChildren(ctx);
     this->pop();
 
@@ -30,7 +31,7 @@ namespace friday::inline api::inline pipeline {
   auto TypeCheckerVisitor::visitBasicBlock(FridayParser::BasicBlockContext *ctx) -> any {
     Console::debug("BlockContext: {}"_f.format(ctx->getText()));
 
-    this->push(ctx->scope);
+    this->push(ctx->scope.get());
     this->visitChildren(ctx);
     this->pop();
 
@@ -40,7 +41,7 @@ namespace friday::inline api::inline pipeline {
   auto TypeCheckerVisitor::visitTrailingBlock(FridayParser::TrailingBlockContext *ctx) -> any {
     Console::debug("TrailingBlockContext: {}"_f.format(ctx->getText()));
 
-    this->push(ctx->scope);
+    this->push(ctx->scope.get());
     this->visitChildren(ctx);
     this->pop();
 
@@ -54,9 +55,9 @@ namespace friday::inline api::inline pipeline {
     this->visitChildren(ctx);
 
     // TODO FIX THIS (INCOMPLETE)
-    weak<ISymbolTable> scope = this->top();
+    Pointer<ISymbolTable> scope = this->top();
     // TODO FOR NOW THE TYPE IS INFERRED AND THE REAL ONE IS IGNORED
-    scope.lock()->define(make_shared<Variable>(*scope.lock(), ctx->id->getText(), *ctx->initializer->typeId));
+    scope->define(make_shared<Variable>(*scope, ctx->id->getText(), *ctx->initializer->value.get_type()));
 
     return {};
   }

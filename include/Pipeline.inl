@@ -10,7 +10,9 @@ namespace friday::inline api::inline pipeline {
 
     this->M_context = M_context
     .and_then([](Pointer<CompilationContext> ctx) -> optional<Pointer<CompilationContext>> {
-      auto errors = T{*ctx}.analyze().errors();
+      auto analyzer = T{*ctx};
+      analyzer.analyze();
+      auto errors = analyzer.errors();
 
       if(not errors.empty()) {
         ranges::for_each(errors, &SemanticError::report);
