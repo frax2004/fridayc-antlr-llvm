@@ -30,6 +30,9 @@ namespace friday::inline api::inline typesystem {
     auto get_declaring_symbol_table() -> Pointer<ISymbolTable> override;
     auto get_parent() -> Pointer<ISymbolTable> override;
     auto get_attributes() const -> Attributes override;
+
+    static auto to_namespace(Pointer<ISymbol> symbol) -> Pointer<Namespace>;
+    static auto is_namespace(Pointer<ISymbol> symbol) -> bool;
   };
 }
 

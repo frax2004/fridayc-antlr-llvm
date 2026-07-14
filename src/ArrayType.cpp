@@ -44,4 +44,13 @@ namespace friday::inline api::inline typesystem {
     );
   }
 
+  auto ArrayType::to_array(Pointer<Type> type) -> Pointer<ArrayType> {
+    return rtti::cast<ArrayType>(type);
+  }
+
+  auto ArrayType::is_array(Pointer<Type> type) -> bool {
+    return rtti::instance_of<ArrayType>(type);
+  }
+
+  
 }

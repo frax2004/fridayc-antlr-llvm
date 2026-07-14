@@ -17,11 +17,10 @@ namespace friday::inline api::inline pipeline {
   }
 
   auto NamespaceBindingVisitor::visitUsingStatement(FridayParser::UsingStatementContext *ctx) -> any {
-    auto token = ctx->IDENTIFIER()->getSymbol();
-    auto name = token->getText();
+    ant::Token*     token = ctx->IDENTIFIER()->getSymbol();
+    string          name  = token->getText();
+    weak<Namespace> nsp   = this->comp_context().find_namespace(name);
 
-    auto nsp = this->comp_context().find_namespace(name);
-    
     if(nsp.expired()) {
       this->error_at(token, USE_OF_UNDECLARED_NAMESPACE.format(name));
       return {};

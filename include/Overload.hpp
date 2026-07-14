@@ -7,28 +7,29 @@
 
 namespace friday::inline api::inline typesystem {
 
-  struct FRIDAY_API Overload final : ISymbol, TypedEntity, Type {
+  struct FRIDAY_API less_by_signature {
+    typedef __is_transparent is_transparent;
+    
+    auto operator()(Pointer<FunctionType> const& self, vector<Pointer<Type>> const& rhs) const -> bool {
+      auto lhs = ranges::subrange(self->param_begin(), self->param_end());
+      return ranges::lexicographical_compare(lhs, rhs);
+    }
+
+    auto operator()(vector<Pointer<Type>> const& rhs, Pointer<FunctionType> const& self) const -> bool {
+      auto lhs = ranges::subrange(self->param_begin(), self->param_end());
+      return ranges::lexicographical_compare(lhs, rhs);
+    }
+
+    auto operator()(Pointer<FunctionType> const& lhs, Pointer<FunctionType> const& rhs) const -> bool {
+      return ranges::lexicographical_compare(
+        ranges::subrange(lhs->param_begin(), lhs->param_end()),
+        ranges::subrange(rhs->param_begin(), rhs->param_end())
+      );
+    }
+  };
+
+  struct FRIDAY_API Overload final : ISymbol, TypedEntity {
     private:
-    struct FRIDAY_API less_by_signature {
-      auto operator()(Pointer<FunctionType> const& self, vector<Pointer<Type>> const& rhs) const -> bool {
-        auto lhs = ranges::subrange(self->param_begin(), self->param_end());
-        return ranges::lexicographical_compare(lhs, rhs);
-      }
-
-      auto operator()(vector<Pointer<Type>> const& rhs, Pointer<FunctionType> const& self) const -> bool {
-        auto lhs = ranges::subrange(self->param_begin(), self->param_end());
-        return ranges::lexicographical_compare(lhs, rhs);
-      }
-      
-      auto operator()(Pointer<FunctionType> const& lhs, Pointer<FunctionType> const& rhs) const -> bool {
-        return ranges::lexicographical_compare(
-          ranges::subrange(lhs->param_begin(), lhs->param_end()),
-          ranges::subrange(rhs->param_begin(), rhs->param_end())
-        );
-      }
-
-      typedef __is_transparent is_transparent;
-    };
 
     private:
     using SignatureMap = map<Pointer<FunctionType>, rc<Function>, less_by_signature>;
@@ -53,13 +54,13 @@ namespace friday::inline api::inline typesystem {
     auto get_declaring_symbol_table() -> Pointer<ISymbolTable> override;
     auto get_attributes() const -> Attributes override;
     auto get_type() const -> Pointer<Type> override;
-    auto get_name() const noexcept -> string_view override;
-    auto to_llvm_type(llvm::LLVMContext& ctx) const noexcept -> Pointer<llvm::Type> override;
+    auto get_name() const noexcept -> string_view;
 
     static auto is_overload(Pointer<ISymbol> symbol) -> bool;
     static auto to_overload(Pointer<ISymbol> symbol) -> Pointer<Overload>;
   };
 }
+
 
 template<>
 struct FRIDAY_API json::stringify<friday::Overload> {
@@ -80,5 +81,3 @@ struct FRIDAY_API json::stringify<friday::Overload> {
     );
   }
 };
-
-#include <Overload.inl>

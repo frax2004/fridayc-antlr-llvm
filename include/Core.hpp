@@ -50,4 +50,5 @@ struct FRIDAY_API transparent_string_hash {
   typedef __is_transparent is_transparent;
 };
 
+
 #include <Core.inl>

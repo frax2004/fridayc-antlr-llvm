@@ -77,9 +77,4 @@ namespace friday::inline api::inline typesystem {
     return S_name;
   }
 
-  auto Overload::to_llvm_type(llvm::LLVMContext& ctx) const noexcept -> Pointer<llvm::Type> {
-    (void)ctx;
-    return nullptr;
-  }
-
 }

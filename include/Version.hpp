@@ -4,7 +4,7 @@
 #define FRIDAY_API
 
 // Misc
-#define FRIDAY_API_ENABLE_SIGSEGV_AS_EXCEPTION     1
+#define FRIDAY_API_ENABLE_SIGSEGV_AS_EXCEPTION     0
 
 // Pointer Wrapper
 #define FRIDAY_API_POINTER_WRAPPER                 0

@@ -5,12 +5,11 @@
 
 namespace friday::inline api::inline parser {
 
-  struct FRIDAY_API SemanticError final : public Error<> {
+  struct FRIDAY_API SemanticError final {
     SemanticError(SourceLocation location, string message);
-    ~SemanticError() override = default;
 
     auto report() const noexcept -> void;
-    auto what() const noexcept -> string override;
+    auto what() const noexcept -> string;
     auto where() const noexcept -> SourceLocation;
 
     private:

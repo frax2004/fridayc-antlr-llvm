@@ -40,7 +40,8 @@ namespace friday::inline api::inline pipeline {
   }
 
   auto TranslationUnit::look_up(string_view name, weak<ISymbol> defaultValue) -> weak<ISymbol> {
-
+    Console::log("TranslationUnit::look_up({})"_f.format(name));
+    
     if(not this->ownedNamespace.expired()) {
       if(auto candidate = this->ownedNamespace.lock()->look_up(name, defaultValue); not candidate.expired()) {
         return candidate;
@@ -67,7 +68,7 @@ namespace friday::inline api::inline pipeline {
   }
 
   auto TranslationUnit::look_up_if(string_view name, Predicate<Pointer<ISymbol>> predicate, weak<ISymbol> defaultValue) -> weak<ISymbol> {
-
+    if(name == "realloc") Console::log("searching for realloc");
     if(not this->ownedNamespace.expired()) {
       if(auto candidate = this->ownedNamespace.lock()->look_up_if(name, predicate, defaultValue); not candidate.expired()) {
         return candidate;
