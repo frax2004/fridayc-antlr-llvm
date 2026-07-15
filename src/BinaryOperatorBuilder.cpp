@@ -10,17 +10,17 @@ namespace friday::inline api::inline pipeline {
     return *this;
   }
 
-  auto BinaryOperatorBuilder::left(weak<Type> type) -> BinaryOperatorBuilder& {
+  auto BinaryOperatorBuilder::left(Pointer<Type> type) -> BinaryOperatorBuilder& {
     this->M_lhs = type;
     return *this;
   }
 
-  auto BinaryOperatorBuilder::right(weak<Type> type) -> BinaryOperatorBuilder& {
+  auto BinaryOperatorBuilder::right(Pointer<Type> type) -> BinaryOperatorBuilder& {
     this->M_rhs = type;
     return *this;
   }
 
-  auto BinaryOperatorBuilder::returns(weak<Type> type) -> BinaryOperatorBuilder& {
+  auto BinaryOperatorBuilder::returns(Pointer<Type> type) -> BinaryOperatorBuilder& {
     this->M_ret = type;
     return *this;
   }
@@ -30,10 +30,10 @@ namespace friday::inline api::inline pipeline {
     overload->add(
       make_shared<Function>(
         *overload, 
-        *this->M_ret.lock(), 
+        *this->M_ret, 
         vector{
-          pair{"lhs"s, this->M_lhs.lock().get()}, 
-          pair{"rhs"s, this->M_rhs.lock().get()}
+          pair{"lhs"s, this->M_lhs}, 
+          pair{"rhs"s, this->M_rhs}
         }
       )
     );

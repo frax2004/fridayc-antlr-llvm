@@ -43,10 +43,16 @@ namespace friday::inline api::inline pipeline {
     Pointer<ISymbolTable> scope = this->top();
     string id = ctx->id->getText();
 
+    auto is_not_struct_field = [](Pointer<ISymbol> sym) {
+      return not rtti::instance_of<Struct>(sym->get_declaring_symbol_table());
+    };
+
+    auto find_by_lookup = [this, &id, is_not_struct_field](Pointer<ISymbolTable> table) {
+      return this->get_current_unit()->look_up_if(id, table, is_not_struct_field, {});
+    };
+
     weak<ISymbol> symbol = (scope != nullptr ? make_optional(scope) : nullopt)
-    .transform([this, &id](Pointer<ISymbolTable> table) {
-      return this->get_current_unit()->look_up(id, table, {});
-    })
+    .transform(find_by_lookup)
     .value_or({});
 
     if(symbol.expired()) {

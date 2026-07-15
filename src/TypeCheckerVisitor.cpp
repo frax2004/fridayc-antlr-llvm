@@ -45,26 +45,28 @@ namespace friday::inline api::inline pipeline {
   auto TypeCheckerVisitor::find_binary_operator(string_view name, Pointer<Type> lhsType, Pointer<Type> rhsType) -> weak<Function> {
 
     auto unit = this->get_current_unit();
-    weak<ISymbol> candidate = unit->look_up_if(
-      name, 
-      rtti::cast<ISymbolTable>(unit->get_owned_namespace().lock().get()), 
-      &Overload::is_overload, 
-      {}
-    );
 
     auto try_match = [lhsType, rhsType](Overload* ref) { 
       return ref->try_match(vector{ lhsType, rhsType }).to_optional();
     };
 
-    auto search_within_left_struct = [lhsType, candidate, name]() -> optional<weak<ISymbol>> {
-      if(auto lhsAsStruct = rtti::cast<Struct>(lhsType); candidate.expired() and lhsAsStruct != nullptr) {
+    auto search_within_global_scope = [unit, name]() {
+      return unit->look_up_if(
+        name, 
+        rtti::cast<ISymbolTable>(unit->get_owned_namespace().lock().get()), 
+        &Overload::is_overload, 
+        {}
+      ).to_optional();
+    };
+
+    auto search_within_left_struct = [lhsType, name]() -> optional<weak<ISymbol>> {
+      if(auto lhsAsStruct = rtti::cast<Struct>(lhsType); lhsAsStruct != nullptr) {
         return lhsAsStruct->find_method(name).to_optional();
       } else return nullopt;
     };
 
-    return candidate
-    .to_optional()
-    .or_else(search_within_left_struct)
+    return search_within_left_struct()
+    .or_else(search_within_global_scope)
     .transform(&weak<ISymbol>::lock)
     .transform(&rc<ISymbol>::get)
     .transform(&Overload::to_overload)

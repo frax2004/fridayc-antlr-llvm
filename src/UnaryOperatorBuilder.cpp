@@ -10,12 +10,12 @@ namespace friday::inline api::inline pipeline {
     return *this;
   }
 
-  auto UnaryOperatorBuilder::takes(weak<Type> type) -> UnaryOperatorBuilder& {
+  auto UnaryOperatorBuilder::takes(Pointer<Type> type) -> UnaryOperatorBuilder& {
     this->M_type = type;
     return *this;
   }
 
-  auto UnaryOperatorBuilder::returns(weak<Type> type) -> UnaryOperatorBuilder& {
+  auto UnaryOperatorBuilder::returns(Pointer<Type> type) -> UnaryOperatorBuilder& {
     this->M_ret = type;
     return *this;
   }
@@ -25,8 +25,8 @@ namespace friday::inline api::inline pipeline {
     overload->add(
       make_shared<Function>(
         *overload, 
-        *this->M_ret.lock(), 
-        vector{ pair{"rhs"s, this->M_type.lock().get()} }
+        *this->M_ret, 
+        vector{ pair{"rhs"s, this->M_type} }
       )
     );
 

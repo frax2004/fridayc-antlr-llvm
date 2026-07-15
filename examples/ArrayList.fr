@@ -6,10 +6,6 @@ public fn main() -> void {
   let a: ArrayList = get();
   defer a.destroy();
 
-  const p: ***void = get_pointer();
-  let y: int = 4.5;
-  y = (&p).ciao;
-
   const g: *byte = null;
   const x: int = 0;
   const y: float = 0.0;
@@ -52,8 +48,8 @@ public struct ArrayList {
   private count: int;
   private capacity: int;
 
-  public fn get(this: *ArrayList, index: int) -> *void => *(this.data + index);
-  public fn set(this: *ArrayList, index: int, element: *void) -> void => *(this.data + index) = element;
+  public fn get(this: *ArrayList, index: int) -> *void => *((this.data as *void + index) as **void);
+  public fn set(this: *ArrayList, index: int, element: *void) -> void => *((this.data as *void + index) as **void) = element;
   public fn size(this: *ArrayList) -> int => this.count;
   public fn max_size(this: *ArrayList) -> int => this.capacity;
   public fn pop(this: *ArrayList) -> void => this.count -= 1;
@@ -64,13 +60,13 @@ public struct ArrayList {
       this.grow();
     }
 
-    *(this.data + count) = obj;
+    *((this.data as *void + this.count) as **void) = obj;
     this.count++;
   }
 
 
   public fn destroy(this: *ArrayList) -> void {
-    libc.free(this.data);
+    libc.free(this.data as *void);
     this.count = 0;
     this.capacity = 0;
   }
@@ -81,7 +77,7 @@ public struct ArrayList {
     } else {
       this.capacity *= 2;
     }
-    this.data = libc.realloc(this.data, this.capacity * sizeof *void);
+    this.data = libc.realloc(this.data as *void, this.capacity * sizeof *void) as **void;
   }
 }
 

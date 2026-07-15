@@ -7,9 +7,9 @@ namespace friday::inline api::inline pipeline {
   struct FRIDAY_API BinaryOperatorBuilder final : Builder<rc<Overload>> {
     private:
     string                M_name   { "" };
-    weak<Type>            M_lhs    { };
-    weak<Type>            M_rhs    { };
-    weak<Type>            M_ret    { };
+    Pointer<Type>         M_lhs    { nullptr };
+    Pointer<Type>         M_rhs    { nullptr };
+    Pointer<Type>         M_ret    { nullptr };
     Pointer<ISymbolTable> M_parent { nullptr };
 
 
@@ -22,9 +22,9 @@ namespace friday::inline api::inline pipeline {
     auto operator=(BinaryOperatorBuilder &&) -> BinaryOperatorBuilder& = default;
 
     auto within(ISymbolTable& parent) -> BinaryOperatorBuilder&;
-    auto left(weak<Type> type) -> BinaryOperatorBuilder&;
-    auto right(weak<Type> type) -> BinaryOperatorBuilder&;
-    auto returns(weak<Type> type) -> BinaryOperatorBuilder&;
+    auto left(Pointer<Type> type) -> BinaryOperatorBuilder&;
+    auto right(Pointer<Type> type) -> BinaryOperatorBuilder&;
+    auto returns(Pointer<Type> type) -> BinaryOperatorBuilder&;
 
     auto build() -> rc<Overload> override;
   };
