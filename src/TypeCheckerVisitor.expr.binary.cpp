@@ -153,7 +153,7 @@ namespace friday::inline api::inline pipeline {
 
     Pointer<Type> lhsType = ctx->left->value.get_type();
     Pointer<Type> rhsType = ctx->right->value.get_type();
-
+    
     string operatorName = "operator{}"_f.format(ctx->binaryOperator->getText());
     weak<Function> function = this->find_binary_operator(operatorName, lhsType, rhsType);
 
@@ -195,7 +195,7 @@ namespace friday::inline api::inline pipeline {
 
     bool ok = ctx->object->value.is_struct() 
     or ctx->object->value.is_namespace() 
-    or ctx->object->value.is_llvm_value();
+    or is_value(ctx->object->value);
 
     if(not ok) {
       this->error_at(
@@ -321,4 +321,93 @@ namespace friday::inline api::inline pipeline {
     return {};
   }
 
+  auto to_simple_operator(u64 token_type) -> string_view {
+    switch(token_type) {
+      case FridayParser::PLUS_ASSIGN: return "+"sv;
+      case FridayParser::MINUS_ASSIGN: return "-"sv;
+      case FridayParser::STAR_ASSIGN: return "*"sv;
+      case FridayParser::SLASH_ASSIGN: return "/"sv;
+      case FridayParser::MODULO_ASSIGN: return "%"sv;
+      case FridayParser::LSHIFT_ASSIGN: return "<<"sv;
+      case FridayParser::RSHIFT_ASSIGN: return ">>"sv;
+      case FridayParser::AMPERSAND_ASSIGN: return "&"sv;
+      case FridayParser::PIPELINE_ASSIGN: return "|"sv;
+      default: throw InvalidArgumentError{ "Invalid binary assignment operator of type '{}'"_f.format(token_type) };
+    }
+
+    return "";
+  }
+
+  auto TypeCheckerVisitor::visitAssignmentExpression(FridayParser::AssignmentExpressionContext* ctx) -> any {
+    Console::debug("TypeCheckerVisitor::visitAssignmentExpression({})"_f.format(ctx->getText()));
+    this->visitChildren(ctx);
+
+    Pointer<Type> resultType = ErrorType::get();
+
+    if(ctx->binaryOperator->getType() == FridayParser::ASSIGN) {
+      resultType = ctx->right->value.get_type();
+    } else {
+      Pointer<Type> lhsType = ctx->left->value.get_type();
+      Pointer<Type> rhsType = ctx->right->value.get_type();
+
+      string_view op = to_simple_operator(ctx->binaryOperator->getType());
+      string operatorName = "operator{}"_f.format(op);
+      weak<Function> function = this->find_binary_operator(operatorName, lhsType, rhsType);
+
+      string suggestion = "";
+
+      if(function.expired()) {
+        if(lhsType != rhsType) {
+          suggestion = " Implicit casts are not permitted so, if this is a cast problem, try adding an explicit cast.";
+        }
+        this->error_at(
+          ctx,
+          ctx->binaryOperator,
+          "No matching function for call to '{}' with operands of types '{}' and '{}'.{}"_f.format(
+            operatorName,
+            lhsType->get_name(),
+            rhsType->get_name(),
+            suggestion
+          )
+        );
+      } else resultType = function.lock()->get_return_type();
+    }
+
+    bool ok = true;
+    if(ErrorType::is_error_type(ctx->left->value.get_type())) {
+      ok = false;
+      this->error_at(
+        ctx,
+        ctx->left->getStart(),
+        "Cannot assign to an expression of an invalid type '{}'"_f.format(ctx->left->value.get_type()->get_name())
+      );
+    }
+
+    if(ctx->left->value.get_category() != ValueCategory::LVALUE) {
+      ok = false;
+      this->error_at(
+        ctx,
+        ctx->left->getStart(),
+        "Left side of an assignment expression must be an lvalue"
+      );
+    }
+
+    if(ctx->left->value.get_type() != resultType) {
+      ok = false;
+      this->error_at(
+        ctx,
+        ctx->binaryOperator,
+        "In assignment expression, cannot assign an expression of type '{}' to an object of type '{}'."_f.format(
+          resultType->get_name(),
+          ctx->left->value.get_type()->get_name()
+        )
+      );
+    }
+
+    if(not ok) return {};
+
+    ctx->value = Value::from_variable(resultType, nullptr);
+
+    return {};
+  }
 }

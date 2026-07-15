@@ -37,8 +37,10 @@ namespace friday::inline api::inline pipeline {
     auto visitIdentifierExpression(FridayParser::IdentifierExpressionContext *ctx) -> any override;
     auto visitStringLiteralExpression(FridayParser::StringLiteralExpressionContext *ctx) -> any override;
     auto visitBinaryExpression(FridayParser::BinaryExpressionContext *ctx) -> any override;
+    auto visitAssignmentExpression(FridayParser::AssignmentExpressionContext* ctx) -> any override;
     auto visitGroupingExpression(FridayParser::GroupingExpressionContext *ctx) -> any override;
     auto visitUnaryPrefixExpression(FridayParser::UnaryPrefixExpressionContext *ctx) -> any override;
+    auto visitCompTimeUnaryPrefixExpression(FridayParser::CompTimeUnaryPrefixExpressionContext *ctx) -> any override;
     auto visitSubscriptExpression(FridayParser::SubscriptExpressionContext *ctx) -> any override;
     auto visitBoolLiteralExpression(FridayParser::BoolLiteralExpressionContext *ctx) -> any override;
     auto visitCharLiteralExpression(FridayParser::CharLiteralExpressionContext *ctx) -> any override;

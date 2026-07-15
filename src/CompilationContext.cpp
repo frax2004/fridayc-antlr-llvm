@@ -1,6 +1,7 @@
 #include <CompilationContext.hpp>
 #include <Primitive.hpp>
 #include <BinaryOperatorBuilder.hpp>
+#include <UnaryOperatorBuilder.hpp>
 
 namespace friday::inline api::inline pipeline {
 
@@ -41,6 +42,11 @@ namespace friday::inline api::inline pipeline {
     intType->define(BinaryOperatorBuilder{"operator<="}.within(*this->M_global).returns(boolType).left(intType).right(intType).build());
     intType->define(BinaryOperatorBuilder{"operator>"}.within(*this->M_global).returns(boolType).left(intType).right(intType).build());
     intType->define(BinaryOperatorBuilder{"operator>="}.within(*this->M_global).returns(boolType).left(intType).right(intType).build());
+    intType->define(BinaryOperatorBuilder{"operator&"}.within(*this->M_global).returns(intType).left(intType).right(intType).build());
+    intType->define(BinaryOperatorBuilder{"operator|"}.within(*this->M_global).returns(intType).left(intType).right(intType).build());
+    intType->define(UnaryOperatorBuilder("operator+").within(*this->M_global).returns(intType).takes(intType).build());
+    intType->define(UnaryOperatorBuilder("operator-").within(*this->M_global).returns(intType).takes(intType).build());
+    intType->define(UnaryOperatorBuilder("operator~").within(*this->M_global).returns(intType).takes(intType).build());
 
     floatType->define(BinaryOperatorBuilder{"operator+"}.within(*this->M_global).returns(floatType).left(floatType).right(floatType).build());
     floatType->define(BinaryOperatorBuilder{"operator-"}.within(*this->M_global).returns(floatType).left(floatType).right(floatType).build());
@@ -53,6 +59,8 @@ namespace friday::inline api::inline pipeline {
     floatType->define(BinaryOperatorBuilder{"operator<="}.within(*this->M_global).returns(boolType).left(floatType).right(floatType).build());
     floatType->define(BinaryOperatorBuilder{"operator>"}.within(*this->M_global).returns(boolType).left(floatType).right(floatType).build());
     floatType->define(BinaryOperatorBuilder{"operator>="}.within(*this->M_global).returns(boolType).left(floatType).right(floatType).build());
+    floatType->define(UnaryOperatorBuilder("operator+").within(*this->M_global).returns(floatType).takes(floatType).build());
+    floatType->define(UnaryOperatorBuilder("operator-").within(*this->M_global).returns(floatType).takes(floatType).build());
 
     byteType->define(BinaryOperatorBuilder{"operator+"}.within(*this->M_global).returns(byteType).left(byteType).right(byteType).build());
     byteType->define(BinaryOperatorBuilder{"operator-"}.within(*this->M_global).returns(byteType).left(byteType).right(byteType).build());
@@ -65,9 +73,19 @@ namespace friday::inline api::inline pipeline {
     byteType->define(BinaryOperatorBuilder{"operator<="}.within(*this->M_global).returns(boolType).left(byteType).right(byteType).build());
     byteType->define(BinaryOperatorBuilder{"operator>"}.within(*this->M_global).returns(boolType).left(byteType).right(byteType).build());
     byteType->define(BinaryOperatorBuilder{"operator>="}.within(*this->M_global).returns(boolType).left(byteType).right(byteType).build());
+    byteType->define(BinaryOperatorBuilder{"operator&"}.within(*this->M_global).returns(byteType).left(byteType).right(byteType).build());
+    byteType->define(BinaryOperatorBuilder{"operator|"}.within(*this->M_global).returns(byteType).left(byteType).right(byteType).build());
+    byteType->define(UnaryOperatorBuilder("operator~").within(*this->M_global).returns(byteType).takes(byteType).build());
 
     boolType->define(BinaryOperatorBuilder{"operator=="}.within(*this->M_global).returns(boolType).left(boolType).right(boolType).build());
     boolType->define(BinaryOperatorBuilder{"operator!="}.within(*this->M_global).returns(boolType).left(boolType).right(boolType).build());
+    boolType->define(BinaryOperatorBuilder{"operatorand"}.within(*this->M_global).returns(boolType).left(boolType).right(boolType).build());
+    boolType->define(BinaryOperatorBuilder{"operatoror"}.within(*this->M_global).returns(boolType).left(boolType).right(boolType).build());
+    boolType->define(BinaryOperatorBuilder{"operator&"}.within(*this->M_global).returns(boolType).left(boolType).right(boolType).build());
+    boolType->define(BinaryOperatorBuilder{"operator|"}.within(*this->M_global).returns(boolType).left(boolType).right(boolType).build());
+    boolType->define(UnaryOperatorBuilder("operatornot").within(*this->M_global).returns(boolType).takes(boolType).build());
+    boolType->define(UnaryOperatorBuilder("operator~").within(*this->M_global).returns(boolType).takes(boolType).build());
+
 
     this->M_global->define(intType);
     this->M_global->define(byteType);

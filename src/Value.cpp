@@ -50,7 +50,7 @@ namespace friday::inline api::inline typesystem {
   auto Value::from_variable(Pointer<Type> type, Pointer<llvm::Value> value) -> Value {
     return Value{
       type, 
-      ValueCategory::RVALUE,
+      ValueCategory::LVALUE,
       value
     };
   }

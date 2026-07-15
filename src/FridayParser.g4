@@ -136,36 +136,36 @@ expression returns [Value value = Value::error_value()]
 | NEW type LEFT_CURLY (
     fields += IDENTIFIER COL initializers += expression 
     (COMMA fields += IDENTIFIER COL initializers += expression)*?
-  )? RIGHT_CURLY                                                                                # NewExpression
-| LEFT_SQUARE (values += expression (COMMA values += expression)*?)? RIGHT_SQUARE               # ArrayLiteralExpression
-| expr = expression postfixOperator = (INCREMENT | DECREMENT)                                   # UnaryPostfixExpression
-| func = expression LEFT_PAREN (args += expression (COMMA args += expression)*)? RIGHT_PAREN    # CallExpression
-| array = expression LEFT_SQUARE index = expression RIGHT_SQUARE                                # SubscriptExpression
-| object = expression DOT member = IDENTIFIER                                                   # MemberAccessExpression
-| <assoc = right> unaryOperator = (PLUS | MINUS | NOT | TILDE | STAR | AMPERSAND) expression    # UnaryPrefixExpression
-| <assoc = right> unaryOperator = (SIZEOF | ALIGNOF) (expression | type)                        # UnaryPrefixExpression
-| <assoc = right> expr = expression AS type                                                     # ExplicitCastExpression
-| left = expression binaryOperator = (STAR | SLASH | MODULO) right = expression                 # BinaryExpression
-| left = expression binaryOperator = (PLUS | MINUS) right = expression                          # BinaryExpression
-| left = expression binaryOperator = (LSHIFT | RSHIFT) right = expression                       # BinaryExpression
-| left = expression binaryOperator = (LESS | LESS_EQ | GREATER | GREATER_EQ) right = expression # BinaryExpression
-| left = expression binaryOperator = (EQUALS | NOT_EQUALS) right = expression                   # BinaryExpression
-| left = expression binaryOperator = AMPERSAND right = expression                               # BinaryExpression
-| left = expression binaryOperator = PIPELINE right = expression                                # BinaryExpression
-| left = expression binaryOperator = AND right = expression                                     # BinaryExpression
-| left = expression binaryOperator = OR right = expression                                      # BinaryExpression
-| <assoc=right> left = expression binaryOperator = (
-  ASSIGN 
-  | PLUS_ASSIGN 
-  | MINUS_ASSIGN 
-  | STAR_ASSIGN 
-  | SLASH_ASSIGN 
-  | MODULO_ASSIGN 
-  | LSHIFT_ASSIGN 
-  | RSHIFT_ASSIGN 
-  | AMPERSAND_ASSIGN 
+  )? RIGHT_CURLY                                                                                       # NewExpression
+| LEFT_SQUARE (values += expression (COMMA values += expression)*?)? RIGHT_SQUARE                      # ArrayLiteralExpression
+| operand = expression postfixOperator = (INCREMENT | DECREMENT)                                       # UnaryPostfixExpression
+| func = expression LEFT_PAREN (args += expression (COMMA args += expression)*)? RIGHT_PAREN           # CallExpression
+| array = expression LEFT_SQUARE index = expression RIGHT_SQUARE                                       # SubscriptExpression
+| object = expression DOT member = IDENTIFIER                                                          # MemberAccessExpression
+| <assoc = right> unaryOperator = (PLUS | MINUS | NOT | TILDE | STAR | AMPERSAND) operand = expression # UnaryPrefixExpression
+| <assoc = right> unaryOperator = (SIZEOF | ALIGNOF) type                                              # CompTimeUnaryPrefixExpression
+| <assoc = right> expr = expression AS type                                                            # ExplicitCastExpression
+| left = expression binaryOperator = (STAR | SLASH | MODULO) right = expression                        # BinaryExpression
+| left = expression binaryOperator = (PLUS | MINUS) right = expression                                 # BinaryExpression
+| left = expression binaryOperator = (LSHIFT | RSHIFT) right = expression                              # BinaryExpression
+| left = expression binaryOperator = (LESS | LESS_EQ | GREATER | GREATER_EQ) right = expression        # BinaryExpression
+| left = expression binaryOperator = (EQUALS | NOT_EQUALS) right = expression                          # BinaryExpression
+| left = expression binaryOperator = AMPERSAND right = expression                                      # BinaryExpression
+| left = expression binaryOperator = PIPELINE right = expression                                       # BinaryExpression
+| left = expression binaryOperator = AND right = expression                                            # BinaryExpression
+| left = expression binaryOperator = OR right = expression                                             # BinaryExpression
+| <assoc = right> left = expression binaryOperator = (
+  ASSIGN
+  | PLUS_ASSIGN
+  | MINUS_ASSIGN
+  | STAR_ASSIGN
+  | SLASH_ASSIGN
+  | MODULO_ASSIGN
+  | LSHIFT_ASSIGN
+  | RSHIFT_ASSIGN
+  | AMPERSAND_ASSIGN                 
   | PIPELINE_ASSIGN
-  ) right = expression              # BinaryExpression
+  ) right = expression              # AssignmentExpression
 | LEFT_PAREN expression RIGHT_PAREN # GroupingExpression
 ;
 
