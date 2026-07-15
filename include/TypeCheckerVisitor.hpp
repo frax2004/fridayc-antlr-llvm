@@ -59,6 +59,7 @@ namespace friday::inline api::inline pipeline {
     auto BOOL() -> Pointer<Type>;
     auto VOID() -> Pointer<Type>;
     auto FLOAT() -> Pointer<Type>;
+    auto VOIDPTR() -> Pointer<Type>;
 
     template<class T>
     auto by_visiting() -> function<any (Pointer<T>)> {

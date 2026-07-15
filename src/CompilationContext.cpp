@@ -56,6 +56,12 @@ namespace friday::inline api::inline pipeline {
     this->M_global->define(boolType);
     this->M_global->define(floatType);
     this->M_global->define(voidType);
+    this->M_global->define(BinaryOperatorBuilder{"operator<"}.within(*this->M_global).returns(boolType.get()).left(voidPtrType).right(voidPtrType).build());
+    this->M_global->define(BinaryOperatorBuilder{"operator>"}.within(*this->M_global).returns(boolType.get()).left(voidPtrType).right(voidPtrType).build());
+    this->M_global->define(BinaryOperatorBuilder{"operator<="}.within(*this->M_global).returns(boolType.get()).left(voidPtrType).right(voidPtrType).build());
+    this->M_global->define(BinaryOperatorBuilder{"operator>="}.within(*this->M_global).returns(boolType.get()).left(voidPtrType).right(voidPtrType).build());
+    this->M_global->define(BinaryOperatorBuilder{"operator=="}.within(*this->M_global).returns(boolType.get()).left(voidPtrType).right(voidPtrType).build());
+    this->M_global->define(BinaryOperatorBuilder{"operator!="}.within(*this->M_global).returns(boolType.get()).left(voidPtrType).right(voidPtrType).build());
     this->M_global->define(BinaryOperatorBuilder{"operator+"}.within(*this->M_global).returns(voidPtrType).left(voidPtrType).right(intType.get()).build());
     this->M_global->define(opminus);
 
@@ -72,8 +78,8 @@ namespace friday::inline api::inline pipeline {
     Int->define(BinaryOperatorBuilder{"operator*"}.within(*Int).returns(intType.get()).left(intType.get()).right(intType.get()).build());
     Int->define(BinaryOperatorBuilder{"operator/"}.within(*Int).returns(intType.get()).left(intType.get()).right(intType.get()).build());
     Int->define(BinaryOperatorBuilder{"operator%"}.within(*Int).returns(intType.get()).left(intType.get()).right(intType.get()).build());
-    Int->define(BinaryOperatorBuilder{"operator=="}.within(*Int).returns(intType.get()).left(intType.get()).right(intType.get()).build());
-    Int->define(BinaryOperatorBuilder{"operator!="}.within(*Int).returns(intType.get()).left(intType.get()).right(intType.get()).build());
+    Int->define(BinaryOperatorBuilder{"operator=="}.within(*Int).returns(boolType.get()).left(intType.get()).right(intType.get()).build());
+    Int->define(BinaryOperatorBuilder{"operator!="}.within(*Int).returns(boolType.get()).left(intType.get()).right(intType.get()).build());
     Int->define(BinaryOperatorBuilder{"operator<"}.within(*Int).returns(boolType.get()).left(intType.get()).right(intType.get()).build());
     Int->define(BinaryOperatorBuilder{"operator<="}.within(*Int).returns(boolType.get()).left(intType.get()).right(intType.get()).build());
     Int->define(BinaryOperatorBuilder{"operator>"}.within(*Int).returns(boolType.get()).left(intType.get()).right(intType.get()).build());
@@ -91,8 +97,8 @@ namespace friday::inline api::inline pipeline {
     Float->define(BinaryOperatorBuilder{"operator*"}.within(*Float).returns(floatType.get()).left(floatType.get()).right(floatType.get()).build());
     Float->define(BinaryOperatorBuilder{"operator/"}.within(*Float).returns(floatType.get()).left(floatType.get()).right(floatType.get()).build());
     Float->define(BinaryOperatorBuilder{"operator%"}.within(*Float).returns(floatType.get()).left(floatType.get()).right(floatType.get()).build());
-    Float->define(BinaryOperatorBuilder{"operator=="}.within(*Float).returns(floatType.get()).left(floatType.get()).right(floatType.get()).build());
-    Float->define(BinaryOperatorBuilder{"operator!="}.within(*Float).returns(floatType.get()).left(floatType.get()).right(floatType.get()).build());
+    Float->define(BinaryOperatorBuilder{"operator=="}.within(*Float).returns(boolType.get()).left(floatType.get()).right(floatType.get()).build());
+    Float->define(BinaryOperatorBuilder{"operator!="}.within(*Float).returns(boolType.get()).left(floatType.get()).right(floatType.get()).build());
     Float->define(BinaryOperatorBuilder{"operator<"}.within(*Float).returns(boolType.get()).left(floatType.get()).right(floatType.get()).build());
     Float->define(BinaryOperatorBuilder{"operator<="}.within(*Float).returns(boolType.get()).left(floatType.get()).right(floatType.get()).build());
     Float->define(BinaryOperatorBuilder{"operator>"}.within(*Float).returns(boolType.get()).left(floatType.get()).right(floatType.get()).build());
@@ -107,8 +113,8 @@ namespace friday::inline api::inline pipeline {
     Byte->define(BinaryOperatorBuilder{"operator*"}.within(*Byte).returns(byteType.get()).left(byteType.get()).right(byteType.get()).build());
     Byte->define(BinaryOperatorBuilder{"operator/"}.within(*Byte).returns(byteType.get()).left(byteType.get()).right(byteType.get()).build());
     Byte->define(BinaryOperatorBuilder{"operator%"}.within(*Byte).returns(byteType.get()).left(byteType.get()).right(byteType.get()).build());
-    Byte->define(BinaryOperatorBuilder{"operator=="}.within(*Byte).returns(byteType.get()).left(byteType.get()).right(byteType.get()).build());
-    Byte->define(BinaryOperatorBuilder{"operator!="}.within(*Byte).returns(byteType.get()).left(byteType.get()).right(byteType.get()).build());
+    Byte->define(BinaryOperatorBuilder{"operator=="}.within(*Byte).returns(boolType.get()).left(byteType.get()).right(byteType.get()).build());
+    Byte->define(BinaryOperatorBuilder{"operator!="}.within(*Byte).returns(boolType.get()).left(byteType.get()).right(byteType.get()).build());
     Byte->define(BinaryOperatorBuilder{"operator<"}.within(*Byte).returns(boolType.get()).left(byteType.get()).right(byteType.get()).build());
     Byte->define(BinaryOperatorBuilder{"operator<="}.within(*Byte).returns(boolType.get()).left(byteType.get()).right(byteType.get()).build());
     Byte->define(BinaryOperatorBuilder{"operator>"}.within(*Byte).returns(boolType.get()).left(byteType.get()).right(byteType.get()).build());

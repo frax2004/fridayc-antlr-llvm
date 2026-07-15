@@ -42,7 +42,20 @@ namespace friday::inline api::inline pipeline {
     Console::debug("TrailingBlockContext: {}"_f.format(ctx->getText()));
 
     this->push(ctx->scope.get());
-    this->visitChildren(ctx);
+    this->visit(ctx->expression());
+    auto func = rtti::cast<FridayParser::FreeFunctionStatementContext>(ctx->parent);
+    Pointer<Type> expected = func->returnType->typeId;
+    Pointer<Type> actual = ctx->expression()->value.get_type();
+    
+
+    if(expected != actual) {
+      this->error_at(
+        ctx,
+        ctx->expression()->getStart(),
+        RETURN_TYPE_MISMATCH.format(actual->get_name(), expected->get_name())
+      );
+    }
+
     this->pop();
 
     return {};
@@ -54,17 +67,72 @@ namespace friday::inline api::inline pipeline {
     Console::debug("DeclarationStatementContext: {}"_f.format(ctx->getText()));
     this->visitChildren(ctx);
 
-    // TODO FIX THIS (INCOMPLETE)
     Pointer<ISymbolTable> scope = this->top();
-    // TODO FOR NOW THE TYPE IS INFERRED AND THE REAL ONE IS IGNORED
-    scope->define(make_shared<Variable>(*scope, ctx->id->getText(), *ctx->initializer->value.get_type()));
+    string name = ctx->id->getText();
+
+    bool ok = true;
+    if(scope->is_defined(name, &Variable::is_variable)) {
+      ok = false;
+      this->error_at(
+        ctx,
+        ctx->id,
+        ENTITY_REDECLARATION.format(name)
+      );
+    }
+
+    Pointer<Type> inferred = ctx->expression()->value.get_type();
+    if(auto expected = ctx->type(); expected != nullptr and expected->typeId != inferred) {
+      ok = false;
+      this->error_at(
+        ctx,
+        ctx->ASSIGN()->getSymbol(),
+        "In declaration of variable '{}', cannot assign an expression of type '{}' to an object of type '{}'"_f.format(
+          name,
+          inferred->get_name(),
+          expected->typeId->get_name()
+        )
+      );
+    }
+
+    if(ErrorType::is_error_type(inferred)) {
+      ok = false;
+      this->error_at(
+        ctx,
+        ctx->ASSIGN()->getSymbol(),
+        "In declaration of variable '{}', cannot declare a variable with an invalid type '{}'"_f.format(
+          name,
+          ErrorType::get()->get_name()
+        )
+      );
+    }
+
+    if(not ok) return {};
+    scope->define(make_shared<Variable>(*scope, name, *ctx->initializer->value.get_type()));
 
     return {};
   }
 
   auto TypeCheckerVisitor::visitIfStatement(FridayParser::IfStatementContext *ctx) -> any {
     Console::debug("IfStatementContext: {}"_f.format(ctx->getText()));
-    this->visitChildren(ctx);
+
+    for(auto [condition, statement] : views::zip(ctx->conditions, ctx->scopes)) {
+      this->visit(condition);
+
+      if(condition->value.get_type() != this->BOOL()) {
+        this->error_at(
+          ctx,
+          condition->getStart(),
+          "Condition expression expected to be of type '{}' but got an expression of type '{}'"_f.format(
+            this->BOOL()->get_name(),
+            condition->value.get_type()->get_name()
+          )
+        );
+      }
+
+      this->visit(statement);
+    }
+
+    if(ctx->elseStatement) this->visit(ctx->elseStatement);
 
     return {};
   }
@@ -78,7 +146,20 @@ namespace friday::inline api::inline pipeline {
 
   auto TypeCheckerVisitor::visitWhileStatement(FridayParser::WhileStatementContext *ctx) -> any {
     Console::debug("WhileStatementContext: {}"_f.format(ctx->getText()));
-    this->visitChildren(ctx);
+
+    this->visit(ctx->condition);
+    if(ctx->condition->value.get_type() != this->BOOL()) {
+      this->error_at(
+        ctx,
+        ctx->condition->getStart(),
+        "Condition expression expected to be of type '{}' but got an expression of type '{}'"_f.format(
+          this->BOOL()->get_name(),
+          ctx->condition->value.get_type()->get_name()
+        )
+      );
+    }
+
+    this->visit(ctx->scope);
 
     return {};
   }
@@ -99,16 +180,25 @@ namespace friday::inline api::inline pipeline {
 
   auto TypeCheckerVisitor::visitReturnStatement(FridayParser::ReturnStatementContext *ctx) -> any {
     Console::debug("ReturnStatementContext: {}"_f.format(ctx->getText()));
-    this->visitChildren(ctx);
-    // Pointer<Type> actual = any_cast<Pointer<Type>>(this->visit(ctx->expression()));
-    // if(actual == ErrorType::get() or actual != this->M_currentFunctionReturnType) {
-    //   this->error_at(
-    //     ctx,
-    //     ctx->expression()->getStart(),
-    //     RETURN_TYPE_MISMATCH.format(actual->get_name(), this->M_currentFunctionReturnType->get_name())
-    //   );
-    //   return (Pointer<Type>)ErrorType::get();
-    // } else return (Pointer<Type>)this->M_currentScope->resolve("void")->as<Struct>();
+    this->visit(ctx->expression());
+
+    Pointer<ant::tree::ParseTree> funcRule = rtti::cast<ant::tree::ParseTree>(ctx);
+    while(not rtti::instance_of<FridayParser::FreeFunctionStatementContext>(funcRule)) {
+      funcRule = funcRule->parent;
+    }
+    
+    auto asFunc = rtti::cast<FridayParser::FreeFunctionStatementContext>(funcRule);
+    Pointer<Type> expected = asFunc->returnType->typeId;
+    Pointer<Type> actual = ctx->expression()->value.get_type();
+
+    if(expected != actual) {
+      this->error_at(
+        ctx,
+        ctx->expression()->getStart(),
+        RETURN_TYPE_MISMATCH.format(actual->get_name(), expected->get_name())
+      );
+    }
+
     return {};
   }
 
@@ -116,17 +206,6 @@ namespace friday::inline api::inline pipeline {
     Console::debug("PrintStatementContext: {}"_f.format(ctx->getText()));
     this->visitChildren(ctx);
 
-    // Pointer<Type> expected = PointerType::get((Pointer<Type>)this->M_currentScope->resolve("byte")->as<Struct>(), 1);
-    // Pointer<Type> actual = any_cast<Pointer<Type>>(this->visit(ctx->expr()));
-
-    // if(expected != actual) {
-    //   this->error_at(
-    //     ctx,
-    //     ctx->expr()->getStart(),
-    //     EXPRESSION_NOT_CONVERTIBLE.format(actual->get_name(), expected->get_name())
-    //   );
-    //   return (Pointer<Type>)ErrorType::get();
-    // } else return (Pointer<Type>)this->M_currentScope->resolve("void")->as<Struct>();
     return {};
   }
 

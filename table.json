@@ -12,21 +12,6 @@
       },
       {
         "kind": "overload",
-        "name": "get",
-        "signatures": [
-          "ArrayList()"
-        ]
-      },
-      {
-        "kind": "overload",
-        "name": "operator-",
-        "signatures": [
-          "*void(*void, int)",
-          "int(*void, *void)"
-        ]
-      },
-      {
-        "kind": "overload",
         "name": "get_pointer",
         "signatures": [
           "***void()"
@@ -34,97 +19,236 @@
       },
       {
         "kind": "struct",
-        "name": "float",
+        "name": "int",
         "symbols": [
-          {
-            "kind": "overload",
-            "name": "operator>",
-            "signatures": [
-              "bool(float, float)"
-            ]
-          },
           {
             "kind": "overload",
             "name": "operator--",
             "signatures": [
-              "float(float)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator<=",
-            "signatures": [
-              "bool(float, float)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator<",
-            "signatures": [
-              "bool(float, float)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator!=",
-            "signatures": [
-              "float(float, float)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator>=",
-            "signatures": [
-              "bool(float, float)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator%",
-            "signatures": [
-              "float(float, float)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator/",
-            "signatures": [
-              "float(float, float)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator*",
-            "signatures": [
-              "float(float, float)"
+              "int(int)"
             ]
           },
           {
             "kind": "overload",
             "name": "operator++",
             "signatures": [
-              "float(float)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator-",
-            "signatures": [
-              "float(float, float)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator==",
-            "signatures": [
-              "float(float, float)"
+              "int(int)"
             ]
           },
           {
             "kind": "overload",
             "name": "operator+",
             "signatures": [
-              "float(float, float)"
+              "int(int, int)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator==",
+            "signatures": [
+              "bool(int, int)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator-",
+            "signatures": [
+              "int(int, int)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator|",
+            "signatures": [
+              "int(int, int)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator*",
+            "signatures": [
+              "int(int, int)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator/",
+            "signatures": [
+              "int(int, int)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator%",
+            "signatures": [
+              "int(int, int)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator>=",
+            "signatures": [
+              "bool(int, int)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator~",
+            "signatures": [
+              "int(int)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator!=",
+            "signatures": [
+              "bool(int, int)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator<",
+            "signatures": [
+              "bool(int, int)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator<=",
+            "signatures": [
+              "bool(int, int)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator>",
+            "signatures": [
+              "bool(int, int)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator&",
+            "signatures": [
+              "int(int, int)"
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "overload",
+        "name": "operator==",
+        "signatures": [
+          "bool(*void, *void)"
+        ]
+      },
+      {
+        "kind": "overload",
+        "name": "operator+",
+        "signatures": [
+          "*void(*void, int)"
+        ]
+      },
+      {
+        "kind": "struct",
+        "name": "byte",
+        "symbols": [
+          {
+            "kind": "overload",
+            "name": "operator+",
+            "signatures": [
+              "byte(byte, byte)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator==",
+            "signatures": [
+              "bool(byte, byte)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator-",
+            "signatures": [
+              "byte(byte, byte)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator|",
+            "signatures": [
+              "byte(byte, byte)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator*",
+            "signatures": [
+              "byte(byte, byte)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator/",
+            "signatures": [
+              "byte(byte, byte)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator%",
+            "signatures": [
+              "byte(byte, byte)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator>=",
+            "signatures": [
+              "bool(byte, byte)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator~",
+            "signatures": [
+              "byte(byte)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator!=",
+            "signatures": [
+              "bool(byte, byte)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator<",
+            "signatures": [
+              "bool(byte, byte)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator<=",
+            "signatures": [
+              "bool(byte, byte)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator>",
+            "signatures": [
+              "bool(byte, byte)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator&",
+            "signatures": [
+              "byte(byte, byte)"
             ]
           }
         ]
@@ -193,113 +317,127 @@
       },
       {
         "kind": "struct",
-        "name": "byte",
+        "name": "float",
         "symbols": [
           {
             "kind": "overload",
-            "name": "operator+",
+            "name": "operator>",
             "signatures": [
-              "byte(byte, byte)"
+              "bool(float, float)"
             ]
           },
           {
             "kind": "overload",
-            "name": "operator==",
+            "name": "operator--",
             "signatures": [
-              "byte(byte, byte)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator-",
-            "signatures": [
-              "byte(byte, byte)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator|",
-            "signatures": [
-              "byte(byte, byte)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator*",
-            "signatures": [
-              "byte(byte, byte)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator/",
-            "signatures": [
-              "byte(byte, byte)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator%",
-            "signatures": [
-              "byte(byte, byte)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator>=",
-            "signatures": [
-              "bool(byte, byte)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator~",
-            "signatures": [
-              "byte(byte)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator!=",
-            "signatures": [
-              "byte(byte, byte)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator<",
-            "signatures": [
-              "bool(byte, byte)"
+              "float(float)"
             ]
           },
           {
             "kind": "overload",
             "name": "operator<=",
             "signatures": [
-              "bool(byte, byte)"
+              "bool(float, float)"
             ]
           },
           {
             "kind": "overload",
-            "name": "operator>",
+            "name": "operator<",
             "signatures": [
-              "bool(byte, byte)"
+              "bool(float, float)"
             ]
           },
           {
             "kind": "overload",
-            "name": "operator&",
+            "name": "operator!=",
             "signatures": [
-              "byte(byte, byte)"
+              "bool(float, float)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator>=",
+            "signatures": [
+              "bool(float, float)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator%",
+            "signatures": [
+              "float(float, float)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator/",
+            "signatures": [
+              "float(float, float)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator*",
+            "signatures": [
+              "float(float, float)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator++",
+            "signatures": [
+              "float(float)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator-",
+            "signatures": [
+              "float(float, float)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator==",
+            "signatures": [
+              "bool(float, float)"
+            ]
+          },
+          {
+            "kind": "overload",
+            "name": "operator+",
+            "signatures": [
+              "float(float, float)"
             ]
           }
         ]
       },
       {
         "kind": "overload",
-        "name": "operator+",
+        "name": "operator<",
         "signatures": [
-          "*void(*void, int)"
+          "bool(*void, *void)"
+        ]
+      },
+      {
+        "kind": "overload",
+        "name": "get",
+        "signatures": [
+          "ArrayList()"
+        ]
+      },
+      {
+        "kind": "overload",
+        "name": "operator>",
+        "signatures": [
+          "bool(*void, *void)"
+        ]
+      },
+      {
+        "kind": "overload",
+        "name": "operator<=",
+        "signatures": [
+          "bool(*void, *void)"
         ]
       },
       {
@@ -308,121 +446,25 @@
         "symbols": []
       },
       {
-        "kind": "struct",
-        "name": "int",
-        "symbols": [
-          {
-            "kind": "overload",
-            "name": "operator--",
-            "signatures": [
-              "int(int)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator++",
-            "signatures": [
-              "int(int)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator+",
-            "signatures": [
-              "int(int, int)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator==",
-            "signatures": [
-              "int(int, int)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator-",
-            "signatures": [
-              "int(int, int)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator|",
-            "signatures": [
-              "int(int, int)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator*",
-            "signatures": [
-              "int(int, int)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator/",
-            "signatures": [
-              "int(int, int)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator%",
-            "signatures": [
-              "int(int, int)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator>=",
-            "signatures": [
-              "bool(int, int)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator~",
-            "signatures": [
-              "int(int)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator!=",
-            "signatures": [
-              "int(int, int)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator<",
-            "signatures": [
-              "bool(int, int)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator<=",
-            "signatures": [
-              "bool(int, int)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator>",
-            "signatures": [
-              "bool(int, int)"
-            ]
-          },
-          {
-            "kind": "overload",
-            "name": "operator&",
-            "signatures": [
-              "int(int, int)"
-            ]
-          }
+        "kind": "overload",
+        "name": "operator>=",
+        "signatures": [
+          "bool(*void, *void)"
+        ]
+      },
+      {
+        "kind": "overload",
+        "name": "operator!=",
+        "signatures": [
+          "bool(*void, *void)"
+        ]
+      },
+      {
+        "kind": "overload",
+        "name": "operator-",
+        "signatures": [
+          "*void(*void, int)",
+          "int(*void, *void)"
         ]
       }
     ]
@@ -513,7 +555,7 @@
             "kind": "overload",
             "name": "create",
             "signatures": [
-              "ArrayList()"
+              "*ArrayList()"
             ]
           },
           {

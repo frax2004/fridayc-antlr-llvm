@@ -88,9 +88,11 @@ options {
   : PRINT expression SEMI                                                                       # PrintStatement
   | RETURN (expression?) SEMI                                                                   # ReturnStatement
   | expression SEMI                                                                             # ExpressionStatement
-  | IF expression statement (ELIF expression statement)*? (ELSE statement)?                     # IfStatement
+  | IF conditions += expression scopes += syntacticalScope (
+      ELIF conditions += expression scopes += syntacticalScope
+    )*? (ELSE elseStatement = statement)?                                                       # IfStatement
   | FOR statement expression SEMI expression statement                                          # ForStatement
-  | WHILE expression statement                                                                  # WhileStatement
+  | WHILE condition = expression scope = syntacticalScope                                       # WhileStatement
   | declarator = (LET | CONST) id = IDENTIFIER (COL type)? ASSIGN initializer = expression SEMI # DeclarationStatement
   | DEFER statement                                                                             # DeferStatement
   | syntacticalScope                                                                            # ScopeStatement

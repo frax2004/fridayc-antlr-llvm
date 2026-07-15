@@ -1,5 +1,6 @@
 #include "TypeCheckerVisitor.hpp"
 #include <OperationNotSupportedError.hpp>
+#include <PointerType.hpp>
 
 namespace friday::inline api::inline pipeline {
 
@@ -36,6 +37,10 @@ namespace friday::inline api::inline pipeline {
 
   auto TypeCheckerVisitor::VOID() -> Pointer<Type> {
     return rtti::cast<Type>(this->comp_context().get_global()->find_struct("void").lock().get());
+  }
+
+  auto TypeCheckerVisitor::VOIDPTR() -> Pointer<Type> {
+    return PointerType::get(*this->VOID(), 1);
   }
 
   auto TypeCheckerVisitor::FLOAT() -> Pointer<Type> {

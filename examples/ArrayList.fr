@@ -6,7 +6,7 @@ public fn main() -> void {
   let a: ArrayList = get();
   defer a.destroy();
 
-  const g: *byte = null;
+  const g: *byte = null as *byte;
   const x: int = 0;
   const y: float = 0.0;
 
@@ -49,11 +49,11 @@ public struct ArrayList {
   private capacity: int;
 
   public fn get(this: *ArrayList, index: int) -> *void => *((this.data as *void + index) as **void);
-  public fn set(this: *ArrayList, index: int, element: *void) -> void => *((this.data as *void + index) as **void) = element;
+  public fn set(this: *ArrayList, index: int, element: *void) -> void { *((this.data as *void + index) as **void) = element; }
   public fn size(this: *ArrayList) -> int => this.count;
   public fn max_size(this: *ArrayList) -> int => this.capacity;
-  public fn pop(this: *ArrayList) -> void => this.count -= 1;
-  public fn create() -> ArrayList => new ArrayList{data: null, count: 0, capacity: 0};
+  public fn pop(this: *ArrayList) -> void { this.count -= 1; }
+  public fn create() -> ArrayList => new ArrayList{data: null as **void, count: 0, capacity: 0};
 
   public fn push(this: *ArrayList, obj: *void) -> void {
     if this.count >= this.capacity {

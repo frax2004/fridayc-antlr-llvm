@@ -251,7 +251,53 @@ namespace friday::inline api::inline pipeline {
     Console::debug("TypeCheckerVisitor::visitExplicitCastExpression({})"_f.format(ctx->getText()));
     this->visitChildren(ctx);
 
-    
+    Pointer<Type> lhsType = ctx->expr->value.get_type();
+    Pointer<Type> rhsType = ctx->type()->typeId;
+    Pointer<Type> valueType = lhsType;
+    Pointer<Type> targetType = rhsType;
+
+    if(PointerType::is_pointer(valueType)) {
+      valueType = this->VOIDPTR();
+    }
+
+    if(PointerType::is_pointer(valueType)) {
+      targetType = this->VOIDPTR();
+    }
+
+    auto to_type_index = [this](Pointer<Type> type) -> i32 {
+      if(type == this->VOIDPTR()) return 0;
+      else if(type == this->INT()) return 1;
+      else if(type == this->FLOAT()) return 2;
+      else if(type == this->BYTE()) return 3;
+      else if(type == this->BOOL()) return 4;
+      else return -1;
+    };
+
+    using __entry_type = bool;
+    using __coercion_table = __entry_type[5][5];
+
+    static constexpr __coercion_table coercion_table = {
+                  /* *any   int    float  byte   bool */
+      /* *any  */   {true,  false, false, false, false},
+      /* int   */   {false, true , true , true , false},
+      /* float */   {false, true , true , false, false},
+      /* byte  */   {false, true , false, true , false},
+      /* bool  */   {false, false, false, false, true },
+    };
+
+    i32 lhs = to_type_index(valueType);
+    i32 rhs = to_type_index(targetType);
+
+    if((lhs < 0 or rhs < 0) or not coercion_table[lhs][rhs]) {
+      this->error_at(
+        ctx,
+        ctx->AS()->getSymbol(),
+        "Invalid explicit conversion: cannot convert an expression of type '{}' into an expression of type '{}'"_f.format(
+          lhsType->get_name(),
+          rhsType->get_name()
+        )
+      );
+    } else ctx->value = Value::from_value(rhsType, nullptr);
 
     return {};
   }
