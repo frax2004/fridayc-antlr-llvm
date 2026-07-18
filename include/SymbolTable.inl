@@ -7,20 +7,20 @@
 namespace friday::inline api::inline typesystem {
 
   template<derived_from<ISymbol>... Ts>
-  auto SymbolTable<Ts...>::retrieve(string_view id) -> weak<ISymbol> {
+  auto SymbolTable<Ts...>::retrieve(string_view id) const -> weak<ISymbol> {
     auto it = this->M_symbols.find(id);
     return it != this->M_symbols.end() ? weak<ISymbol>{ it->second } : weak<ISymbol>{};
   }
 
   template<derived_from<ISymbol>... Ts>
-  auto SymbolTable<Ts...>::retrieve_if(string_view id, Predicate<Pointer<ISymbol>> predicate) -> weak<ISymbol> {
+  auto SymbolTable<Ts...>::retrieve_if(string_view id, Predicate<Pointer<ISymbol>> predicate) const -> weak<ISymbol> {
     auto it = this->M_symbols.find(id);
     return it != this->M_symbols.end() and predicate(it->second.get()) ? 
       weak<ISymbol>{ it->second } : weak<ISymbol>{};
   }
 
   template<derived_from<ISymbol>... Ts>
-  auto SymbolTable<Ts...>::is_defined(string_view id, Predicate<Pointer<ISymbol>> predicate) -> bool {
+  auto SymbolTable<Ts...>::is_defined(string_view id, Predicate<Pointer<ISymbol>> predicate) const -> bool {
     auto it = this->M_symbols.find(id);
     return it != this->M_symbols.end() 
     and SymbolTable::assert_valid_type<Ts...>(it->second) 
@@ -28,7 +28,7 @@ namespace friday::inline api::inline typesystem {
   }
 
   template<derived_from<ISymbol>... Ts>
-  auto SymbolTable<Ts...>::most_similar(string_view name, Predicate<Pointer<ISymbol>> filter, u64 maxEditDistance) noexcept -> weak<ISymbol> {
+  auto SymbolTable<Ts...>::most_similar(string_view name, Predicate<Pointer<ISymbol>> filter, u64 maxEditDistance) const noexcept -> weak<ISymbol> {
     (void)name;
     (void)filter;
     (void)maxEditDistance;

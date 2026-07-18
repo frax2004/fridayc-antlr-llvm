@@ -9,12 +9,12 @@ namespace friday::inline api::inline typesystem {
     this->M_name = name;
   }
 
-  auto Struct::find_field(string_view name) noexcept -> weak<Variable> {
+  auto Struct::find_field(string_view name) const noexcept -> weak<Variable> {
     weak<ISymbol> candidate = this->retrieve_if(name, &Variable::is_variable);
     return not candidate.expired() ? weak<Variable>{ dynamic_pointer_cast<Variable>(candidate.lock()) } : weak<Variable>{};
   }
 
-  auto Struct::find_method(string_view name) noexcept -> weak<Overload> {
+  auto Struct::find_method(string_view name) const noexcept -> weak<Overload> {
     weak<ISymbol> candidate = this->retrieve_if(name, &Overload::is_overload);
     return not candidate.expired() ? weak<Overload>{ dynamic_pointer_cast<Overload>(candidate.lock()) } : weak<Overload>{};
   }
@@ -27,7 +27,7 @@ namespace friday::inline api::inline typesystem {
     constexpr auto is_variable = [](Pointer<ISymbol> symbol) {
       return dynamic_cast<Pointer<Variable>>(symbol) != nullptr;
     };
-    
+
     constexpr auto to_variable = [](Pointer<ISymbol> symbol) {
       return dynamic_cast<Pointer<Variable>>(symbol);
     };
@@ -53,15 +53,17 @@ namespace friday::inline api::inline typesystem {
     return this->M_name;
   }
 
-  auto Struct::get_full_qualified_id() const -> string {
-    throw NotImplementedError{"Struct::get_full_qualified_id()"};
+  auto Struct::get_mangled_name_builder() const -> MangledNameBuilder {
+    auto parent = this->get_declaring_symbol_table();
+    Pointer<ISymbol> symbol = rtti::cast<ISymbol>(parent);
+
+    auto builder = symbol->get_mangled_name_builder();
+    builder.dot(this->get_qualified_id());
+
+    return builder;
   }
 
-  auto Struct::get_mangled_id() const -> string {
-    throw NotImplementedError{"Struct::get_mangled_id()"};
-  }
-
-  auto Struct::get_declaring_symbol_table() -> Pointer<ISymbolTable> {
+  auto Struct::get_declaring_symbol_table() const -> Pointer<ISymbolTable> {
     return rtti::cast<ISymbolTable>(this->M_declaryingNamespace);
   }
 
@@ -69,7 +71,7 @@ namespace friday::inline api::inline typesystem {
     throw NotImplementedError{"Struct::get_attributes()"};
   }
 
-  auto Struct::get_parent() -> Pointer<ISymbolTable> {
+  auto Struct::get_parent() const -> Pointer<ISymbolTable> {
     return rtti::cast<ISymbolTable>(this->M_declaryingNamespace);
   }
 

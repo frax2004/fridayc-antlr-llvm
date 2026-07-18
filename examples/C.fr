@@ -1,4 +1,4 @@
-namespace libc;
+namespace C;
 
 public native fn malloc(bytes: int) -> *void;
 public native fn realloc(ptr: *void, bytes: int) -> *void;

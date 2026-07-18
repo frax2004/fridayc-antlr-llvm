@@ -10,4 +10,12 @@ namespace friday::inline api::inline typesystem {
     | views::join_with("."s)
     | ranges::to<string>();
   }
+
+  auto ISymbol::get_full_qualified_id() const -> string {
+    return ISymbol::get_demangled_id(this->get_mangled_id());
+  }
+  
+  auto ISymbol::get_mangled_id() const -> string {
+    return this->get_mangled_name_builder().build();
+  }
 }

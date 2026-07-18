@@ -19,16 +19,15 @@ namespace friday::inline api::inline typesystem {
     Struct(Namespace& parent, string name) noexcept;
     ~Struct() override = default;
 
-    auto find_field(string_view name) noexcept -> weak<Variable>;
-    auto find_method(string_view name) noexcept -> weak<Overload>;
+    auto find_field(string_view name) const noexcept -> weak<Variable>;
+    auto find_method(string_view name) const noexcept -> weak<Overload>;
     auto get_name() const noexcept -> string_view override;
     auto to_llvm_type(llvm::LLVMContext& ctx) const noexcept -> Pointer<llvm::Type> override;
     auto get_qualified_id() const -> string override;
-    auto get_full_qualified_id() const -> string override;
-    auto get_mangled_id() const -> string override;
     auto get_attributes() const -> Attributes override;
-    auto get_parent() -> Pointer<ISymbolTable> override;
-    auto get_declaring_symbol_table() -> Pointer<ISymbolTable> override;
+    auto get_parent() const -> Pointer<ISymbolTable> override;
+    auto get_declaring_symbol_table() const -> Pointer<ISymbolTable> override;
+    auto get_mangled_name_builder() const -> MangledNameBuilder override;
 
     static auto is_struct(Pointer<ISymbol> symbol) -> bool;
     static auto to_struct(Pointer<ISymbol> symbol) -> Pointer<Struct>;
@@ -39,7 +38,7 @@ namespace friday::inline api::inline typesystem {
 template<>
 struct FRIDAY_API json::stringify<friday::Struct> {
   auto operator()(friday::Struct const& self) -> string {
-    auto name = self.get_qualified_id();
+    auto name = self.get_mangled_id();
     auto symbols = self.get_symbols();
 
     // TODO grammar must implement global variables

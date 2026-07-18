@@ -25,11 +25,10 @@ namespace friday::inline api::inline typesystem {
     auto find_variable(string_view id) -> weak<Variable>;
 
     auto get_qualified_id() const -> string override;
-    auto get_full_qualified_id() const -> string override;
-    auto get_mangled_id() const -> string override;
-    auto get_declaring_symbol_table() -> Pointer<ISymbolTable> override;
-    auto get_parent() -> Pointer<ISymbolTable> override;
+    auto get_declaring_symbol_table() const -> Pointer<ISymbolTable> override;
+    auto get_parent() const -> Pointer<ISymbolTable> override;
     auto get_attributes() const -> Attributes override;
+    auto get_mangled_name_builder() const -> MangledNameBuilder override;
 
     static auto to_namespace(Pointer<ISymbol> symbol) -> Pointer<Namespace>;
     static auto is_namespace(Pointer<ISymbol> symbol) -> bool;
@@ -40,7 +39,7 @@ namespace friday::inline api::inline typesystem {
 template<>
 struct FRIDAY_API json::stringify<friday::Namespace> {
   auto operator()(friday::Namespace const& self) -> string {
-    auto name = self.get_qualified_id();
+    auto name = self.get_mangled_id();
     auto symbols = self.get_symbols();
 
     // TODO grammar must implement global variables

@@ -1,6 +1,7 @@
 #include <Variable.hpp>
 #include <Type.hpp>
 #include <NotImplementedError.hpp>
+#include <SymbolTable.hpp>
 
 namespace friday::inline api::inline typesystem {
   Variable::Variable(ISymbolTable& declaringScope, string name, Type& type) noexcept {
@@ -12,16 +13,18 @@ namespace friday::inline api::inline typesystem {
   auto Variable::get_qualified_id() const -> string {
     return this->M_name;
   }
+  
+  auto Variable::get_mangled_name_builder() const -> MangledNameBuilder {
+    auto parent = this->get_declaring_symbol_table();
+    Pointer<ISymbol> symbol = rtti::cast<ISymbol>(parent);
 
-  auto Variable::get_full_qualified_id() const -> string {
-    throw NotImplementedError{"Variable::get_full_qualified_id()"};
+    auto builder = symbol->get_mangled_name_builder();
+    builder.dot(this->get_qualified_id());
+
+    return builder;
   }
 
-  auto Variable::get_mangled_id() const -> string {
-    throw NotImplementedError{"Variable::get_mangled_id()"};
-  }
-
-  auto Variable::get_declaring_symbol_table() -> Pointer<ISymbolTable> {
+  auto Variable::get_declaring_symbol_table() const -> Pointer<ISymbolTable> {
     return this->M_declaringScope;
   }
 

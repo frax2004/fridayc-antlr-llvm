@@ -17,6 +17,7 @@ auto Main(vector<string> paths) -> void {
   .and_then<OverloadSolverVisitor>()
   .peek(&CompilationContext::print)
   .and_then<TypeCheckerVisitor>()
+  .and_then<LLVMObjectEmitterVisitor>()
   ;
 
 }

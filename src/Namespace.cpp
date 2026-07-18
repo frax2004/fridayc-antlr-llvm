@@ -30,15 +30,12 @@ namespace friday::inline api::inline typesystem {
     return this->M_name;
   }
 
-  auto Namespace::get_full_qualified_id() const -> string {
-    throw NotImplementedError{"Namespace::getFullQualifiedId()"};
+  auto Namespace::get_mangled_name_builder() const -> MangledNameBuilder {
+    return MangledNameBuilder { this->get_qualified_id() };
   }
 
-  auto Namespace::get_mangled_id() const -> string {
-    throw NotImplementedError{"Namespace::get_mangled_id()"};
-  }
 
-  auto Namespace::get_declaring_symbol_table() -> Pointer<ISymbolTable> {
+  auto Namespace::get_declaring_symbol_table() const -> Pointer<ISymbolTable> {
     return this->M_parentNamespace;
   }
 
@@ -46,7 +43,7 @@ namespace friday::inline api::inline typesystem {
     throw NotImplementedError{"Namespace::get_attributes()"};
   }
 
-  auto Namespace::get_parent() -> Pointer<ISymbolTable> {
+  auto Namespace::get_parent() const -> Pointer<ISymbolTable> {
     return rtti::cast<ISymbolTable>(this->M_parentNamespace);
   }
   

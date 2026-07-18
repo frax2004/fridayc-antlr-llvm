@@ -33,7 +33,7 @@ namespace friday::inline api::inline pipeline {
 
     if(not ok) return {};
 
-    ctx->value = Value::from_value(ArrayType::get(*type, ctx->values.size()), nullptr);
+    ctx->value = Value::from_value(ArrayType::get(*this->comp_context().get_global(), *type), nullptr);
 
     return {};
   }

@@ -20,6 +20,7 @@ namespace friday::inline api::inline pipeline {
     ant::CommonTokenStream               tokens;
     FridayParser                         parser;
     Pointer<ant::tree::ParseTree>        ast { nullptr };
+    rc<llvm::Module>                     module { };
 
     public:
     TranslationUnit(CompilationContext& ctx, string path);
@@ -33,6 +34,7 @@ namespace friday::inline api::inline pipeline {
     auto get_owned_namespace() const -> weak<Namespace>;
     auto set_owned_namespace(rc<Namespace> nsp) -> void;
     auto comp_context() -> CompilationContext&;
+    auto get_llvm_module() const -> weak<llvm::Module>;
 
     auto look_up(
       string_view name, 

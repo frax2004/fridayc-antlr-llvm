@@ -40,19 +40,17 @@ namespace friday::inline api::inline typesystem {
   auto Overload::get_qualified_id() const -> string {
     return this->M_name;
   }
+  
+  auto Overload::get_mangled_name_builder() const -> MangledNameBuilder {
+    auto parent = this->get_declaring_symbol_table();
+    Pointer<ISymbol> symbol = rtti::cast<ISymbol>(parent);
 
-  auto Overload::get_full_qualified_id() const -> string {
-    return "{}.{}"_f.format(
-      rtti::cast<ISymbol>(this->M_declaringSymbolTable)->get_full_qualified_id(), 
-      this->M_name
-    );
+    auto builder = symbol->get_mangled_name_builder();
+    builder.dot(this->get_qualified_id());
+    return builder;
   }
 
-  auto Overload::get_mangled_id() const -> string {
-    throw OperationNotSupportedError{"Overload::get_mangled_id()"};
-  }
-
-  auto Overload::get_declaring_symbol_table() -> Pointer<ISymbolTable> {
+  auto Overload::get_declaring_symbol_table() const -> Pointer<ISymbolTable> {
     return this->M_declaringSymbolTable;
   }
 
@@ -70,11 +68,6 @@ namespace friday::inline api::inline typesystem {
 
   auto Overload::to_overload(Pointer<ISymbol> symbol) -> Pointer<Overload> {
     return rtti::cast<Overload>(symbol);
-  }
-
-  auto Overload::get_name() const noexcept -> string_view {
-    static constexpr string_view S_name = "<unresolved-overload-type>"sv;
-    return S_name;
   }
 
 }

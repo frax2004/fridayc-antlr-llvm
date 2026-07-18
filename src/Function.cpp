@@ -57,10 +57,41 @@ namespace friday::inline api::inline typesystem {
 
   }
 
+  auto Function::get_mangled_name_builder() const -> MangledNameBuilder {
+    auto parent = this->M_owner->get_declaring_symbol_table();
+    Pointer<ISymbol> symbol = rtti::cast<ISymbol>(parent);
+
+    auto builder = symbol->get_mangled_name_builder();
+    builder.dot(this->M_owner->get_qualified_id());
+
+    auto first = this->M_signature->param_begin();
+    auto last = this->M_signature->param_end();
+
+    for(auto T : ranges::subrange(first, last)) {
+      builder.param(T);
+    }
+
+    return builder;
+  }
+
   auto Function::is_static_method() const -> bool {
     return rtti::instance_of<Struct>(this->M_owner->get_declaring_symbol_table()) 
     and not this->is_nonstatic_method();
   }
+
+  auto Function::get_qualified_id() const -> string {
+    return this->M_owner->get_qualified_id();
+  }
+
+  auto Function::get_declaring_symbol_table() const -> Pointer<ISymbolTable> {
+    return this->M_owner->get_declaring_symbol_table();
+  }
+
+
+  auto Function::get_attributes() const -> Attributes {
+    return this->M_owner->get_attributes();
+  }
+
 
   
 }

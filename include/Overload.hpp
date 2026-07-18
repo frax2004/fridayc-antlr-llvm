@@ -49,12 +49,10 @@ namespace friday::inline api::inline typesystem {
     auto has_match(vector<Pointer<Type>> const& argsTypes) const -> bool;
 
     auto get_qualified_id() const -> string override;
-    auto get_full_qualified_id() const -> string override;
-    auto get_mangled_id() const -> string override;
-    auto get_declaring_symbol_table() -> Pointer<ISymbolTable> override;
+    auto get_mangled_name_builder() const -> MangledNameBuilder override;
+    auto get_declaring_symbol_table() const -> Pointer<ISymbolTable> override;
     auto get_attributes() const -> Attributes override;
     auto get_type() const -> Pointer<Type> override;
-    auto get_name() const noexcept -> string_view;
 
     static auto is_overload(Pointer<ISymbol> symbol) -> bool;
     static auto to_overload(Pointer<ISymbol> symbol) -> Pointer<Overload>;
@@ -66,7 +64,7 @@ template<>
 struct FRIDAY_API json::stringify<friday::Overload> {
   auto operator()(friday::Overload const& self) -> string {
     return format("{{\"kind\": \"overload\", \"name\": \"{}\", \"signatures\": [{}]}}", 
-      self.get_qualified_id(),
+      self.get_mangled_id(),
       self.get_functions()
       | views::filter([](weak<friday::Function> ref) { return not ref.expired(); })
       | views::transform([](weak<friday::Function> ref) { return ref.lock().get(); })

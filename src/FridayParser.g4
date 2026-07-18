@@ -175,7 +175,7 @@ expression returns [Value value = Value::error_value()]
 type returns [Pointer<Type> typeId = ErrorType::get()]
 : IDENTIFIER                                                                                            # SimpleType
 | STAR+ pointedType = type                                                                              # PointerType
-| (LEFT_SQUARE RIGHT_SQUARE)+ elementType = type                                                        # ArrayType
+| (LEFT_SQUARE RIGHT_SQUARE) elementType = type                                                         # ArrayType
 | FN LEFT_PAREN (paramsTypes += type (COMMA paramsTypes += type)*)? RIGHT_PAREN ARROW returnType = type # FunctionType
 ;
 

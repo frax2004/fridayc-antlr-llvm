@@ -18,9 +18,8 @@ namespace friday::inline api::inline typesystem {
 
     
     auto get_qualified_id() const -> string override;
-    auto get_full_qualified_id() const -> string override;
-    auto get_mangled_id() const -> string override;
-    auto get_declaring_symbol_table() -> Pointer<ISymbolTable> override;
+    auto get_mangled_name_builder() const -> MangledNameBuilder override;
+    auto get_declaring_symbol_table() const -> Pointer<ISymbolTable> override;
 
     auto get_attributes() const -> Attributes override;
     auto get_type() const -> Pointer<Type> override;
@@ -35,7 +34,7 @@ struct FRIDAY_API json::stringify<friday::Variable> {
   auto operator()(friday::Variable const& self) -> string {
     return format(
       "{{\"kind\": \"variable\", \"name\": \"{}\", \"type\": \"{}\"}}",
-      self.get_qualified_id(),
+      self.get_mangled_id(),
       self.get_type()->get_name()
     );
   }

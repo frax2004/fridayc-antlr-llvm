@@ -2,6 +2,7 @@
 #include <OperationNotSupportedError.hpp>
 #include <ErrorType.hpp>
 #include <Scope.hpp>
+#include <PointerType.hpp>
 
 
 namespace friday::inline api::inline pipeline {
@@ -205,6 +206,20 @@ namespace friday::inline api::inline pipeline {
   auto TypeCheckerVisitor::visitPrintStatement(FridayParser::PrintStatementContext *ctx) -> any {
     Console::debug("PrintStatementContext: {}"_f.format(ctx->getText()));
     this->visitChildren(ctx);
+
+    auto actual = ctx->expression()->value.get_type();
+    auto expected = PointerType::get(*this->BYTE(), 1);
+
+    if(expected != actual) {
+      this->error_at(
+        ctx,
+        ctx->expression()->getStart(),
+        "Expression must be of type '{}' bug got an expression of type '{}'"_f.format(
+          expected->get_name(),
+          actual->get_name()
+        )
+      );
+    }
 
     return {};
   }

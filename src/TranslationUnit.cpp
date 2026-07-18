@@ -14,6 +14,7 @@ namespace friday::inline api::inline pipeline {
     , ast { this->parser.translationUnit() }
   {
     this->ownedNamespace = this->comp_context().get_global();
+    this->module = make_shared<llvm::Module>(path, globalContext->get_llvm_context());
   }
 
   auto TranslationUnit::parse(CompilationContext& ctx, string path) -> rc<TranslationUnit> {
@@ -106,6 +107,10 @@ namespace friday::inline api::inline pipeline {
 
   auto TranslationUnit::owns_namespace() -> bool {
     return not this->ownedNamespace.expired() and this->ownedNamespace.lock() != this->comp_context().get_global();
+  }
+
+  auto TranslationUnit::get_llvm_module() const -> weak<llvm::Module> {
+    return this->module;
   }
 
 }

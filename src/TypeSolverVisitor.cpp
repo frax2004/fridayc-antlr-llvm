@@ -188,20 +188,18 @@ namespace friday::inline api::inline pipeline {
   auto TypeSolverVisitor::visitArrayType(FridayParser::ArrayTypeContext *ctx) -> any {
 
     Pointer<Type> type = this->to_type(ctx->elementType);
-    u64 length = ctx->LEFT_SQUARE().size();
 
     if(type == ErrorType::get()) {
       this->error_at(
         ctx,
         ctx->elementType->getStart(), 
-        "Cannot form {}-th dimensional array type '{}' from non-existent element-type '{}'"_f.format(
-          length,
+        "Cannot form array type '{}' from non-existent element-type '{}'"_f.format(
           ctx->getText(),
           ctx->elementType->getText()
         )
       );
     } else {
-      type = ArrayType::get(*type, length);
+      type = ArrayType::get(*this->comp_context().get_global(), *type);
       ctx->typeId = type;
     }
 

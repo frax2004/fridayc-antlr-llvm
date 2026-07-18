@@ -10,7 +10,7 @@ namespace friday::inline api::inline typesystem {
     return not candidate.expired() ? weak<Variable>{ dynamic_pointer_cast<Variable>(candidate.lock()) } : weak<Variable>{};
   }
 
-  auto Scope::get_parent() -> Pointer<ISymbolTable> {
+  auto Scope::get_parent() const -> Pointer<ISymbolTable> {
     return this->M_parent;
   }
 

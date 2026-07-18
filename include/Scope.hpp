@@ -13,6 +13,6 @@ namespace friday::inline api::inline typesystem {
     ~Scope() override = default;
 
     auto find_variable(string_view id) -> weak<Variable>;
-    auto get_parent() -> Pointer<ISymbolTable> override;
+    auto get_parent() const -> Pointer<ISymbolTable> override;
   };
 }
