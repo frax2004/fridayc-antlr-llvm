@@ -14,7 +14,7 @@ namespace friday::inline api::inline pipeline {
   auto LLVMObjectEmitterVisitor::on_unit_end(TranslationUnit& unit) -> void {
     auto path = filesystem::path{ unit.get_path() }
     .replace_extension("ll");
-    
+
     ofstream ostream { path };
     llvm::raw_os_ostream stream{ ostream };
 

@@ -3,7 +3,6 @@
 
 using namespace friday;
 
-
 auto Main(vector<string> paths) -> void {
 
   Console::set_debug_enabled(false);
