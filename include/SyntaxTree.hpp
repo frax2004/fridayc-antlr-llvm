@@ -8,195 +8,239 @@
 
 namespace friday::inline api::inline pipeline {
 
-  template<derived_from<ant::tree::ParseTree> C>
-  struct SyntaxTree {
-    using context_type = C;
-
-    private:
-    Pointer<context_type> M_context { nullptr };
-
-    public:
-    SyntaxTree(context_type& ctx);
-    constexpr SyntaxTree(SyntaxTree const&) = default;
-    constexpr SyntaxTree(SyntaxTree &&) = default;
-    constexpr auto operator=(SyntaxTree const&) -> SyntaxTree& = default;
-    constexpr auto operator=(SyntaxTree &&) -> SyntaxTree& = default;
-    constexpr virtual ~SyntaxTree() noexcept = default;
-
-    public:
-    virtual auto context() const -> context_type& final;
-    virtual auto accept(ant::tree::ParseTreeVisitor& visitor) -> void final;
-  };
-
-  struct TranslationUnitTree : SyntaxTree<FridayParser::TranslationUnitContext> {
+  struct TranslationUnitTree {
 
   };
 
-  struct TopLevelStatementTree : SyntaxTree<FridayParser::TopLevelStatementContext> {
+  struct TopLevelStatementTree {
 
   };
 
-  struct NamespaceStatementTree : SyntaxTree<FridayParser::NamespaceStatementContext> {
+  struct NamespaceStatementTree {
     rc<Namespace> namespace_ { };
   };
 
-  struct UsingStatementTree : SyntaxTree<FridayParser::UsingStatementContext> {
+  struct UsingStatementTree {
     rc<Namespace> namespace_ { };
   };
 
-  struct FreeFunctionStatementTree : SyntaxTree<FridayParser::FreeFunctionStatementContext> {
+  struct FreeFunctionStatementTree {
     rc<Scope>    scope    { };
     rc<Function> function { };
     rc<Overload> overload { };
   };
 
-  struct NativeFunctionStatementTree : SyntaxTree<FridayParser::NativeFunctionStatementContext> {
+  struct NativeFunctionStatementTree {
     rc<Function> function { };
     rc<Overload> overload { };
   };
 
-  struct StructStatementTree : SyntaxTree<FridayParser::StructStatementContext> {
+  struct StructStatementTree {
     rc<Struct> struct_ { };
   };
 
-  struct PrintStatementTree : SyntaxTree<FridayParser::PrintStatementContext> {
+  struct PrintStatementTree {
 
   };
 
-  struct ReturnStatementTree : SyntaxTree<FridayParser::ReturnStatementContext> {
+  struct ReturnStatementTree {
     
   };
 
-  struct ExpressionStatementTree : SyntaxTree<FridayParser::ExpressionStatementContext> {
+  struct ExpressionStatementTree {
 
   };
 
-  struct IfStatementTree : SyntaxTree<FridayParser::IfStatementContext> {
+  struct IfStatementTree {
 
   };
 
-  struct ForStatementTree : SyntaxTree<FridayParser::ForStatementContext> {
+  struct ForStatementTree {
 
   };
 
-  struct WhileStatementTree : SyntaxTree<FridayParser::WhileStatementContext> {
+  struct WhileStatementTree {
 
   };
 
-  struct DeclarationStatementTree : SyntaxTree<FridayParser::DeclarationStatementContext> {
+  struct DeclarationStatementTree {
 
   };
 
-  struct DeferStatementTree : SyntaxTree<FridayParser::DeferStatementContext> {
+  struct DeferStatementTree {
 
   };
 
-  struct ScopeStatementTree : SyntaxTree<FridayParser::ScopeStatementContext> {
+  struct ScopeStatementTree {
 
   };
 
-  struct SyntacticalScopeTree : SyntaxTree<FridayParser::SyntacticalScopeContext> {
+  struct SyntacticalScopeTree {
 
   };
 
-  struct BasicBlockTree : SyntaxTree<FridayParser::BasicBlockContext> {
+  struct BasicBlockTree {
 
   };
 
-  struct TrailingBlockTree : SyntaxTree<FridayParser::TrailingBlockContext> {
+  struct TrailingBlockTree {
 
   };
 
-  struct MemberAccessExpressionTree : SyntaxTree<FridayParser::MemberAccessExpressionContext> {
+  struct MemberAccessExpressionTree {
 
   };
 
-  struct UnaryPostfixExpressionTree : SyntaxTree<FridayParser::UnaryPostfixExpressionContext> {
+  struct UnaryPostfixExpressionTree {
 
   };
 
-  struct FloatLiteralExpressionTree : SyntaxTree<FridayParser::FloatLiteralExpressionContext> {
+  struct FloatLiteralExpressionTree {
 
   };
 
-  struct NewExpressionTree : SyntaxTree<FridayParser::NewExpressionContext> {
+  struct NewExpressionTree {
 
   };
 
-  struct ArrayLiteralExpressionTree : SyntaxTree<FridayParser::ArrayLiteralExpressionContext> {
+  struct ArrayLiteralExpressionTree {
 
   };
 
-  struct ExplicitCastExpressionTree : SyntaxTree<FridayParser::ExplicitCastExpressionContext> {
+  struct ExplicitCastExpressionTree {
 
   };
 
-  struct IntLiteralExpressionTree : SyntaxTree<FridayParser::IntLiteralExpressionContext> {
+  struct IntLiteralExpressionTree {
 
   };
 
-  struct IdentifierExpressionTree : SyntaxTree<FridayParser::IdentifierExpressionContext> {
+  struct IdentifierExpressionTree {
 
   };
 
-  struct StringLiteralExpressionTree : SyntaxTree<FridayParser::StringLiteralExpressionContext> {
+  struct StringLiteralExpressionTree {
 
   };
 
-  struct BinaryExpressionTree : SyntaxTree<FridayParser::BinaryExpressionContext> {
+  struct BinaryExpressionTree {
 
   };
 
-  struct AssignmentExpressionTree : SyntaxTree<FridayParser::AssignmentExpressionContext> {
+  struct AssignmentExpressionTree {
 
   };
 
-  struct GroupingExpressionTree : SyntaxTree<FridayParser::GroupingExpressionContext> {
+  struct GroupingExpressionTree {
 
   };
 
-  struct UnaryPrefixExpressionTree : SyntaxTree<FridayParser::UnaryPrefixExpressionContext> {
+  struct UnaryPrefixExpressionTree {
 
   };
 
-  struct SubscriptExpressionTree : SyntaxTree<FridayParser::SubscriptExpressionContext> {
+  struct SubscriptExpressionTree {
 
   };
 
-  struct BoolLiteralExpressionTree : SyntaxTree<FridayParser::BoolLiteralExpressionContext> {
+  struct BoolLiteralExpressionTree {
 
   };
 
-  struct CharLiteralExpressionTree : SyntaxTree<FridayParser::CharLiteralExpressionContext> {
+  struct CharLiteralExpressionTree {
 
   };
 
-  struct CallExpressionTree : SyntaxTree<FridayParser::CallExpressionContext> {
+  struct CallExpressionTree {
 
   };
 
-  struct NullLiteralExpressionTree : SyntaxTree<FridayParser::NullLiteralExpressionContext> {
+  struct NullLiteralExpressionTree {
 
   };
 
-  struct CompTimeUnaryPrefixExpressionTree : SyntaxTree<FridayParser::CompTimeUnaryPrefixExpressionContext> {
+  struct CompTimeUnaryPrefixExpressionTree {
 
   };
 
-  struct SimpleTypeTree : SyntaxTree<FridayParser::SimpleTypeContext> {
+  struct SimpleTypeTree {
 
   };
 
-  struct PointerTypeTree : SyntaxTree<FridayParser::PointerTypeContext> {
+  struct PointerTypeTree {
 
   };
 
-  struct ArrayTypeTree : SyntaxTree<FridayParser::ArrayTypeContext> {
+  struct ArrayTypeTree {
 
   };
 
-  struct FunctionTypeTree : SyntaxTree<FridayParser::FunctionTypeContext> {
+  struct FunctionTypeTree {
 
+  };
+
+  using AttributeSetType = variant<
+    TranslationUnitTree,
+    TopLevelStatementTree,
+    NamespaceStatementTree,
+    UsingStatementTree,
+    FreeFunctionStatementTree,
+    NativeFunctionStatementTree,
+    StructStatementTree,
+    PrintStatementTree,
+    ReturnStatementTree,
+    ExpressionStatementTree,
+    IfStatementTree,
+    ForStatementTree,
+    WhileStatementTree,
+    DeclarationStatementTree,
+    DeferStatementTree,
+    ScopeStatementTree,
+    SyntacticalScopeTree,
+    BasicBlockTree,
+    TrailingBlockTree,
+    MemberAccessExpressionTree,
+    UnaryPostfixExpressionTree,
+    FloatLiteralExpressionTree,
+    NewExpressionTree,
+    ArrayLiteralExpressionTree,
+    ExplicitCastExpressionTree,
+    IntLiteralExpressionTree,
+    IdentifierExpressionTree,
+    StringLiteralExpressionTree,
+    BinaryExpressionTree,
+    AssignmentExpressionTree,
+    GroupingExpressionTree,
+    UnaryPrefixExpressionTree,
+    SubscriptExpressionTree,
+    BoolLiteralExpressionTree,
+    CharLiteralExpressionTree,
+    CallExpressionTree,
+    NullLiteralExpressionTree,
+    CompTimeUnaryPrefixExpressionTree,
+    SimpleTypeTree,
+    PointerTypeTree,
+    ArrayTypeTree,
+    FunctionTypeTree
+  >;
+
+  struct SyntaxTree : public ant::ParserRuleContext {
+
+    private:
+    AttributeSetType M_attributes;
+
+    private:
+    SyntaxTree(ant::ParserRuleContext *parent, u64 invokingState);
+    virtual ~SyntaxTree() override = default;
+
+    public:
+    template<class Attr>
+    auto assign(Attr&& value) -> void;
+
+    template<class Visitor>
+    auto visit(Visitor&& visitor) -> void;
   };
 
 }
+
+#include <SyntaxTree.inl>
