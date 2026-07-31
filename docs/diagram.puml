@@ -1,0 +1,44 @@
+@startuml
+!include theme.puml
+
+namespace friday {
+
+namespace api {
+
+namespace symbols {
+  class MangledNameBuilder {}
+
+  interface ISymbol {}
+
+  class Struct extends friday.api.symboltables.SymbolTable implements friday.api.typesystem.Type, ISymbol {}
+  class Function implements ISymbol {}
+  class Overload implements ISymbol {}  
+  class Variable implements ISymbol {}
+}
+
+namespace symboltables {
+  interface ISymbolTable {}
+  abstract class SymbolTable<Ts ...> implements ISymbolTable {}
+  class Namespace extends SymbolTable implements friday.api.symbols.ISymbol {}
+  class Scope extends SymbolTable {}
+}
+
+namespace typesystem {
+  interface Type {}
+
+  enum VisibilityModifier {}
+  class ErrorType implements Type {}
+  class UnresolvedOverloadType implements Type {}
+  class TypeType implements Type {}
+  class FunctionType implements Type {}
+  class ArrayType extends friday.api.symbols.Struct {}
+  class PointerType implements Type {}
+  class PrimitiveType extends friday.api.symbols.Struct {}
+  class NamespaceType implements Type {}
+
+}
+}
+}
+
+
+@enduml

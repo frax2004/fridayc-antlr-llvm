@@ -1,0 +1,80 @@
+' blender-flat.puml
+' Blender Flat UI Theme - Custom Color Edition
+
+' Theme Palettes
+!define BLENDER_DARK #1E1E1C
+!define BLENDER_PANEL #2C2C2A
+!define BLENDER_HEADER #3A3A37
+!define BLENDER_BORDER #151515
+
+' Requested Colors
+!define COLOR_GOLD #ffb300
+!define COLOR_ORANGE #f38212
+!define COLOR_RED #ff4e45
+!define COLOR_CYAN #1c95e0
+!define COLOR_LIGHT_GRAY #D3D3D3
+
+' Note Custom Colors
+!define NOTE_TEXT #FFFFFF
+!define NOTE_OUTLINE #1B4332
+!define NOTE_FILL #40916C
+
+' General Settings
+skinparam backgroundColor BLENDER_DARK
+skinparam shadowing false
+skinparam roundCorner 8
+skinparam DefaultFontName "Helvetica Neue", Helvetica, Arial, sans-serif
+skinparam DefaultFontColor BLENDER_TEXT
+skinparam DefaultFontSize 12
+
+' Class Diagram Specifics
+skinparam class {
+  BackgroundColor BLENDER_PANEL
+  BorderColor BLENDER_BORDER
+  BorderThickness 1.5
+  HeaderBackgroundColor BLENDER_HEADER
+  FontColor #f0f0f0
+  FontName "Helvetica Neue", Helvetica, Arial, sans-serif
+  FontSize 13
+  FontStyle bold
+  AttributeFontColor #e2e2e2
+  AttributeFontSize 11
+}
+
+' Stereotype / Circle Icons
+skinparam stereotype {
+  FontColor #969696
+  FontSize 10
+}
+
+skinparam stereotypeCBackgroundColor COLOR_GOLD
+skinparam stereotypeCBorderColor BLENDER_BORDER
+skinparam stereotypeABackgroundColor COLOR_ORANGE
+skinparam stereotypeABorderColor BLENDER_BORDER
+skinparam stereotypeIBackgroundColor COLOR_RED
+skinparam stereotypeIBorderColor BLENDER_BORDER
+skinparam stereotypeEBackgroundColor COLOR_CYAN
+skinparam stereotypeEBorderColor BLENDER_BORDER
+
+' Namespaces (C++ style)
+skinparam namespace {
+  BackgroundColor COLOR_CYAN.25 ' <-- 25% opaque cyan background
+  BorderColor COLOR_CYAN        ' Cyan Outline
+  FontColor COLOR_CYAN          ' Cyan Text
+  BorderThickness 1.5
+}
+
+' Arrows and Relations
+skinparam arrow {
+  Color COLOR_LIGHT_GRAY
+  FontColor COLOR_LIGHT_GRAY
+  FontSize 10
+  Thickness 1.2
+}
+
+' Notes
+skinparam note {
+  BackgroundColor NOTE_FILL
+  BorderColor NOTE_OUTLINE
+  FontColor NOTE_TEXT
+}
