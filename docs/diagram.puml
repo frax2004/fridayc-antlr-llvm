@@ -26,7 +26,7 @@ namespace symboltables {
 namespace typesystem {
   interface Type {}
 
-  enum VisibilityModifier {}
+  enum Visibility {}
   class ErrorType implements Type {}
   class UnresolvedOverloadType implements Type {}
   class TypeType implements Type {}

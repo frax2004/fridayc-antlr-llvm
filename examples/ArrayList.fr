@@ -1,4 +1,3 @@
-
 using collections;
 
 public native fn get() -> ArrayList;

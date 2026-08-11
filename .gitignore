@@ -1,4 +1,4 @@
 /build
-CMakeLists.txt
 /.vscode
-bin/fridayc.exe
+/bin/fridayc.exe
+/lib
