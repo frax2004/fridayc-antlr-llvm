@@ -1,0 +1,14 @@
+[
+{
+  "directory": "C:/Dev/C++/iolib/build",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe  @CMakeFiles/iolib-static.dir/includes_CXX.rsp -g -std=c++23 -o CMakeFiles\\iolib-static.dir\\src\\console.cpp.obj -c C:\\Dev\\C++\\iolib\\src\\console.cpp",
+  "file": "C:/Dev/C++/iolib/src/console.cpp",
+  "output": "CMakeFiles/iolib-static.dir/src/console.cpp.obj"
+},
+{
+  "directory": "C:/Dev/C++/iolib/build",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -Diolib_dynamic_EXPORTS @CMakeFiles/iolib-dynamic.dir/includes_CXX.rsp -g -std=c++23 -o CMakeFiles\\iolib-dynamic.dir\\src\\console.cpp.obj -c C:\\Dev\\C++\\iolib\\src\\console.cpp",
+  "file": "C:/Dev/C++/iolib/src/console.cpp",
+  "output": "CMakeFiles/iolib-dynamic.dir/src/console.cpp.obj"
+}
+]

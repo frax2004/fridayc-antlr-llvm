@@ -1,0 +1,3 @@
+C:\msys64\mingw64\bin\cmake.exe -E rm -f CMakeFiles\graphlib-dynamic.dir/objects.a
+C:\msys64\mingw64\bin\ar.exe qc CMakeFiles\graphlib-dynamic.dir/objects.a @CMakeFiles\graphlib-dynamic.dir\objects1.rsp
+C:\msys64\mingw64\bin\g++.exe -g -shared -o C:\Dev\C++\graphlib\bin\libgraphlib.dll -Wl,--out-implib,C:\Dev\C++\graphlib\lib\libgraphlib.dll.a -Wl,--major-image-version,0,--minor-image-version,0 -Wl,--whole-archive CMakeFiles\graphlib-dynamic.dir/objects.a -Wl,--no-whole-archive @CMakeFiles\graphlib-dynamic.dir\linkLibs.rsp

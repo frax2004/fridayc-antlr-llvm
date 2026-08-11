@@ -1,0 +1,4 @@
+C:/Dev/C++/graphlib/build/CMakeFiles/graphlib-static.dir
+C:/Dev/C++/graphlib/build/CMakeFiles/graphlib-dynamic.dir
+C:/Dev/C++/graphlib/build/CMakeFiles/edit_cache.dir
+C:/Dev/C++/graphlib/build/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,14 @@
+[
+{
+  "directory": "C:/Dev/C++/graphlib/build",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe  @CMakeFiles/graphlib-static.dir/includes_CXX.rsp -g -std=c++23 -o CMakeFiles\\graphlib-static.dir\\src\\graphlib.cpp.obj -c C:\\Dev\\C++\\graphlib\\src\\graphlib.cpp",
+  "file": "C:/Dev/C++/graphlib/src/graphlib.cpp",
+  "output": "CMakeFiles/graphlib-static.dir/src/graphlib.cpp.obj"
+},
+{
+  "directory": "C:/Dev/C++/graphlib/build",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -Dgraphlib_dynamic_EXPORTS @CMakeFiles/graphlib-dynamic.dir/includes_CXX.rsp -g -std=c++23 -o CMakeFiles\\graphlib-dynamic.dir\\src\\graphlib.cpp.obj -c C:\\Dev\\C++\\graphlib\\src\\graphlib.cpp",
+  "file": "C:/Dev/C++/graphlib/src/graphlib.cpp",
+  "output": "CMakeFiles/graphlib-dynamic.dir/src/graphlib.cpp.obj"
+}
+]

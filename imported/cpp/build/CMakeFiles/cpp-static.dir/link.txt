@@ -1,0 +1,2 @@
+C:\msys64\mingw64\bin\ar.exe qc C:\Dev\C++\cpp\lib\libcpp.a "CMakeFiles/cpp-static.dir/src/demangle.cpp.obj" "CMakeFiles/cpp-static.dir/src/hashing.cpp.obj"
+C:\msys64\mingw64\bin\ranlib.exe C:\Dev\C++\cpp\lib\libcpp.a

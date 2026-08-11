@@ -1,0 +1,2 @@
+C:\msys64\mingw64\bin\ar.exe qc C:\Dev\C++\graphlib\lib\libgraphlib.a CMakeFiles/graphlib.dir/src/graphlib.cpp.obj
+C:\msys64\mingw64\bin\ranlib.exe C:\Dev\C++\graphlib\lib\libgraphlib.a

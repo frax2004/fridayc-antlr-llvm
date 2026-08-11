@@ -1,0 +1,4 @@
+C:/Dev/C++/iolib/build/CMakeFiles/iolib-static.dir
+C:/Dev/C++/iolib/build/CMakeFiles/iolib-dynamic.dir
+C:/Dev/C++/iolib/build/CMakeFiles/edit_cache.dir
+C:/Dev/C++/iolib/build/CMakeFiles/rebuild_cache.dir

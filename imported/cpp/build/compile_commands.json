@@ -1,0 +1,26 @@
+[
+{
+  "directory": "C:/Dev/C++/cpp/build",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe  @CMakeFiles/cpp-static.dir/includes_CXX.rsp -g -std=c++23 -o CMakeFiles\\cpp-static.dir\\src\\demangle.cpp.obj -c C:\\Dev\\C++\\cpp\\src\\demangle.cpp",
+  "file": "C:/Dev/C++/cpp/src/demangle.cpp",
+  "output": "CMakeFiles/cpp-static.dir/src/demangle.cpp.obj"
+},
+{
+  "directory": "C:/Dev/C++/cpp/build",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe  @CMakeFiles/cpp-static.dir/includes_CXX.rsp -g -std=c++23 -o CMakeFiles\\cpp-static.dir\\src\\hashing.cpp.obj -c C:\\Dev\\C++\\cpp\\src\\hashing.cpp",
+  "file": "C:/Dev/C++/cpp/src/hashing.cpp",
+  "output": "CMakeFiles/cpp-static.dir/src/hashing.cpp.obj"
+},
+{
+  "directory": "C:/Dev/C++/cpp/build",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -Dcpp_dynamic_EXPORTS @CMakeFiles/cpp-dynamic.dir/includes_CXX.rsp -g -std=c++23 -o CMakeFiles\\cpp-dynamic.dir\\src\\demangle.cpp.obj -c C:\\Dev\\C++\\cpp\\src\\demangle.cpp",
+  "file": "C:/Dev/C++/cpp/src/demangle.cpp",
+  "output": "CMakeFiles/cpp-dynamic.dir/src/demangle.cpp.obj"
+},
+{
+  "directory": "C:/Dev/C++/cpp/build",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -Dcpp_dynamic_EXPORTS @CMakeFiles/cpp-dynamic.dir/includes_CXX.rsp -g -std=c++23 -o CMakeFiles\\cpp-dynamic.dir\\src\\hashing.cpp.obj -c C:\\Dev\\C++\\cpp\\src\\hashing.cpp",
+  "file": "C:/Dev/C++/cpp/src/hashing.cpp",
+  "output": "CMakeFiles/cpp-dynamic.dir/src/hashing.cpp.obj"
+}
+]

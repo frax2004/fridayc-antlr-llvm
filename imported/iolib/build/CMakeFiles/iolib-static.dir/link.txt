@@ -1,0 +1,2 @@
+C:\msys64\mingw64\bin\ar.exe qc C:\Dev\C++\iolib\lib\libiolib.a "CMakeFiles/iolib-static.dir/src/console.cpp.obj"
+C:\msys64\mingw64\bin\ranlib.exe C:\Dev\C++\iolib\lib\libiolib.a
