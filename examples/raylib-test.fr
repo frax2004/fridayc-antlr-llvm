@@ -1,0 +1,11 @@
+using raylib;
+
+public fn main() -> void {
+  raylib.InitWindow("Hello From Friday!", 1200, 800);
+  defer raylib.CloseWindow();
+
+  while !raylib.WindowShouldClose() {
+    raylib.BeginDrawing();
+    defer raylib.EndDrawing();
+  }
+}

@@ -42,7 +42,7 @@ namespace friday::inline api {
     llvm::Function* func = $(ctx).llvm_function = llvm::Function::Create(
       llvm::cast<llvm::FunctionType>(decl->get_type()->to_llvm_type()),
       llvm::GlobalValue::LinkageTypes::ExternalLinkage,
-      decl->get_mangled_id(),
+      decl->get_qualified_id(),
       LLVMWrapper::instance().module()
     );
 

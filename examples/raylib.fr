@@ -1,0 +1,8 @@
+namespace raylib;
+
+public native fn InitWindow(title: *byte, width: int, height: int) -> void;
+public native fn CloseWindow() -> void;
+public native fn WindowShouldClose() -> bool;
+
+public native fn BeginDrawing() -> void;
+public native fn EndDrawing() -> void;
