@@ -21,6 +21,7 @@
 //* /// Utility
 //* ////////////////////////////////////////
 #include <fridayc/SourceLocation.hpp>
+#include <fridayc/Debugging.hpp>
 #include <fridayc/Metadata.hpp>
 #include <fridayc/Value.hpp>
 #include <fridayc/TranslationUnit.hpp>
