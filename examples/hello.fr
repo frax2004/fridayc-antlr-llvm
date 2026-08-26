@@ -1,6 +1,5 @@
+using Raylib;
 
 public fn main() -> void {
-  const x = 0;
-  const y: int = x;
-  print "Hello, World!";
+  
 }

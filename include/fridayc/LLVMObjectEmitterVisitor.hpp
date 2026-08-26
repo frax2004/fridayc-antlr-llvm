@@ -10,14 +10,8 @@ namespace friday::inline api {
   // will emit the llvm object files
   struct LLVMObjectEmitterVisitor final : StaticAnalyzer {
   private:
-    using BuiltinMap = TypeMap<
-      TypeMapEntry<Function, llvm::Function*>,
-      TypeMapEntry<Struct, llvm::StructType*>
-    >;
+    unordered_map<ISymbol*, llvm::Value*> M_values { };
 
-  private:
-    static unordered_map<void*, void*> S_builtins;
-  
   public:
     LLVMObjectEmitterVisitor(CompilationContext& ctx);
     ~LLVMObjectEmitterVisitor() override = default;
@@ -38,51 +32,52 @@ namespace friday::inline api {
     auto visitBasicBlock(FridayParser::BasicBlockContext *ctx) -> any override;
     auto visitTrailingBlock(FridayParser::TrailingBlockContext *ctx) -> any override;
 
-    auto visitFloatLiteralExpression(FridayParser::FloatLiteralExpressionContext *ctx) -> any override;
     auto visitArrayLiteralExpression(FridayParser::ArrayLiteralExpressionContext *ctx) -> any override;
-    auto visitIntLiteralExpression(FridayParser::IntLiteralExpressionContext *ctx) -> any override;
-    auto visitBoolLiteralExpression(FridayParser::BoolLiteralExpressionContext *ctx) -> any override;
-    auto visitCharLiteralExpression(FridayParser::CharLiteralExpressionContext *ctx) -> any override;
-    auto visitNullLiteralExpression(FridayParser::NullLiteralExpressionContext *ctx) -> any override;
     auto visitIdentifierExpression(FridayParser::IdentifierExpressionContext *ctx) -> any override;
-    auto visitStringLiteralExpression(FridayParser::StringLiteralExpressionContext *ctx) -> any override;
 
-    // auto visitExplicitCastExpression(FridayParser::ExplicitCastExpressionContext *ctx) -> any override;
-    // auto visitBinaryExpression(FridayParser::BinaryExpressionContext *ctx) -> any override;
-    // auto visitAssignmentExpression(FridayParser::AssignmentExpressionContext *ctx) -> any override;
-    // auto visitSubscriptExpression(FridayParser::SubscriptExpressionContext *ctx) -> any override;
-    // auto visitCallExpression(FridayParser::CallExpressionContext *ctx) -> any override;
-    // auto visitMemberAccessExpression(FridayParser::MemberAccessExpressionContext *ctx) -> any override;
-
-    // auto visitNewExpression(FridayParser::NewExpressionContext *ctx) -> any override;
-    // auto visitUnaryPrefixExpression(FridayParser::UnaryPrefixExpressionContext *ctx) -> any override;
-    // auto visitUnaryPostfixExpression(FridayParser::UnaryPostfixExpressionContext *ctx) -> any override;
-    // auto visitGroupingExpression(FridayParser::GroupingExpressionContext *ctx) -> any override;
-    // auto visitCompTimeUnaryPrefixExpression(FridayParser::CompTimeUnaryPrefixExpressionContext *ctx) -> any override;
+    auto visitExplicitCastExpression(FridayParser::ExplicitCastExpressionContext *ctx) -> any override;
+    auto visitBinaryExpression(FridayParser::BinaryExpressionContext *ctx) -> any override;
+    auto visitAssignmentExpression(FridayParser::AssignmentExpressionContext *ctx) -> any override;
+    auto visitSubscriptExpression(FridayParser::SubscriptExpressionContext *ctx) -> any override;
+    auto visitCallExpression(FridayParser::CallExpressionContext *ctx) -> any override;
+    auto visitMemberAccessExpression(FridayParser::MemberAccessExpressionContext *ctx) -> any override;
+    
+    auto visitNewExpression(FridayParser::NewExpressionContext *ctx) -> any override;
+    auto visitUnaryPrefixExpression(FridayParser::UnaryPrefixExpressionContext *ctx) -> any override;
+    auto visitUnaryPostfixExpression(FridayParser::UnaryPostfixExpressionContext *ctx) -> any override;
+    auto visitGroupingExpression(FridayParser::GroupingExpressionContext *ctx) -> any override;
+    auto visitCompTimeUnaryPrefixExpression(FridayParser::CompTimeUnaryPrefixExpressionContext *ctx) -> any override;
 
     auto on_unit_begin(TranslationUnit& unit) -> void override;
     auto on_unit_end(TranslationUnit& unit) -> void override;
 
   private:
-    auto BYTE() -> llvm::Type*;
-    auto INT() -> llvm::Type*;
-    auto BOOL() -> llvm::Type*;
-    auto VOID() -> llvm::Type*;
-    auto FLOAT() -> llvm::Type*;
-    auto VOIDPTR() -> llvm::Type*;
-    auto PRINTF() -> llvm::Function*;
+    // Helpers
+    auto get_byte() -> llvm::Type*;
+    auto get_int() -> llvm::Type*;
+    auto get_bool() -> llvm::Type*;
+    auto get_void() -> llvm::Type*;
+    auto get_float() -> llvm::Type*;
+    auto get_voidptr() -> llvm::Type*;
+    auto get_printf() -> llvm::Function*;
 
-    template<class T> requires(BuiltinMap::contains<T>)
-    static auto builtin(T* obj) -> BuiltinMap::at<T> {
-      using target_type = BuiltinMap::at<T>;
-      static_assert(is_pointer_v<target_type>, "Target type must be a pointer.");
+    // Emitters
+    auto emit_builtins() -> void;
+    auto emit_native_functions() -> void;
+    auto emit_functions() -> void;
 
-      void* __obj = dynamic_cast<void*>(obj);
-      if(auto it = S_builtins.find(__obj); it != S_builtins.end()) {
-        return dynamic_cast<target_type>(it->second);
-      } else return nullptr;
-    }
+    auto emit_function(Function* func, llvm::GlobalValue::LinkageTypes linkage, function<string(Function*)> get_name) -> llvm::Value*;
+    auto emit_value(Value value) -> llvm::Value*;
+    auto emit_alloca(llvm::Type* type, llvm::Value* arraySize = nullptr) -> llvm::AllocaInst*;
+    auto emit_call(llvm::Function* func, llvm::ArrayRef<llvm::Value*> args) -> llvm::CallInst*;
+    auto emit_call(llvm::FunctionCallee callee, llvm::ArrayRef<llvm::Value*> args) -> llvm::CallInst*;
 
-    auto setup() -> void;
+    // Value queries
+    auto query(ISymbol* symbol) -> llvm::Value*;
+    auto bind(ISymbol* symbol, llvm::Value* value) -> void;
+    auto has_binding(ISymbol* symbol) const -> bool;
+
+  protected:
+    auto setup() -> void override;
   };
 }

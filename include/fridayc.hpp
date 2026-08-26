@@ -23,6 +23,7 @@
 #include <fridayc/SourceLocation.hpp>
 #include <fridayc/Debugging.hpp>
 #include <fridayc/Metadata.hpp>
+#include <fridayc/Reflection.hpp>
 #include <fridayc/Value.hpp>
 #include <fridayc/TranslationUnit.hpp>
 #include <fridayc/CompilationContext.hpp>

@@ -23,6 +23,9 @@ namespace friday::inline api {
     /// @brief The namespace where the struct was defined
     Namespace* M_declaryingNamespace { nullptr };
 
+    /// @brief The fields
+    vector<Variable*> M_fields { };
+
   protected:
     /// @brief Construct a struct
     /// @param parent the parent namespace
@@ -34,10 +37,12 @@ namespace friday::inline api {
     ~Struct() override = default;
 
   public:
+    auto add_field(Variable* field) -> void;
     auto find_field(string_view name) const noexcept -> Variable*;
     auto find_method(string_view name) const noexcept -> Overload*;
     auto get_name() const noexcept -> string_view override;
     auto to_llvm_type() const noexcept -> llvm::Type* override;
+    auto get_fields() const -> vector<Variable*> const&;
     auto get_qualified_id() const -> string override;
     auto get_attributes() const -> Attributes override;
     auto get_parent() const -> ISymbolTable* override;

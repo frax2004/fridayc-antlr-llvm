@@ -10,19 +10,19 @@ auto to_string(Overload* self) -> string;
 
 
 auto Main(vector<string> paths) -> void {
-  debug::show_hierarchy_graph();
-  // auto settings = CompilationSettings::builder()
-  // .enable_debug(false)
-  // .redirect_notes_to(stdout)
-  // .redirect_logs_to(stdout)
-  // .redirect_debugs_to(stderr)
-  // .redirect_errors_to(stderr)
-  // .redirect_warnings_to(stderr)
-  // .build();
 
-  // auto context = CompilationContext::create(paths);
-  // auto compiler = Compiler::create(*context, settings);
-  // compiler->compile();
+  auto settings = CompilationSettings::builder()
+  .enable_debug(false)
+  .redirect_notes_to(stdout)
+  .redirect_logs_to(stdout)
+  .redirect_debugs_to(stderr)
+  .redirect_errors_to(stderr)
+  .redirect_warnings_to(stderr)
+  .build();
+
+  auto context = CompilationContext::create(paths);
+  auto compiler = Compiler::create(*context, settings);
+  compiler->compile();
 }
 
 auto to_string(Namespace* self) -> string {

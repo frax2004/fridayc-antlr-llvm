@@ -10,5 +10,7 @@ namespace friday::inline api {
 
     virtual auto get_name() const noexcept -> string_view = 0;
     virtual auto to_llvm_type() const noexcept -> llvm::Type* = 0;
+    auto size() const -> u64;
+    auto alignment() const -> u64;
   };
 }

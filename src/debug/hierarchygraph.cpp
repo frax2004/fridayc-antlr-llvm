@@ -8,6 +8,7 @@ namespace friday::inline debug {
     OVERLOAD,
     ARRAY_TYPE,
     STRUCT,
+    GLOBAL_NAMESPACE,
     NAMESPACE,
   };
 
@@ -20,54 +21,51 @@ namespace friday::inline debug {
   }
 
   namespace theme {
-    constexpr rl::Color NAMESPACE_PRIMARY = rgb(247, 125, 18);
-    constexpr rl::Color NAMESPACE_SECONDARY = rgba(247, 125, 18, 235);
+    constexpr rl::Color PRIMARY = rgb(78, 231, 137);
+    constexpr rl::Color SECONDARY = rgba(78, 231, 137, 235);
     array<rl::Texture, 7> ICONS { };
   };
 
-  static auto draw_namespace_icon(rl::Vector2 p, float r) -> void {
-    using Center = rl::Vector2;
-    using Icon = rl::Texture;
-
-    Center center = { p.x + r, p.y + r };
-    Icon icon = theme::ICONS[Icons::NAMESPACE];
-
-    rl::DrawCircleV(center, r, theme::NAMESPACE_PRIMARY);
-    rl::DrawCircleLinesV(center, r, theme::NAMESPACE_SECONDARY);
-    rl::DrawTextureV(
-      icon, 
-      Center{ 
-        center.x - icon.width/2, 
-        center.y - icon.height/2 
-      }, 
-      rl::WHITE
-    );
+  namespace drawers {
+    static auto draw_icon(rl::Vector2 p, float r, Icons icon) -> void {
+      rl::Vector2 center = { p.x + r, p.y + r };
+      rl::Texture texture = theme::ICONS[icon];
+  
+      rl::DrawCircleV(center, r, theme::PRIMARY);
+      rl::DrawTextureV(
+        texture, 
+        rl::Vector2{
+          center.x - texture.width/2, 
+          center.y - texture.height/2 
+        }, 
+        rl::BLACK
+      );
+  
+    }
 
   }
-  
-  
-  auto show_hierarchy_graph() -> void {
-    // rl::SetConfigFlags(rl::FLAG_WINDOW_RESIZABLE);
-    rl::InitWindow(1200, 1800, "Fridayc Debugger :: Hierarchy Graph");
+
+  auto show_debugger() -> void {
+    rl::SetConfigFlags(rl::FLAG_WINDOW_RESIZABLE);
+    rl::InitWindow(1200, 800, "Fridayc Debugger");
     rl::SetTargetFPS(60);
 
-    // auto to_icon_path = [](u64 i) { return format("res/icon{}.png", i); };
-    // auto load_icon = [](string path) { return rl::LoadTexture(path.c_str()); };
+    auto to_icon_path = [](u64 i) { return format("bin/res/icon{}.png", i); };
+    auto load_icon = [](string path) { return rl::LoadTexture(path.c_str()); };
 
-    // auto icons = views::iota(0ULL, theme::ICONS.size())
-    // | views::transform(to_icon_path)
-    // | views::transform(load_icon);
+    auto icons = views::iota(0ULL, theme::ICONS.size())
+    | views::transform(to_icon_path)
+    | views::transform(load_icon);
 
-    // ranges::copy(icons, theme::ICONS.begin());
+    ranges::copy(icons, theme::ICONS.begin());
 
     while(not rl::WindowShouldClose()) {
       rl::BeginDrawing();
       rl::ClearBackground(rl::BLACK);
-      // draw_namespace_icon({50, 50}, 20);
       rl::EndDrawing();
     }
 
-    // ranges::for_each(theme::ICONS, &rl::UnloadTexture);
+    ranges::for_each(theme::ICONS, &rl::UnloadTexture);
     rl::CloseWindow();
   }
 }

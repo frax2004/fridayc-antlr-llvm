@@ -28,8 +28,6 @@ namespace friday::inline api {
         default: throw InvalidArgumentError{};
       }
     };
-
-    (void)toVisibility;
     
     string overloadName = ctx->name->getText();
 
@@ -91,13 +89,25 @@ namespace friday::inline api {
     | views::transform(tup2pair)
     | ranges::to<vector>();
 
+    Function* function = $(ctx).function = overload->add(
+      *retType, 
+      parameters, 
+      Attributes{
+        .visibility = toVisibility(ctx->accessModifier->getType()),
+        .linkage = Linkage::INTERNAL,
+        .isConst = true
+      }
+    );
 
     Scope* scope = Scope::Factory::create(*overload->get_declaring_symbol_table());
-    for(auto [paramName, paramType] : parameters) {
-      scope->define(Variable::Factory::create(*scope, paramName, *paramType));
+
+    for(auto [i, param] : views::enumerate(parameters)) {
+      Variable* var = Variable::Factory::create(*scope, param.first, *param.second);
+      scope->define(var);
+      function->set_param_binding(i, var);
     }
 
-    $(ctx).function = overload->add(*retType, parameters);
+
     if(auto asTrailingScope = dynamic_cast<FridayParser::TrailingBlockContext*>(ctx->block)) {
       $(asTrailingScope).function = &$(ctx);
       $(asTrailingScope).scope = scope;
@@ -190,7 +200,15 @@ namespace friday::inline api {
     | views::transform(tup2pair)
     | ranges::to<vector>();
 
-    $(ctx).function = overload->add(*retType, parameters);
+    $(ctx).function = overload->add(
+      *retType, 
+      parameters,
+      Attributes{
+        .visibility = toVisibility(ctx->accessModifier->getType()),
+        .linkage = Linkage::EXTERNAL,
+        .isConst = true
+      }
+    );
 
     return {};
   }

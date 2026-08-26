@@ -17,7 +17,6 @@ namespace friday::inline api {
   struct Attributes final {
     Visibility visibility { Visibility::PUBLIC };
     Linkage    linkage    { Linkage::INTERNAL };
-    bool       isStatic   { false };
     bool       isConst    { false };
   };
 

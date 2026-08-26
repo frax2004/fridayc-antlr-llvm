@@ -11,10 +11,10 @@ namespace friday::inline api {
       return {};
     }
 
-    Type* type = $(ctx->values[0]).value.get_type();
+    Type* type = $(ctx->values[0]).value.type();
     bool ok = true;
     for(auto element : ctx->values | views::drop(1)) {
-      if($(element).value.get_type() != type) {
+      if($(element).value.type() != type) {
         ok = false;
         this->error_at(
           ctx,
@@ -22,7 +22,7 @@ namespace friday::inline api {
           format(
             "Array elements must be of the same type: expression '{}' of type '{}' is not of type '{}'",
             element->getText(),
-            $(element).value.get_type()->get_name(),
+            $(element).value.type()->get_name(),
             type->get_name()
           )
         );
@@ -41,11 +41,10 @@ namespace friday::inline api {
     ISymbolTable* scope = this->top();
     string id = ctx->id->getText();
 
-    auto is_not_struct_field = [](ISymbol* sym) {
-      return dynamic_cast<Struct*>(sym->get_declaring_symbol_table()) == nullptr;
-    };
-
-    auto find_by_lookup = [this, &id, is_not_struct_field](ISymbolTable* table) {
+    auto find_by_lookup = [this, &id](ISymbolTable* table) {
+      auto is_not_struct_field = [](ISymbol* sym) {
+        return dynamic_cast<Struct*>(sym->get_declaring_symbol_table()) == nullptr;
+      };
       return this->get_current_unit()->look_up_if(id, table, is_not_struct_field, {});
     };
 
@@ -78,7 +77,7 @@ namespace friday::inline api {
       PointerType::get(*this->BYTE(), 1), 
       Constant::from_str(string(unquoted))
     );
-    
+
     return {};
   }
 
@@ -119,6 +118,14 @@ namespace friday::inline api {
       this->VOIDPTR(),
       Constant::from_null()
     );
+    return {};
+  }
+
+  auto TypeCheckerVisitor::visitGroupingExpression(FridayParser::GroupingExpressionContext *ctx) -> any {
+    Console::debug(format("TypeCheckerVisitor::visitGroupingExpression({})", ctx->getText()));
+    this->visitChildren(ctx);
+    $(ctx).value = Value::from_rvalue($(ctx->expression()).value.type(), nullptr);
+
     return {};
   }
 }

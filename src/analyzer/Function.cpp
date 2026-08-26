@@ -21,7 +21,7 @@ namespace friday::inline api {
     this->M_attributes = attributes;
 
     this->M_parameters = parameters 
-    | views::transform(&pair<string, Type*>::first) 
+    | views::transform([](pair<string, Type*> param) -> pair<string, Variable*> { return make_pair(param.first, nullptr); }) 
     | ranges::to<vector>();
 
     this->M_signature = (FunctionType*)FunctionType::get(
@@ -32,13 +32,21 @@ namespace friday::inline api {
     );
   }
 
+  auto Function::set_param_binding(u64 index, Variable* symbol) -> void {
+    this->M_parameters.at(index).second = symbol;
+  }
+
+  auto Function::get_param_binding(u64 index) const -> Variable* {
+    return this->M_parameters.at(index).second;
+  }
+  
   auto Function::get_param_name(u64 index) const -> string_view {
-    return this->M_parameters.at(index);
+    return this->M_parameters.at(index).first;
   }
 
   auto Function::get_param(u64 index) const -> pair<string_view, Type*> {
     return make_pair(
-      this->M_parameters.at(index),
+      this->M_parameters.at(index).first,
       this->M_signature->get_param_type(index)
     );
   }
@@ -85,9 +93,21 @@ namespace friday::inline api {
     return builder;
   }
 
+  auto Function::get_params_size() const -> u64 {
+    return this->M_parameters.size();
+  }
+
   auto Function::is_static_method() const -> bool {
     return dynamic_cast<Struct*>(this->M_owner->get_declaring_symbol_table()) != nullptr 
     and not this->is_nonstatic_method();
+  }
+
+  auto Function::is_native() const -> bool {
+    return this->get_attributes().linkage == Linkage::EXTERNAL;
+  }
+
+  auto Function::is_non_native() const -> bool {
+    return this->get_attributes().linkage != Linkage::EXTERNAL;
   }
 
   auto Function::get_qualified_id() const -> string {

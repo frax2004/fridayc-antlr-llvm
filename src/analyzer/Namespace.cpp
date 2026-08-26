@@ -61,6 +61,7 @@ namespace friday::inline api {
   }
 
   Namespace* Namespace::S_globalNamespace = nullptr;
+  vector<ISymbol*> Namespace::S_builtins { };
   Namespace::namespace_map_type Namespace::S_namespaces { };
 
   auto Namespace::Factory::create(string name) -> Namespace* {
@@ -118,16 +119,20 @@ namespace friday::inline api {
     return NameMangler { this->get_qualified_id() };
   }
 
+  auto Namespace::get_builtins() -> vector<ISymbol*> const& {
+    return Namespace::S_builtins;
+  }
+
   auto Namespace::get_global_namespace() noexcept -> Namespace* {
 
     if(Namespace::S_globalNamespace == nullptr) {
       Namespace::S_globalNamespace = Namespace::Factory::create("");
 
-      auto Int = dynamic_cast<Type*>(PrimitiveType::Factory::create("int", LLVMWrapper::get_int_type(64)));
-      auto Byte = dynamic_cast<Type*>(PrimitiveType::Factory::create("byte", LLVMWrapper::get_int_type(8)));
-      auto Bool = dynamic_cast<Type*>(PrimitiveType::Factory::create("bool", LLVMWrapper::get_int_type(1)));
-      auto Float = dynamic_cast<Type*>(PrimitiveType::Factory::create("float", LLVMWrapper::get_double_type()));
-      auto Void = dynamic_cast<Type*>(PrimitiveType::Factory::create("void", LLVMWrapper::get_void_type()));
+      auto Int = dynamic_cast<Type*>(PrimitiveType::Factory::create("int", LLVM.get_int_type(64)));
+      auto Byte = dynamic_cast<Type*>(PrimitiveType::Factory::create("byte", LLVM.get_int_type(8)));
+      auto Bool = dynamic_cast<Type*>(PrimitiveType::Factory::create("bool", LLVM.get_int_type(1)));
+      auto Float = dynamic_cast<Type*>(PrimitiveType::Factory::create("float", LLVM.get_double_type()));
+      auto Void = dynamic_cast<Type*>(PrimitiveType::Factory::create("void", LLVM.get_void_type()));
       auto VoidPtr = dynamic_cast<Type*>(PointerType::get(*Void, 1));
 
       auto plus = "operator+"s
@@ -299,6 +304,26 @@ namespace friday::inline api {
       Namespace::S_globalNamespace->define(dynamic_cast<ISymbol*>(conjunction));
       Namespace::S_globalNamespace->define(dynamic_cast<ISymbol*>(disjunction));
       Namespace::S_globalNamespace->define(dynamic_cast<ISymbol*>(negate));
+
+      Namespace::S_builtins.push_back(dynamic_cast<ISymbol*>(plus));
+      Namespace::S_builtins.push_back(dynamic_cast<ISymbol*>(minus));
+      Namespace::S_builtins.push_back(dynamic_cast<ISymbol*>(multiplies));
+      Namespace::S_builtins.push_back(dynamic_cast<ISymbol*>(divides));
+      Namespace::S_builtins.push_back(dynamic_cast<ISymbol*>(modulus));
+      Namespace::S_builtins.push_back(dynamic_cast<ISymbol*>(equal_to));
+      Namespace::S_builtins.push_back(dynamic_cast<ISymbol*>(not_equal_to));
+      Namespace::S_builtins.push_back(dynamic_cast<ISymbol*>(less));
+      Namespace::S_builtins.push_back(dynamic_cast<ISymbol*>(greater));
+      Namespace::S_builtins.push_back(dynamic_cast<ISymbol*>(less_equal));
+      Namespace::S_builtins.push_back(dynamic_cast<ISymbol*>(greater_equal));
+      Namespace::S_builtins.push_back(dynamic_cast<ISymbol*>(binary_and));
+      Namespace::S_builtins.push_back(dynamic_cast<ISymbol*>(binary_or));
+      Namespace::S_builtins.push_back(dynamic_cast<ISymbol*>(unary_negate));
+      Namespace::S_builtins.push_back(dynamic_cast<ISymbol*>(increment));
+      Namespace::S_builtins.push_back(dynamic_cast<ISymbol*>(decrement));
+      Namespace::S_builtins.push_back(dynamic_cast<ISymbol*>(conjunction));
+      Namespace::S_builtins.push_back(dynamic_cast<ISymbol*>(disjunction));
+      Namespace::S_builtins.push_back(dynamic_cast<ISymbol*>(negate));
     }
 
     return Namespace::S_globalNamespace;

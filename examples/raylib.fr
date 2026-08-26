@@ -1,4 +1,4 @@
-namespace raylib;
+namespace Raylib;
 
 public native fn InitWindow(title: *byte, width: int, height: int) -> void;
 public native fn CloseWindow() -> void;

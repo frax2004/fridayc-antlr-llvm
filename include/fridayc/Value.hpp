@@ -9,19 +9,20 @@ namespace friday::inline api {
   struct Struct;
   struct Namespace;
   struct Overload;
+  struct Variable;
   
+  struct unset final {
+    consteval auto operator==(unset const&) const -> bool = default;
+    consteval auto operator!=(unset const&) const -> bool = default;
+  };
+
   enum class ValueCategory : u8 {
     ILLEGAL,
     LVALUE,
     RVALUE
   };
 
-
   struct Constant final {
-  private:
-    using payload_type = variant<i64, f64, i8, bool, string, nullptr_t>;
-
-    
   public:
     enum class Kind : u8 {
       INTEGER,
@@ -31,16 +32,8 @@ namespace friday::inline api {
       BYTE_POINTER,
       NULL_POINTER,
     };
-    
     using enum Kind;
-    
-  private:
-    static_assert(same_as<variant_alternative_t<static_cast<underlying_type_t<Kind>>(Kind::INTEGER), payload_type>, i64>);
-    static_assert(same_as<variant_alternative_t<static_cast<underlying_type_t<Kind>>(Kind::FLOATING_POINT), payload_type>, f64>);
-    static_assert(same_as<variant_alternative_t<static_cast<underlying_type_t<Kind>>(Kind::BYTE), payload_type>, i8>);
-    static_assert(same_as<variant_alternative_t<static_cast<underlying_type_t<Kind>>(Kind::BOOLEAN), payload_type>, bool>);
-    static_assert(same_as<variant_alternative_t<static_cast<underlying_type_t<Kind>>(Kind::BYTE_POINTER), payload_type>, string>);
-    static_assert(same_as<variant_alternative_t<static_cast<underlying_type_t<Kind>>(Kind::NULL_POINTER), payload_type>, nullptr_t>);
+    using payload_type = variant<i64, f64, i8, bool, string, nullptr_t>;
 
   private:
     payload_type M_payload { };
@@ -71,36 +64,31 @@ namespace friday::inline api {
     auto to_bool() const -> optional<bool>;
     auto to_str() const -> optional<string>;
     auto to_null() const -> optional<nullptr_t>;
+    
+    auto to_llvm_constant() const -> llvm::Constant*;
   };
   
   struct Value final {
-  private:
-    struct unset final {
-      consteval auto operator==(unset const&) const -> bool = default;
-      consteval auto operator!=(unset const&) const -> bool = default;
-    };
-    
-  private:
-    using payload_type = variant<unset, llvm::Value*, Constant, Overload*, Struct*, Namespace*>;
-    
   public:
     enum class Kind : u8 {
       UNSET = 0,
       LLVMVALUE,
+      VARIABLE,
       CONSTANT,
       OVERLOAD,
       STRUCT,
       NAMESPACE,
     };
-
+    using payload_type = variant<
+      unset, 
+      llvm::Value*, 
+      pair<Variable*, llvm::Value*>, 
+      Constant, 
+      Overload*, 
+      Struct*, 
+      Namespace*
+    >;
     using enum Kind;
-
-    static_assert(same_as<variant_alternative_t<static_cast<underlying_type_t<Kind>>(Kind::UNSET), payload_type>, unset>);
-    static_assert(same_as<variant_alternative_t<static_cast<underlying_type_t<Kind>>(Kind::LLVMVALUE), payload_type>, llvm::Value*>);
-    static_assert(same_as<variant_alternative_t<static_cast<underlying_type_t<Kind>>(Kind::CONSTANT), payload_type>, Constant>);
-    static_assert(same_as<variant_alternative_t<static_cast<underlying_type_t<Kind>>(Kind::OVERLOAD), payload_type>, Overload*>);
-    static_assert(same_as<variant_alternative_t<static_cast<underlying_type_t<Kind>>(Kind::STRUCT), payload_type>, Struct*>);
-    static_assert(same_as<variant_alternative_t<static_cast<underlying_type_t<Kind>>(Kind::NAMESPACE), payload_type>, Namespace*>);
 
   private:
     payload_type  M_payload  { unset{} };
@@ -126,28 +114,23 @@ namespace friday::inline api {
     static auto from_namespace(Namespace* _namespace) -> Value;
     static auto from_constant(Type* type, Constant value) -> Value;
     static auto from_rvalue(Type* type, llvm::Value* value) -> Value;
-    static auto from_lvalue(Type* type, llvm::Value* value) -> Value;
+    static auto from_lvalue(Type* type, Variable* variable, llvm::Value* value) -> Value;
     static auto from_overload(Overload* overload) -> Value;
     static auto from_struct(Struct* _struct) -> Value;
     static auto from_unknown(Type* type, ValueCategory category) -> Value;
 
-    auto get_kind() const -> Kind;
-    auto get_type() const -> Type*;
-    auto get_category() const -> ValueCategory;
+    auto kind() const -> Kind;
+    auto type() const -> Type*;
+    auto category() const -> ValueCategory;
 
-    auto is_lvalue() const -> bool;
-    auto is_rvalue() const -> bool;
-    auto is_constant() const -> bool;
-    auto is_overload() const -> bool;
-    auto is_struct() const -> bool;
-    auto is_namespace() const -> bool;
+    auto to_llvm_value() const -> llvm::Value*;
+    auto is(ValueCategory category) const -> bool;
+    auto holds(Kind kind) const -> bool;
 
-    auto to_lvalue() const -> optional<llvm::Value*>;
-    auto to_rvalue() const -> optional<llvm::Value*>;
-    auto to_constant() const -> optional<Constant>;
-    auto to_overload() const -> optional<Overload*>;
-    auto to_struct() const -> optional<Struct*>;
-    auto to_namespace() const -> optional<Namespace*>;
-    
+    template<class T>
+    auto unwrap() -> optional<T> {
+      return holds_alternative<T>(this->M_payload) ? 
+        make_optional(get<T>(this->M_payload)) : nullopt;
+    }
   };
 }

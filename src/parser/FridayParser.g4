@@ -138,8 +138,8 @@ expression
 | array = expression LEFT_SQUARE index = expression RIGHT_SQUARE                                       # SubscriptExpression
 | object = expression DOT member = IDENTIFIER                                                          # MemberAccessExpression
 | <assoc = right> unaryOperator = (PLUS | MINUS | NOT | TILDE | STAR | AMPERSAND) operand = expression # UnaryPrefixExpression
-| <assoc = right> unaryOperator = (SIZEOF | ALIGNOF) type                                              # CompTimeUnaryPrefixExpression
-| <assoc = right> expr = expression AS type                                                            # ExplicitCastExpression
+| <assoc = right> unaryOperator = (SIZEOF | ALIGNOF) target = type                                     # CompTimeUnaryPrefixExpression
+| <assoc = right> expr = expression AS target = type                                                   # ExplicitCastExpression
 | left = expression binaryOperator = (STAR | SLASH | MODULO) right = expression                        # BinaryExpression
 | left = expression binaryOperator = (PLUS | MINUS) right = expression                                 # BinaryExpression
 | left = expression binaryOperator = (LSHIFT | RSHIFT) right = expression                              # BinaryExpression

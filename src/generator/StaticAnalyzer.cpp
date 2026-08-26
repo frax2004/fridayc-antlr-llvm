@@ -17,6 +17,7 @@ namespace friday::inline api {
   }
 
   auto StaticAnalyzer::analyze() -> StaticAnalyzer& {
+    this->setup();
     for(auto unit: this->M_context->get_units()) {
       this->set_current_unit(unit);
       this->on_unit_begin(*unit);
@@ -28,10 +29,39 @@ namespace friday::inline api {
     return *this;
   }
 
+  auto StaticAnalyzer::setup() -> void {}
+
   auto StaticAnalyzer::error_at(ant::ParserRuleContext* ctx, ant::Token* token, string message) -> void {
     if(not this->M_currentUnit) {
       throw NullPointerError{};
     }
+
+    auto code = token
+    ->getInputStream()
+    ->getText(
+      ant::misc::Interval{
+        ctx->getStart()->getStartIndex(), 
+        ctx->getStop()->getStopIndex()
+      }
+    );
+
+    auto highlight = [i = ctx->getStart()->getLine()](string line) mutable {
+      return format(
+        " {:>4} | {}\n {:>4} | {}", 
+        i++, 
+        line, 
+        "",
+        views::repeat('~', line.length())
+        | ranges::to<string>()
+      );
+    };
+
+    auto highlighted = code 
+    | views::split("\n"s)
+    | views::transform(ranges::to<string>())
+    | views::transform(highlight)
+    | views::join_with("\n"s)
+    | ranges::to<string>();
 
 
     this->M_errors.push_back(
@@ -41,10 +71,11 @@ namespace friday::inline api {
           token->getLine(),
           token->getCharPositionInLine()+1
         },
+
+
         format(
-          " {:>4} | {}\n {:>4} |\n{}Note{}: {}{}{}",
-          ctx->getStart()->getLine(),
-          token->getInputStream()->getText(ant::misc::Interval{ctx->getStart()->getStartIndex(), ctx->getStop()->getStopIndex()}),
+          "{}\n {:>4} |\n{}Note{}: {}{}{}",
+          highlighted,
           "",
           Console::Color::BLUE,
           Console::Color::RESET,

@@ -3,6 +3,6 @@
 
 namespace friday::inline debug {
 
-  auto show_hierarchy_graph() -> void;
+  auto show_debugger() -> void;
 
 }

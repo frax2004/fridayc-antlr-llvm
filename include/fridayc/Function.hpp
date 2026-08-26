@@ -17,7 +17,7 @@ namespace friday::inline api {
 
   private:
     /// @brief The parameters names
-    vector<string> M_parameters { };
+    vector<pair<string, Variable*>> M_parameters { };
 
     /// @brief The overload owner
     Overload* M_owner { nullptr };
@@ -40,7 +40,9 @@ namespace friday::inline api {
     ~Function() override = default;
 
   public:
+    auto get_param_binding(u64 index) const -> Variable*;
     auto get_param_name(u64 index) const -> string_view;
+    auto get_params_size() const -> u64;
     auto get_param(u64 index) const -> pair<string_view, Type*>;
     auto get_return_type() const -> Type*;
     auto get_qualified_id() const -> string override;
@@ -49,8 +51,12 @@ namespace friday::inline api {
     auto get_mangled_name_builder() const -> NameMangler override;
     auto get_type() const -> Type* override;
     
+    auto set_param_binding(u64 index, Variable* symbol) -> void;
+
     auto is_nonstatic_method() const -> bool;
     auto is_static_method() const -> bool;
+    auto is_native() const -> bool;
+    auto is_non_native() const -> bool;
 
     static auto instances() -> vector<Function*>;
   };

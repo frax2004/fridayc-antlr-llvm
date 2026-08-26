@@ -86,6 +86,7 @@ namespace friday::inline api {
     auto out = fs::path{ cur/"out" };
     auto llvm = fs::path{ cur/out/"llvm" };
     auto bin = fs::path{ cur/out/"bin" };
+    auto lib = fs::path{ cur/out/"lib" };
     auto ir = fs::path{ cur/llvm/"out.ll" };
     auto exe = fs::path{ cur/bin/"a.exe" };
 
@@ -97,16 +98,20 @@ namespace friday::inline api {
     ofstream ostream { ir };
     llvm::raw_os_ostream stream{ ostream };
 
-    LLVMWrapper::instance().module().print(stream, nullptr);
+    LLVM.module().print(stream, nullptr);
     stream.flush();
     ostream.close();
 
     string command = format(
-      "clang++ -Wno-override-module -std=c++23 -o {} {} -L{} -l{}",
+      "clang++ -Wno-override-module -std=c++23 -o {} {} -L{} {}",
       exe,
       ir,
-      cur/"lib",
-      "friday-runtime"
+      lib,
+      " -lfriday-runtime"
+      " -lraylib"
+      " -lwinmm"
+      " -lgdi32"
+      " -lopengl32"
     );
 
     system(command.c_str());

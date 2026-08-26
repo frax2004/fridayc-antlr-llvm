@@ -27,6 +27,7 @@ namespace friday::inline api {
     auto comp_context() -> CompilationContext&;
     
   protected:
+    virtual auto setup() -> void;
     auto set_current_unit(TranslationUnit* unit) -> void;
     auto get_current_unit() -> TranslationUnit*;
     auto error_at(ant::ParserRuleContext* ctx, ant::Token* end, string message) -> void;

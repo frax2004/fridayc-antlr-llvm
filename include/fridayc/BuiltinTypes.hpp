@@ -32,6 +32,7 @@ namespace friday::inline api {
     auto get_name() const noexcept -> string_view override;
     auto to_llvm_type() const noexcept -> llvm::Type* override;
     static auto get() -> Type*;
+    static auto is_namespace_type(Type* type) -> bool;
 
   };
 
@@ -49,12 +50,13 @@ namespace friday::inline api {
     auto get_name() const noexcept -> string_view override;
     auto to_llvm_type() const noexcept -> llvm::Type* override;
     static auto get() -> Type*;
+    static auto is_unresolved_overload_type(Type* type) -> bool;
 
   };
 
   struct TypeType final : Type {
   private:
-    string M_name { "<type-of-types>" };
+    string M_name { "<type>" };
 
   private:
     constexpr TypeType() = default;
@@ -65,6 +67,7 @@ namespace friday::inline api {
     auto get_name() const noexcept -> string_view override;
     auto to_llvm_type() const noexcept -> llvm::Type* override;
     static auto get() -> Type*;
+    static auto is_type_type(Type* type) -> bool;
 
   };
 
@@ -115,6 +118,7 @@ namespace friday::inline api {
     auto params_size() const noexcept -> u64;
     auto get_return_type() const noexcept -> Type*;
     auto to_llvm_type() const noexcept -> llvm::Type* override;
+    auto to_llvm_signature_type() const noexcept -> llvm::Type*;
     auto get_name() const noexcept -> string_view override;
 
   };

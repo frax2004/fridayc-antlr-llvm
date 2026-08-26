@@ -42,8 +42,7 @@ namespace friday::inline api {
     this->visit(ctx->expression());
     auto func = dynamic_cast<FridayParser::FreeFunctionStatementContext*>(ctx->parent);
     Type* expected = $(func->returnType).type;
-    Type* actual = $(ctx->expression()).value.get_type();
-
+    Type* actual = $(ctx->expression()).value.type();
 
     if(expected != actual) {
       this->error_at(
@@ -77,7 +76,8 @@ namespace friday::inline api {
       );
     }
 
-    Type* inferred = $(ctx->expression()).value.get_type();
+    Type* inferred = $(ctx->expression()).value.type();
+
     if(auto expected = ctx->type(); expected != nullptr and $(expected).type != inferred) {
       ok = false;
       this->error_at(
@@ -88,6 +88,17 @@ namespace friday::inline api {
           name,
           inferred->get_name(),
           $(expected).type->get_name()
+        )
+      );
+    } else if(ctx->type() == nullptr and UnresolvedOverloadType::is_unresolved_overload_type(inferred)) {
+      ok = false;
+      this->error_at(
+        ctx,
+        ctx->ASSIGN()->getSymbol(),
+        format(
+          "In declaration of variable '{}', cannot infer the type from an expression of type {}",
+          name,
+          inferred->get_name()
         )
       );
     }
@@ -106,7 +117,9 @@ namespace friday::inline api {
     }
 
     if(not ok) return {};
-    scope->define(Variable::Factory::create(*scope, name, *$(ctx->initializer).value.get_type()));
+    Variable* var = Variable::Factory::create(*scope, name, *$(ctx->initializer).value.type());
+    $(ctx).variable = var;
+    scope->define(var);
 
     return {};
   }
@@ -117,14 +130,14 @@ namespace friday::inline api {
     for(auto [condition, statement] : views::zip(ctx->conditions, ctx->scopes)) {
       this->visit(condition);
 
-      if($(condition).value.get_type() != this->BOOL()) {
+      if($(condition).value.type() != this->BOOL()) {
         this->error_at(
           ctx,
           condition->getStart(),
           format(
             "Condition expression expected to be of type '{}' but got an expression of type '{}'",
             this->BOOL()->get_name(),
-            $(condition).value.get_type()->get_name()
+            $(condition).value.type()->get_name()
           )
         );
       }
@@ -148,14 +161,14 @@ namespace friday::inline api {
     Console::debug(format("WhileStatementContext: {}", ctx->getText()));
 
     this->visit(ctx->condition);
-    if($(ctx->condition).value.get_type() != this->BOOL()) {
+    if($(ctx->condition).value.type() != this->BOOL()) {
       this->error_at(
         ctx,
         ctx->condition->getStart(),
         format(
           "Condition expression expected to be of type '{}' but got an expression of type '{}'",
           this->BOOL()->get_name(),
-          $(ctx->condition).value.get_type()->get_name()
+          $(ctx->condition).value.type()->get_name()
         )
       );
     }
@@ -190,7 +203,7 @@ namespace friday::inline api {
     
     auto asFunc = dynamic_cast<FridayParser::FreeFunctionStatementContext*>(funcRule);
     Type* expected = $(asFunc->returnType).type;
-    Type* actual = $(ctx->expression()).value.get_type();
+    Type* actual = $(ctx->expression()).value.type();
 
     if(expected != actual) {
       this->error_at(
@@ -207,7 +220,7 @@ namespace friday::inline api {
     Console::debug(format("PrintStatementContext: {}", ctx->getText()));
     this->visitChildren(ctx);
 
-    auto actual = $(ctx->expression()).value.get_type();
+    auto actual = $(ctx->expression()).value.type();
     auto expected = PointerType::get(*this->BYTE(), 1);
 
     if(expected != actual) {

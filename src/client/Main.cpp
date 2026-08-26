@@ -1,9 +1,11 @@
 #include <fridayc.hpp>
+#include <llvm/Support/Signals.h>
 
 using namespace friday;
 
 
 auto main(i32 argc, const i8** argv) -> i32 {
+  llvm::sys::PrintStackTraceOnErrorSignal(argv[0]);
   if constexpr(FRIDAY_API_ENABLE_SIGSEGV_AS_EXCEPTION) {
     signal(SIGSEGV, [](int signum) {
       (void)signum;

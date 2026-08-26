@@ -32,6 +32,10 @@ namespace friday::inline api {
     return dynamic_cast<Type*>(&UNRESOLVED_OVERLOAD);
   }
 
+  auto UnresolvedOverloadType::is_unresolved_overload_type(Type* type) -> bool {
+    return type == UnresolvedOverloadType::get();
+  }
+
   auto NamespaceType::get_name() const noexcept -> string_view {
     return this->M_name;
   }
@@ -43,6 +47,10 @@ namespace friday::inline api {
   auto NamespaceType::get() -> Type* {
     static NamespaceType NAMESPACE_TYPE;
     return dynamic_cast<Type*>(&NAMESPACE_TYPE);
+  }
+  
+  auto NamespaceType::is_namespace_type(Type* type) -> bool {
+    return type == NamespaceType::get();
   }
 
   auto TypeType::get_name() const noexcept -> string_view {
@@ -57,6 +65,10 @@ namespace friday::inline api {
     static TypeType TYPE_TYPE;
     return dynamic_cast<Type*>(&TYPE_TYPE);
   }
+  
+  auto TypeType::is_type_type(Type* type) -> bool {
+    return type == TypeType::get();
+  }
 
   PointerType::PointerType(Type& pointedType, u64 dimensions) noexcept {
     this->M_pointedType = &pointedType;
@@ -69,7 +81,7 @@ namespace friday::inline api {
   }
 
   auto PointerType::to_llvm_type() const noexcept -> llvm::Type* {
-    return LLVMWrapper::get_pointer_type(this->M_pointedType->to_llvm_type());
+    return LLVM.get_pointer_type();
   }
 
   auto PointerType::get_pointed_type() const noexcept -> Type* {
@@ -134,11 +146,15 @@ namespace friday::inline api {
   }
 
   auto FunctionType::to_llvm_type() const noexcept -> llvm::Type* {
+    return llvm::PointerType::get(LLVM.context(), 0);
+  }
+  
+  auto FunctionType::to_llvm_signature_type() const noexcept -> llvm::Type* {
     auto args = this->M_parameters
     | views::transform(&Type::to_llvm_type)
-    | ranges::to<vector>();  
-    
-    return LLVMWrapper::get_function_type(
+    | ranges::to<vector>();
+  
+    return LLVM.get_function_type(
       this->M_returnType->to_llvm_type(),
       span{ args.data(), args.size() }
     );
@@ -214,8 +230,8 @@ namespace friday::inline api {
     auto ptrField = Variable::Factory::create(*this, "ptr", *ptrType);
     auto lenField = Variable::Factory::create(*this, "len", *intType);
 
-    this->define(ptrField);
-    this->define(lenField);
+    this->add_field(ptrField);
+    this->add_field(lenField);
   }
 
   auto ArrayType::get(Type& elementType) noexcept -> Type* {

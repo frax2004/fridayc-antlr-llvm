@@ -27,6 +27,9 @@ namespace friday::inline api {
     /// @brief Maps a namepsace name with its instance
     static namespace_map_type S_namespaces;
 
+    /// @brief Builtin symbols
+    static vector<ISymbol*> S_builtins;
+
   private:
     /// @brief The parent namespace
     Namespace* M_parentNamespace { nullptr };
@@ -73,6 +76,10 @@ namespace friday::inline api {
     /// @brief Get the global namespace
     /// @return the global namespace instance
     static auto get_global_namespace() noexcept -> Namespace*;
+
+    /// @brief Get the builtin symbols
+    /// @return the builtin symbols
+    static auto get_builtins() -> vector<ISymbol*> const&;
 
     /// @brief Search a namespace instance by its name
     /// @param name the name of the namespace

@@ -32,6 +32,10 @@ namespace friday::inline api {
   }
 
   auto Struct::to_llvm_type() const noexcept -> llvm::Type* {
+    string mangled_name = this->get_mangled_id();
+    if(auto type = llvm::StructType::getTypeByName(LLVM.context(), mangled_name); type != nullptr) {
+      return type;
+    }
     auto fields = this->get_symbols()
     | views::filter(&Variable::is_variable)
     | views::transform(&Variable::to_variable)
@@ -39,11 +43,20 @@ namespace friday::inline api {
     | views::transform(&Type::to_llvm_type)
     | ranges::to<vector>();
 
-    return LLVMWrapper::get_struct_type(this->get_mangled_id(), span{ fields.data(), fields.size() });
+    return LLVM.get_struct_type(this->get_mangled_id(), span{ fields.data(), fields.size() });
   }
 
   auto Struct::get_qualified_id() const -> string {
     return this->M_name;
+  }
+
+  auto Struct::add_field(Variable* field) -> void {
+    this->M_fields.push_back(field);
+    this->define(dynamic_cast<ISymbol*>(field));
+  }
+
+  auto Struct::get_fields() const -> vector<Variable*> const& {
+    return this->M_fields;
   }
 
   auto Struct::get_mangled_name_builder() const -> NameMangler {

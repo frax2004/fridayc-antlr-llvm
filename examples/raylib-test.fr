@@ -1,11 +1,54 @@
-using raylib;
+public fn getWidth() -> int => 1200;
+public fn getHeight() -> int => 800;
+public fn getTitle() -> *byte => "Hello From Friday World!";
+
+public fn getSettings() -> Settings => new Settings {
+  title: "Hello From Friday!",
+  fps: 60,
+  height: 800,
+  width: 1200
+};
+
+public native fn sum(x: int, y: int) -> int;
+
+public native fn malloc(bytes: int) -> *void;
+public native fn free(memory: *void) -> void;
 
 public fn main() -> void {
-  raylib.InitWindow("Hello From Friday!", 1200, 800);
-  defer raylib.CloseWindow();
+  const width = getWidth();
+  const height = getHeight();
+  const title = getTitle();
+  const fps = 60;
 
-  while !raylib.WindowShouldClose() {
-    raylib.BeginDrawing();
-    defer raylib.EndDrawing();
+  const settings = getSettings();
+
+  InitWindow(width, height, title);
+  SetTargetFPS(fps);
+
+  while !WindowShouldClose() {
+    BeginDrawing();
+    EndDrawing();
   }
+
+  const mem = malloc(sizeof Settings);
+  free(mem);
+
+  CloseWindow();
 }
+
+public struct Settings {
+  width: int;
+  height: int;
+  title: *byte;
+  fps: int;
+}
+
+
+public native fn InitWindow(width: int, height: int, title: *byte) -> void;
+public native fn CloseWindow() -> void;
+public native fn WindowShouldClose() -> bool;
+public native fn BeginDrawing() -> void;
+public native fn EndDrawing() -> void;
+public native fn SetTargetFPS(fps: int) -> void;
+public native fn WaitTime(amount: float) -> void;
+

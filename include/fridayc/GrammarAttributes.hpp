@@ -10,6 +10,7 @@ namespace friday::inline api {
   struct Scope;
   struct Function;
   struct Overload;
+  struct Variable;
   struct TranslationUnit;
 
   /**
@@ -177,7 +178,7 @@ namespace friday::inline api {
   };
 
   struct DeclarationStatementAttributes : public StatementAttributes {
-
+    Variable* variable { nullptr };
   };
 
   struct SyntacticalScopeAttributes : public GrammarAttributes {
@@ -206,7 +207,7 @@ namespace friday::inline api {
   };
 
   struct UnaryPostfixExpressionAttributes : public ExpressionAttributes {
-
+    Function* _operator = nullptr;
   };
 
   struct FloatLiteralExpressionAttributes : public ExpressionAttributes {
@@ -238,7 +239,7 @@ namespace friday::inline api {
   };
 
   struct BinaryExpressionAttributes : public ExpressionAttributes {
-
+    Function* _operator = nullptr;
   };
 
   struct AssignmentExpressionAttributes : public ExpressionAttributes {
@@ -250,7 +251,7 @@ namespace friday::inline api {
   };
 
   struct UnaryPrefixExpressionAttributes : public ExpressionAttributes {
-
+    Function* _operator = nullptr;
   };
 
   struct SubscriptExpressionAttributes : public ExpressionAttributes {
@@ -266,7 +267,7 @@ namespace friday::inline api {
   };
 
   struct CallExpressionAttributes : public ExpressionAttributes {
-
+    Function* caller { nullptr };
   };
 
   struct NullLiteralExpressionAttributes : public ExpressionAttributes {

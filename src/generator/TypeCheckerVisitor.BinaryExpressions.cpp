@@ -9,104 +9,130 @@ namespace friday::inline api {
     Console::debug(format("TypeCheckerVisitor::visitCallExpression({})", ctx->getText()));
     this->visitChildren(ctx);
 
-    auto candidate = $(ctx->func).value
-    .to_overload()
-    .value_or({});
+    Value candidate = $(ctx->func).value;
+    Type* callerType = candidate.type();
 
-    if(candidate == nullptr) {
+    if(UnresolvedOverloadType::is_unresolved_overload_type(callerType)) {
+      Overload* overload = *candidate.unwrap<Overload*>();
+
+      auto try_member = [ctx, overload]() -> optional<Function*> {
+        auto memberAccess = to_member_access_expr(ctx->func);
+        if(memberAccess == nullptr) return nullopt;
+
+        auto this_bound_args = [memberAccess, ctx] -> generator<Type*> {
+          co_yield PointerType::get(*$(memberAccess->object).value.type(), 1);
+          for(auto arg : ctx->args) co_yield $(arg).value.type();
+        };
+
+        auto match = overload->try_match(this_bound_args() | ranges::to<vector>());
+        return match != nullptr ? make_optional(match) : nullopt;
+      };
+
+      auto try_static = [ctx, overload]() {
+        auto obj = overload
+        ->try_match(
+          ctx->args 
+          | views::transform([](FridayParser::ExpressionContext* expr) { return &$(expr).value; })
+          | views::transform(&Value::type)
+          | ranges::to<vector>()
+        );
+
+        return obj != nullptr ? optional{ obj } : nullopt;
+      };
+
+      Function* function = try_member()
+      .or_else(try_static)
+      .value_or(nullptr);
+
+      if(function == nullptr) {
+        this->error_at(
+          ctx,
+          ctx->func->getStart(),
+          format(
+            "No overload of function '{}' matches the given arguments ({}):\nAvailable overloads:\n{}",
+            overload->get_qualified_id(),
+            ctx->args
+            | views::transform([](FridayParser::ExpressionContext* expr) { return &$(expr).value; })
+            | views::transform(&Value::type)
+            | views::transform(&Type::get_name)
+            | views::join_with(", "s)
+            | ranges::to<string>(),
+            overload->get_instances()
+            | views::transform(&Function::get_type)
+            | views::transform(&Type::get_name)
+            | views::join_with("\n"s)
+            | ranges::to<string>()
+          )
+        );
+        return {};
+      }
+
+      FunctionType* funcType = FunctionType::to_function(function->get_type());
+      $(ctx).value = Value::from_rvalue(funcType->get_return_type(), nullptr);
+      $(ctx).caller = function;
+
+    } else if(FunctionType::is_function(callerType)) {
+
+      FunctionType* funcType = FunctionType::to_function(callerType);
+      auto matches = views::zip(
+        views::iota(0ULL, min(funcType->params_size(), ctx->args.size())),
+        funcType->get_params_types(),
+        ctx->args
+        | views::transform([](FridayParser::ExpressionContext* expr) { return &$(expr).value; })
+        | views::transform(&Value::type)
+      );
+
+      if(funcType->params_size() != ctx->args.size()) {
+        this->error_at(
+          ctx,
+          ctx->getStop(),
+          format(
+            "Candidate expects {} arguments, but {} were given.",
+            funcType->params_size(),
+            ctx->args.size()
+          )
+        );
+      }
+
+      for(auto [i, expected, actual] : matches) {
+        if(expected != actual) {
+          this->error_at(
+            ctx,
+            ctx->args[i]->getStart(),
+            format(
+              "Argument {} of type {} does not match parameter of type {}.",
+              i,
+              actual->get_name(),
+              expected->get_name()
+            )
+          );
+        }
+      }
+
+      $(ctx).value = Value::from_rvalue(funcType->get_return_type(), nullptr);
+      $(ctx).caller = nullptr;
+    } else {
       this->error_at(
         ctx,
         ctx->getStart(),
         format(
-          "The underlined expression '{}' of type '{}' is not a function and cannot be called.",
+          "The underlined expression '{}' of type '{}' is not a callable and cannot be called.",
           ctx->func->getText(),
-          $(ctx->func).value.get_type()->get_name()
+          $(ctx->func).value.type()->get_name()
         )
       );
-      return {};
     }
-
-    Overload* overload = candidate;
-    Function* function = {};
-
-    if(auto memberAccess = to_member_access_expr(ctx->func); memberAccess != nullptr) {
-      auto params_with_this = [memberAccess, ctx] -> generator<Type*> {
-        co_yield PointerType::get(*$(memberAccess->object).value.get_type(), 1);
-        for(auto arg : ctx->args) co_yield $(arg).value.get_type();
-      };
-
-      function = overload->try_match(params_with_this() | ranges::to<vector>());
-    }
-    
-    auto try_static = [ctx, &overload]() {
-      auto obj = overload
-      ->try_match(
-        ctx->args 
-        | views::transform([](FridayParser::ExpressionContext* expr) { return &$(expr).value; })
-        | views::transform(&Value::get_type)
-        | ranges::to<vector>()
-      );
-
-      return obj != nullptr ? optional{ obj } : nullopt;
-    };
-
-    
-    function = (function != nullptr ? optional{ function } : nullopt)
-    .or_else(try_static)
-    .value_or({});
-
-    if(function == nullptr) {
-      function = overload->try_match(
-        ctx->args
-        | views::transform([](FridayParser::ExpressionContext* expr) { return &$(expr).value; })
-        | views::transform(&Value::get_type)
-        | ranges::to<vector>()
-      );
-    }
-
-    if(function == nullptr) {
-      this->error_at(
-        ctx,
-        ctx->func->getStart(),
-        format(
-          "No overload of function '{}' matches the given arguments ({}):\nAvailable overloads:\n{}",
-          overload->get_qualified_id(),
-          ctx->args
-          | views::transform([](FridayParser::ExpressionContext* expr) { return &$(expr).value; })
-          | views::transform(&Value::get_type)
-          | views::transform(&Type::get_name)
-          | views::join_with(", "s)
-          | ranges::to<string>(),
-          overload->get_instances()
-          | views::transform(&Function::get_type)
-          | views::transform(&Type::get_name)
-          | views::join_with("\n"s)
-          | ranges::to<string>()
-        )
-      );
-      return {};
-    }
-
-    auto funcType = dynamic_cast<FunctionType*>(function->get_type());
-    $(ctx).value = Value::from_rvalue(funcType->get_return_type(), nullptr);
 
     return {};
   }
 
-  auto TypeCheckerVisitor::visitGroupingExpression(FridayParser::GroupingExpressionContext *ctx) -> any {
-    Console::debug(format("TypeCheckerVisitor::visitGroupingExpression({})", ctx->getText()));
-    this->visitChildren(ctx);
-    $(ctx).value = Value::from_rvalue($(ctx->expression()).value.get_type(), nullptr);
-
-    return {};
-  }
 
   auto TypeCheckerVisitor::visitSubscriptExpression(FridayParser::SubscriptExpressionContext *ctx) -> any {
     Console::debug(format("TypeCheckerVisitor::visitSubscriptExpression({})", ctx->getText()));
     this->visitChildren(ctx);
 
-    Type* arrayType = $(ctx->array).value.get_type();
-    Type* indexType = $(ctx->index).value.get_type();
+    Type* arrayType = $(ctx->array).value.type();
+    Type* indexType = $(ctx->index).value.type();
 
     bool ok = true;
     if(not ArrayType::is_array(arrayType) or ArrayType::to_array(arrayType)->get_element_type() == this->VOID()) {
@@ -139,7 +165,7 @@ namespace friday::inline api {
 
     $(ctx).value = Value::from_unknown(
       ArrayType::to_array(arrayType)->get_element_type(),
-      $(ctx->array).value.get_category()
+      $(ctx->array).value.category()
     );
     
     return {};
@@ -149,8 +175,8 @@ namespace friday::inline api {
     Console::debug(format("TypeCheckerVisitor::visitBinaryExpression({})", ctx->getText()));
     this->visitChildren(ctx);
 
-    Type* lhsType = $(ctx->left).value.get_type();
-    Type* rhsType = $(ctx->right).value.get_type();
+    Type* lhsType = $(ctx->left).value.type();
+    Type* rhsType = $(ctx->right).value.type();
     
     string operatorName = format("operator{}", ctx->binaryOperator->getText());
     Function* function = this->find_binary_operator(operatorName, lhsType, rhsType);
@@ -172,7 +198,10 @@ namespace friday::inline api {
           suggestion
         )
       );
-    } else $(ctx).value = Value::from_rvalue(function->get_return_type(), nullptr);
+    } else {
+      $(ctx).value = Value::from_rvalue(function->get_return_type(), nullptr);
+      $(ctx)._operator = function;
+    }
 
     return {};
   }
@@ -184,16 +213,16 @@ namespace friday::inline api {
     auto memberName = ctx->member->getText();
     auto always = [](ISymbol* symbol) { (void)symbol; return true; };
     auto is_value = [](Value const& value) {
-      return (value.is_lvalue() or value.is_rvalue()) and (
-        dynamic_cast<Struct*>(value.get_type()) != nullptr or (
-          PointerType::is_pointer(value.get_type()) and 
-          dynamic_cast<Struct*>(PointerType::to_pointer(value.get_type())->get_pointed_type()) != nullptr
+      return (value.is(ValueCategory::RVALUE) or value.is(ValueCategory::LVALUE)) and (
+        dynamic_cast<Struct*>(value.type()) != nullptr or (
+          PointerType::is_pointer(value.type()) and 
+          dynamic_cast<Struct*>(PointerType::to_pointer(value.type())->get_pointed_type()) != nullptr
         )
       );
     };
 
-    bool ok = $(ctx->object).value.is_struct() 
-    or $(ctx->object).value.is_namespace() 
+    bool ok = $(ctx->object).value.holds(Value::Kind::STRUCT) 
+    or $(ctx->object).value.holds(Value::Kind::NAMESPACE)
     or is_value($(ctx->object).value);
 
     if(not ok) {
@@ -203,15 +232,15 @@ namespace friday::inline api {
         format(
           "The underlined expression '{}' of type '{}' is not an instance of a struct or a struct or a namespace",
           ctx->object->getText(),
-          $(ctx->object).value.get_type()->get_name()
+          $(ctx->object).value.type()->get_name()
         )
       );
     } 
 
     if(is_value($(ctx->object).value)) {
-      auto asStruct = dynamic_cast<Struct*>($(ctx->object).value.get_type());
+      auto asStruct = dynamic_cast<Struct*>($(ctx->object).value.type());
       // attempt auto dereference
-      if(not asStruct) asStruct = dynamic_cast<Struct*>(PointerType::to_pointer($(ctx->object).value.get_type())->get_pointed_type());
+      if(not asStruct) asStruct = dynamic_cast<Struct*>(PointerType::to_pointer($(ctx->object).value.type())->get_pointed_type());
 
       if(not asStruct->is_defined(memberName, always)) {
         this->error_at(
@@ -222,8 +251,8 @@ namespace friday::inline api {
       } else $(ctx).value = Value::from_symbol(asStruct->retrieve(memberName));
     }
 
-    if($(ctx->object).value.is_struct()) {
-      auto asStruct = *$(ctx->object).value.to_struct();
+    if($(ctx->object).value.holds(Value::Kind::STRUCT)) {
+      auto asStruct = *$(ctx->object).value.unwrap<Struct*>();
       if(not asStruct->is_defined(memberName, always)) {
         this->error_at(
           ctx,
@@ -233,8 +262,8 @@ namespace friday::inline api {
       } else $(ctx).value = Value::from_symbol(asStruct->retrieve(memberName));
     }
 
-    if($(ctx->object).value.is_namespace()) {
-      auto asNamespace = *$(ctx->object).value.to_namespace();
+    if($(ctx->object).value.holds(Value::Kind::NAMESPACE)) {
+      auto asNamespace = *$(ctx->object).value.unwrap<Namespace*>();
       if(not asNamespace->is_defined(memberName, always)) {
         this->error_at(
           ctx,
@@ -251,7 +280,7 @@ namespace friday::inline api {
     Console::debug(format("TypeCheckerVisitor::visitExplicitCastExpression({})", ctx->getText()));
     this->visitChildren(ctx);
 
-    Type* lhsType = $(ctx->expr).value.get_type();
+    Type* lhsType = $(ctx->expr).value.type();
     Type* rhsType = $(ctx->type()).type;
     Type* valueType = lhsType;
     Type* targetType = rhsType;
@@ -303,76 +332,6 @@ namespace friday::inline api {
     return {};
   }
 
-  auto TypeCheckerVisitor::visitNewExpression(FridayParser::NewExpressionContext *ctx) -> any {
-    Console::debug(format("TypeCheckerVisitor::visitNewExpression({})", ctx->getText()));
-    this->visitChildren(ctx);
-
-    Type* type = $(ctx->type()).type;
-
-
-    if(auto asStruct = dynamic_cast<Struct*>(type)) {
-      auto fieldsNames = ctx->fields 
-      | views::transform(&ant::Token::getText);
-      
-      auto initializers = ctx->initializers 
-      | views::transform([](FridayParser::ExpressionContext* expr) { return &$(expr).value; })
-      | views::transform(&Value::get_type);
-      
-      bool ok = true;
-      for(auto [i, field_and_type] : views::zip(fieldsNames, initializers) | views::enumerate) {
-        auto [name, actual] = field_and_type;
-
-        auto field = asStruct->find_field(name);
-        if(field == nullptr) {
-          ok = false;
-          this->error_at(
-            ctx,
-            ctx->fields[i],
-            format(
-              "In new expression (#{}-th field), struct '{}' has no field named '{}'",
-              i, 
-              asStruct->get_name(), 
-              name
-            )
-          );
-          continue;
-        }
-
-        Type* expected = field->get_type();
-        if(expected != actual) {
-          ok = false;
-          this->error_at(
-            ctx,
-            ctx->initializers[i]->getStart(),
-            format(
-              "In new expression, in the assignment of field '{}' requires an expression of type '{}' but got a value of type '{}'",
-              name,
-              expected->get_name(),
-              actual->get_name()
-            )
-          );
-        }
-      }
-
-      if(not ok) return {};
-
-      $(ctx).value = Value::from_rvalue(type, nullptr);
-
-    } else {
-      this->error_at(
-        ctx,
-        ctx->type()->getStart(),
-        format(
-          "In new expression '{}', cannot create instance of type '{}'",
-          ctx->getText(),
-          type->get_name()
-        )
-      );
-    }
-    
-    return {};
-  }
-
   auto to_simple_operator(u64 token_type) -> string_view {
     switch(token_type) {
       case FridayParser::PLUS_ASSIGN: return "+"sv;
@@ -397,10 +356,10 @@ namespace friday::inline api {
     Type* resultType = ErrorType::get();
 
     if(ctx->binaryOperator->getType() == FridayParser::ASSIGN) {
-      resultType = $(ctx->right).value.get_type();
+      resultType = $(ctx->right).value.type();
     } else {
-      Type* lhsType = $(ctx->left).value.get_type();
-      Type* rhsType = $(ctx->right).value.get_type();
+      Type* lhsType = $(ctx->left).value.type();
+      Type* rhsType = $(ctx->right).value.type();
 
       string_view op = to_simple_operator(ctx->binaryOperator->getType());
       string operatorName = format("operator{}", op);
@@ -427,16 +386,16 @@ namespace friday::inline api {
     }
 
     bool ok = true;
-    if(ErrorType::is_error_type($(ctx->left).value.get_type())) {
+    if(ErrorType::is_error_type($(ctx->left).value.type())) {
       ok = false;
       this->error_at(
         ctx,
         ctx->left->getStart(),
-        format("Cannot assign to an expression of an invalid type '{}'", $(ctx->left).value.get_type()->get_name())
+        format("Cannot assign to an expression of an invalid type '{}'", $(ctx->left).value.type()->get_name())
       );
     }
 
-    if($(ctx->left).value.get_category() != ValueCategory::LVALUE) {
+    if($(ctx->left).value.category() != ValueCategory::LVALUE) {
       ok = false;
       this->error_at(
         ctx,
@@ -445,7 +404,7 @@ namespace friday::inline api {
       );
     }
 
-    if($(ctx->left).value.get_type() != resultType) {
+    if($(ctx->left).value.type() != resultType) {
       ok = false;
       this->error_at(
         ctx,
@@ -453,14 +412,14 @@ namespace friday::inline api {
         format(
           "In assignment expression, cannot assign an expression of type '{}' to an object of type '{}'.",
           resultType->get_name(),
-          $(ctx->left).value.get_type()->get_name()
+          $(ctx->left).value.type()->get_name()
         )
       );
     }
 
     if(not ok) return {};
 
-    $(ctx).value = Value::from_lvalue(resultType, nullptr);
+    $(ctx).value = Value::from_lvalue(resultType, nullptr, nullptr);
 
     return {};
   }

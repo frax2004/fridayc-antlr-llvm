@@ -25,20 +25,23 @@ namespace friday::inline core {
     ~LLVMWrapper() = default;
 
   public:
+    static auto get_instance() -> LLVMWrapper&;
+
+  public:
     auto context() -> llvm::LLVMContext&;
     auto module() const -> llvm::Module&;
     auto builder() const -> llvm::IRBuilder<>&;
-    
-  public:
-    static auto instance() -> LLVMWrapper&;
+    auto size_of(llvm::Type* type) const -> size_t;
+    auto alignment_of(llvm::Type* type) const -> size_t;
 
-    static auto get_int_type(unsigned bits) -> llvm::Type*;
-    static auto get_float_type() -> llvm::Type*;
-    static auto get_double_type() -> llvm::Type*;
-    static auto get_void_type() -> llvm::Type*;
-    static auto get_struct_type(string name, span<llvm::Type*> fields) -> llvm::Type*;
-    static auto get_function_type(llvm::Type* ret, span<llvm::Type*> args) -> llvm::Type*;
-    static auto get_pointer_type(llvm::Type* pointed) -> llvm::Type*;
-
+    auto get_int_type(unsigned bits) -> llvm::Type*;
+    auto get_float_type() -> llvm::Type*;
+    auto get_double_type() -> llvm::Type*;
+    auto get_void_type() -> llvm::Type*;
+    auto get_struct_type(string name, span<llvm::Type*> fields) -> llvm::Type*;
+    auto get_function_type(llvm::Type* ret, span<llvm::Type*> args) -> llvm::Type*;
+    auto get_pointer_type() -> llvm::Type*;
   };
+
+  extern LLVMWrapper& LLVM;
 }

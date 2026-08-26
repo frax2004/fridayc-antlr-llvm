@@ -89,7 +89,7 @@ namespace friday::inline api {
         );
       } else {
         Variable* field = Variable::Factory::create(*asStruct, fieldName, *fieldType);
-        asStruct->define(field);
+        asStruct->add_field(field);
         if(auto fieldAsStruct = dynamic_cast<Struct*>(fieldType)) {
           this->M_dependencyGraph.add_edge(
             static_cast<void*>(asStruct), 
