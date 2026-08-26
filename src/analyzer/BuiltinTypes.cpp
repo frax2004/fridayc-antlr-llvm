@@ -218,6 +218,10 @@ namespace friday::inline api {
     return S_instances.back().get();
   }
 
+  auto PrimitiveType::is_primitive(Type* type) -> bool {
+    return dynamic_cast<PrimitiveType*>(type) != nullptr;
+  }
+
   auto PrimitiveType::to_llvm_type() const noexcept -> llvm::Type* {
     return this->M_type;
   }

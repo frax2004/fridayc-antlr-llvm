@@ -164,7 +164,7 @@ namespace friday::inline api {
         Function* function = this->find_unary_operator(operatorName, type);
     
         string suggestion = "";
-    
+
         if(function == nullptr) {
           this->error_at(
             ctx,

@@ -82,7 +82,7 @@ namespace friday::inline api {
   }
 
   auto TypeCheckerVisitor::find_unary_operator(string_view name, Type* type) -> Function* {
-    
+
     auto unit = this->get_current_unit();
 
     auto search_within_global_scope = [unit, name]() {

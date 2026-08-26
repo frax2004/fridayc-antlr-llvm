@@ -140,6 +140,7 @@ namespace friday::inline api {
     ~PrimitiveType() override = default;
 
     auto to_llvm_type() const noexcept -> llvm::Type* override;
+    static auto is_primitive(Type* type) -> bool;
   };
 
 
