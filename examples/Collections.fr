@@ -1,0 +1,28 @@
+namespace Collections;
+
+using Libc;
+
+public struct String {
+  data: *byte;
+  size: int;
+  capacity: int;
+
+  public fn from(literal: *byte) -> String {
+    const len = Libc.strlen(literal);
+    const buf = Libc.strdup(literal);
+
+    return new String {
+      data: buf,
+      size: len,
+      capacity: len
+    };
+  }
+
+  public fn toSlice(this: String) -> []byte => new []byte {
+    ptr: this.data, len: this.size
+  };
+
+  public fn deinit(this: *String) -> void {
+    Libc.free(this.data as *void);
+  }
+}

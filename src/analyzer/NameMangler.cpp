@@ -43,7 +43,7 @@ namespace friday::inline api {
 
     if(auto it = S_opCodes.find(name); it != S_opCodes.end()) {
       return it->second;
-    } 
+    }
     if(name.empty()) {
       return "";
     } else if(name.starts_with('*')) {
@@ -63,12 +63,12 @@ namespace friday::inline api {
 
     return format(
       "_Z{}{}{}{}",
-      this->M_names.size() > 1 and not this->M_names[0].empty() ? "N" : "",
+      this->M_names.size() <= 2 and this->M_names[0].empty() ? "" : "N",
       this->M_names
       | views::transform(mangle)
       | views::join_with(""s)
       | ranges::to<string>(),
-      this->M_names.size() > 1 and not this->M_names[0].empty() ? "E" : "",
+      this->M_names.size() <= 2 and this->M_names[0].empty() ? "" : "E",
       this->M_argsTypes
       | views::transform(&Type::get_name)
       | views::transform(mangle)

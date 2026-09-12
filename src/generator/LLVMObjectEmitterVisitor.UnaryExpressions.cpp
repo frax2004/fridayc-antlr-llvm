@@ -5,27 +5,11 @@
 namespace friday::inline api {
   
   auto LLVMObjectEmitterVisitor::visitNewExpression(FridayParser::NewExpressionContext *ctx) -> any {
-    (void)ctx;
-
-    auto toIndexedPair = [](auto pair) { 
-      return make_pair(
-        get<1>(pair), 
-        static_cast<u64>(get<0>(pair))
-      ); 
-    };
-
     // Visit the children expressions
     this->visitChildren(ctx);
 
     // Get the struct type
-    Struct* type = dynamic_cast<Struct*>($(ctx).value.type());
-
-    // Map each field name to its index
-    map<string, u64> fieldIndex = type->get_fields()
-    | views::transform(&Variable::get_qualified_id)
-    | views::enumerate
-    | views::transform(toIndexedPair)
-    | ranges::to<map>();
+    Struct* type = Struct::to_struct_type($(ctx).value.type());
 
     // Get the actual llvm struct type
     llvm::Type* llvmType = type->to_llvm_type();
@@ -44,7 +28,7 @@ namespace friday::inline api {
     // Store each value into the correspondent field pointer of the struct
     for(auto [name, initializer] : namedInitializers) {
       // Get the index of the field by name
-      u64 index = fieldIndex.at(name);
+      u64 index = type->get_field_index(name);
 
       // Get the field pointer
       llvm::Value* fieldPtr = LLVM.builder().CreateStructGEP(

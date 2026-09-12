@@ -1,7 +1,45 @@
-(Titolo ancora da definire)
-# Il linguaggio di programmazione Friday: next-gen C
+# Il linguaggio di programmazione Friday: Next-Gen C
 
-## Indice degli argomenti trattati
+APPUNTI SU COME SCRIVERE LE COSE BELLE
+- frontespizio
+- sintesi (riassunto, overview) 
+- interlinea 1.25/1.5
+- descrizioni immagini: numerale in base al capitolo.indiceimmagine: per tabelle va sopra, per altro va sotto
+- didascalie: il testo deve essere giustificato, se e' solo una riga allora si puo centrare altrimenti va giustificato
+- dimensione font 12-24
+- numerazione pagine (le prime coi numeri romani)
+- snippet incasellato
+- i capitoli cominciano su pagine nuove
+
+---
+
+## Indice
+- Introduzione (di cosa parlano i capitoli)
+
+#### 1 Introduzione
+- 1.1 Introduzione al linguaggio di programmazione "Friday"
+- 1.2 Motivazioni alla base dello sviluppo
+- 1.3 Una panoramica sul linguaggio "Friday"
+
+#### 2 Il compilatore
+- 2.1 Utilizzo del generatore di parser ANTLR
+- 2.2 Sintassi e Semantica
+- 2.3 Utilizzo delle librerie LLVM-IR per la generazione del codice intermedio
+
+#### 3 Architettura implementativa
+- 3.1 Algoritmi e strutture dati
+- 3.2 Compatibilita'
+- 3.3 Confronto con linguaggi C-like moderni
+- 3.4 Possibili miglioramenti futuri
+- 3.5 Casi d'uso
+- 3.6 Performance & Benchmarking
+- 3.7 Conclusioni
+
+- Indice bibbliografico
+- Riferimenti esterni
+
+---
+
 ### Che cos'e' il Friday
 Introduzione al linguaggio di programmazione e al suo compilatore.
 ### Da dove nasce l'esigenza di un nuovo linguaggio di programmazione C-like

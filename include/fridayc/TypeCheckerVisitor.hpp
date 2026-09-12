@@ -58,15 +58,11 @@ namespace friday::inline api {
     auto pop() -> ISymbolTable*;
     auto top() -> ISymbolTable*;
 
-    auto BYTE() -> Type*;
-    auto INT() -> Type*;
-    auto BOOL() -> Type*;
-    auto VOID() -> Type*;
-    auto FLOAT() -> Type*;
-    auto VOIDPTR() -> Type*;
-
     auto find_binary_operator(string_view name, Type* lhs, Type* rhs) -> Function*;
     auto find_unary_operator(string_view name, Type* type) -> Function*;
+
+    auto prepare_scope(FridayParser::SyntacticalScopeContext* ctx, vector<pair<string, Type*>> locals) -> void;
+    auto check_scope(FridayParser::SyntacticalScopeContext* ctx) -> void;
 
     template<class T>
     auto by_visiting() -> function<any (T*)> {

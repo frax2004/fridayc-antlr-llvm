@@ -10,17 +10,8 @@ namespace friday::inline api {
 
   auto TypeCheckerVisitor::visitScopeStatement(FridayParser::ScopeStatementContext *ctx) -> any {
     Console::debug(format("ScopeStatementContext: {}", ctx->getText()));
-
-    ISymbolTable* parent = this->top();
-
-    if(not parent) throw OperationNotSupportedError{};
-
-    Scope* current = Scope::Factory::create(*parent);
-    $(ctx->syntacticalScope()).scope = current;
-
-    this->push(current);
-    this->visitChildren(ctx);
-    this->pop();
+    this->prepare_scope(ctx->syntacticalScope(), {});
+    this->check_scope(ctx->syntacticalScope());
 
     return {};
   }
@@ -76,7 +67,7 @@ namespace friday::inline api {
       );
     }
 
-    Type* inferred = $(ctx->expression()).value.type();
+    Type* inferred = $(ctx->initializer).value.type();
 
     if(auto expected = ctx->type(); expected != nullptr and $(expected).type != inferred) {
       ok = false;
@@ -90,20 +81,15 @@ namespace friday::inline api {
           $(expected).type->get_name()
         )
       );
-    } else if(ctx->type() == nullptr and UnresolvedOverloadType::is_unresolved_overload_type(inferred)) {
-      ok = false;
-      this->error_at(
-        ctx,
-        ctx->ASSIGN()->getSymbol(),
-        format(
-          "In declaration of variable '{}', cannot infer the type from an expression of type {}",
-          name,
-          inferred->get_name()
-        )
-      );
     }
+  
+    static set<Type*> proibitedTypes = {
+      ErrorType::get(),
+      Type::get_void_type(),
+      UnresolvedOverloadType::get()
+    };
 
-    if(ErrorType::is_error_type(inferred)) {
+    if(proibitedTypes.contains(inferred)) {
       ok = false;
       this->error_at(
         ctx,
@@ -111,13 +97,13 @@ namespace friday::inline api {
         format(
           "In declaration of variable '{}', cannot declare a variable with an invalid type '{}'",
           name,
-          ErrorType::get()->get_name()
+          inferred->get_name()
         )
       );
     }
 
     if(not ok) return {};
-    Variable* var = Variable::Factory::create(*scope, name, *$(ctx->initializer).value.type());
+    Variable* var = Variable::Factory::create(*scope, name, *inferred);
     $(ctx).variable = var;
     scope->define(var);
 
@@ -130,13 +116,13 @@ namespace friday::inline api {
     for(auto [condition, statement] : views::zip(ctx->conditions, ctx->scopes)) {
       this->visit(condition);
 
-      if($(condition).value.type() != this->BOOL()) {
+      if($(condition).value.type() != Type::get_bool_type()) {
         this->error_at(
           ctx,
           condition->getStart(),
           format(
             "Condition expression expected to be of type '{}' but got an expression of type '{}'",
-            this->BOOL()->get_name(),
+            Type::get_bool_type()->get_name(),
             $(condition).value.type()->get_name()
           )
         );
@@ -152,7 +138,135 @@ namespace friday::inline api {
 
   auto TypeCheckerVisitor::visitForStatement(FridayParser::ForStatementContext *ctx) -> any {
     Console::debug(format("ForStatementContext: {}", ctx->getText()));
-    this->visitChildren(ctx);
+
+    vector<pair<string, Type*>> locals {};
+
+    if(ctx->varname != nullptr) {
+      // Indexed for loop
+      string varname = ctx->varname->getText();
+      ISymbolTable* scope = this->top();
+
+      bool ok = true;
+      if(scope->is_defined(varname, &Variable::is_variable)) {
+        ok = false;
+        this->error_at(
+          ctx,
+          ctx->varname,
+          format(ENTITY_REDECLARATION, varname)
+        );
+      }
+
+      this->visit(ctx->from);
+      this->visit(ctx->to);
+
+      Type* fromType = $(ctx->from).value.type();
+      Type* toType = $(ctx->to).value.type();
+      if(fromType != Type::get_int_type()) {
+        this->error_at(
+          ctx->from,
+          ctx->from->getStart(),
+          format(
+            "The underlined lower bound expression of indexed for loop must be of type {}, got an expression of type {}",
+            Type::get_int_type()->get_name(),
+            fromType->get_name()
+          )
+        );
+      }
+
+      if(toType != Type::get_int_type()) {
+        this->error_at(
+          ctx->to,
+          ctx->to->getStart(),
+          format(
+            "The underlined upper bound expression of indexed for loop must be of type {}, got an expression of type {}",
+            Type::get_int_type()->get_name(),
+            toType->get_name()
+          )
+        );
+      }
+
+      if(ok) {
+        locals.push_back(pair{ varname, Type::get_int_type() });
+      }
+    } else {
+      // (filtered) Slice for loop
+      // assert ctx.enumerator was not defined in the current scope
+      // assert ctx.itername was not defined in the current scope
+      // assert ctx.slice is a slice
+      // assert (if present) ctx.filterExpr is boolean
+      ISymbolTable* scope = this->top();
+
+      
+      string itername = ctx->itername->getText();
+
+      bool enumeratorWasDefined = ctx->enumerator != nullptr and scope->is_defined(
+        ctx->enumerator->getText(), 
+        &Variable::is_variable
+      );
+      
+      bool iternameWasDefined = scope->is_defined(itername, &Variable::is_variable);
+
+      if(enumeratorWasDefined) {
+        this->error_at(
+          ctx,
+          ctx->enumerator,
+          format(ENTITY_REDECLARATION, ctx->enumerator->getText())
+        );
+      }
+
+      if(iternameWasDefined) {
+        this->error_at(
+          ctx,
+          ctx->itername,
+          format(ENTITY_REDECLARATION, itername)
+        );
+      }
+
+      this->visit(ctx->slice);
+      Type* sliceType = $(ctx->slice).value.type();
+
+      if(not sliceType->is_slice_type()) {
+        this->error_at(
+          ctx->slice,
+          ctx->slice->getStart(),
+          format(
+            "In range based for loop, the underlined range expression must be a slice but got an expression of type {}",
+            sliceType->get_name()
+          )
+        );
+      }
+
+      if(ctx->enumerator != nullptr and not enumeratorWasDefined) {
+        locals.push_back(pair{ ctx->enumerator->getText(), Type::get_int_type() });
+      }
+      
+      if(not iternameWasDefined) {
+        Type* iterType = PointerType::get(*ArrayType::to_array(sliceType)->get_element_type(), 1);
+        locals.push_back(pair{ itername, iterType });
+      }
+
+    }
+
+    this->prepare_scope(ctx->scope, locals);
+
+    if(ctx->WHERE() != nullptr) {
+      this->visit(ctx->filterExpr);
+
+      Type* filterExprType = $(ctx->filterExpr).value.type();
+      if(filterExprType != Type::get_bool_type()) {
+        this->error_at(
+          ctx->filterExpr,
+          ctx->filterExpr->getStart(),
+          format(
+            "In range based for loop, the underlined filter expression must be of type {}, got an expresson of type {}",
+            Type::get_bool_type()->get_name(),
+            filterExprType->get_name()
+          )
+        );
+      }
+    }
+
+    this->check_scope(ctx->scope);
 
     return {};
   }
@@ -161,13 +275,13 @@ namespace friday::inline api {
     Console::debug(format("WhileStatementContext: {}", ctx->getText()));
 
     this->visit(ctx->condition);
-    if($(ctx->condition).value.type() != this->BOOL()) {
+    if($(ctx->condition).value.type() != Type::get_bool_type()) {
       this->error_at(
         ctx,
         ctx->condition->getStart(),
         format(
           "Condition expression expected to be of type '{}' but got an expression of type '{}'",
-          this->BOOL()->get_name(),
+          Type::get_bool_type()->get_name(),
           $(ctx->condition).value.type()->get_name()
         )
       );
@@ -187,6 +301,13 @@ namespace friday::inline api {
 
   auto TypeCheckerVisitor::visitDeferStatement(FridayParser::DeferStatementContext *ctx) -> any {
     Console::debug(format("DeferStatementContext: {}", ctx->getText()));
+    if(dynamic_cast<FridayParser::DeferStatementContext*>(ctx->statement()) != nullptr) {
+      this->error_at(
+        ctx,
+        ctx->statement()->getStart(),
+        "The underlined statement is not a valid deferreable statement"
+      );
+    }
     this->visitChildren(ctx);
 
     return {};
@@ -220,20 +341,37 @@ namespace friday::inline api {
     Console::debug(format("PrintStatementContext: {}", ctx->getText()));
     this->visitChildren(ctx);
 
-    auto actual = $(ctx->expression()).value.type();
-    auto expected = PointerType::get(*this->BYTE(), 1);
+    static map<Type*, string> S_allowedTypes = {
+      { Type::get_byteptr_type(), "%s"},
+      { Type::get_int_type(), "%lld"},
+      { Type::get_float_type(), "%lf"},
+      { Type::get_byte_type(), "%c"},
+      { Type::get_bool_type(), "%d"},
+      { Type::get_voidptr_type(), "%p"}
+    };
 
-    if(expected != actual) {
+    static string hint = S_allowedTypes
+    | views::keys
+    | views::transform(&Type::get_name)
+    | views::join_with(format("{}' or '{}{}", Console::Color::RESET, Console::Color::BOLD, Console::Color::YELLOW))
+    | ranges::to<string>();
+
+    Type* actual = $(ctx->expression()).value.type();
+
+    if(not S_allowedTypes.contains(actual)) {
       this->error_at(
         ctx,
         ctx->expression()->getStart(),
         format(
-          "Expression must be of type '{}' bug got an expression of type '{}'",
-          expected->get_name(),
+          "Expression must either of type '{}{}{}{}' but got an expression of type '{}'",
+          Console::Color::BOLD, 
+          Console::Color::YELLOW,
+          hint,
+          Console::Color::RESET,
           actual->get_name()
         )
       );
-    }
+    } else $(ctx).fmt = S_allowedTypes.at(actual);
 
     return {};
   }

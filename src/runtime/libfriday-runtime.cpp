@@ -1,15 +1,16 @@
-#include <cstdint>
+#include <stdint.h>
 #include <stdfloat>
-#include <cmath>
+#include <math.h>
 #include <stacktrace>
-#include <csignal>
+#include <signal.h>
+#include <stdlib.h>
 #include <exception>
 
 #define friday_native extern "C"
 
-using friday_int = int64_t;
+using friday_int = long long int;
 using friday_float = double;
-using friday_byte = int8_t;
+using friday_byte = char;
 using friday_bool = bool;
 using friday_void = void;
 using friday_voidptr = friday_void*;
@@ -83,16 +84,15 @@ friday_native auto _Zaa4bool4bool(friday_bool, friday_bool) -> friday_bool;
 friday_native auto _Zoo4bool4bool(friday_bool, friday_bool) -> friday_bool;
 friday_native auto _Znt4bool(friday_bool) -> friday_bool;
 
-friday_native auto _Z4main() -> friday_void;
+friday_native auto _Z4main3intPP4byte(friday_int, const friday_byte**) -> friday_void;
 
 static auto friday_handle_c_terminate() -> void;
 static auto friday_handle_c_segmentation_fault(int32_t) -> void;
 
-auto main() -> int {
+auto main(int argc, const char** argv) -> int {
   std::set_terminate(&friday_handle_c_terminate);
   signal(SIGSEGV, &friday_handle_c_segmentation_fault);
-
-  _Z4main();
+  _Z4main3intPP4byte(argc, argv);
 
   return 0;
 }

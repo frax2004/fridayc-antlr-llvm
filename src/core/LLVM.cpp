@@ -16,6 +16,7 @@ namespace friday::inline core {
   {}
 
   auto LLVMWrapper::size_of(llvm::Type* type) const -> size_t {
+    if(type == nullptr or not type->isSized()) return 0;
     return this->M_module->getDataLayout().getTypeAllocSize(type).getFixedValue();
   }
 

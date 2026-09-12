@@ -51,7 +51,7 @@ namespace friday::inline api {
 
     // Ensure a terminator is present
     if(LLVM.builder().GetInsertBlock()->getTerminator() == nullptr) {
-      if(func->getReturnType() == this->get_void())
+      if(func->getReturnType() == LLVM.get_void_type())
         LLVM.builder().CreateRetVoid();
       else LLVM.builder().CreateUnreachable();
     }
@@ -75,11 +75,19 @@ namespace friday::inline api {
   auto LLVMObjectEmitterVisitor::visitPrintStatement(FridayParser::PrintStatementContext *ctx) -> any {
     this->visitChildren(ctx);
 
-    // Get the string value
-    llvm::Value* str = this->emit_value($(ctx->expression()).value);
+    string fmt = $(ctx).fmt;
+    Value arg = $(ctx->expression()).value;
+
+    Type* byteptrType = Type::get_byteptr_type();
+    
+    // Get the format string
+    llvm::Value* formatter = this->emit_value(Value::from_constant(byteptrType, Constant::from_str(fmt)));
+
+    // Get the value
+    llvm::Value* value = this->emit_value(arg);
 
     // Call to C printf
-    this->emit_call(this->get_printf(), { str });
+    this->emit_call(this->get_printf(), { formatter, value });
 
     return {};
   }
@@ -88,7 +96,7 @@ namespace friday::inline api {
     this->visitChildren(ctx);
 
     Value value = $(ctx->expression()).value;
-    if(value.type()->to_llvm_type() == this->get_void()) {
+    if(value.type()->to_llvm_type() == LLVM.get_void_type()) {
       LLVM.builder().CreateRetVoid();
     } else LLVM.builder().CreateRet(this->emit_value(value));
 
@@ -101,12 +109,128 @@ namespace friday::inline api {
   }
 
   auto LLVMObjectEmitterVisitor::visitIfStatement(FridayParser::IfStatementContext *ctx) -> any {
-    this->visitChildren(ctx);
+    llvm::Function* function = LLVM.builder().GetInsertBlock()->getParent();
+
+    llvm::BasicBlock* mergeBlock = llvm::BasicBlock::Create(LLVM.context(), "if.merge");
+
+    auto group = views::zip(
+      views::indices(ctx->conditions.size()), 
+      ctx->conditions, 
+      ctx->scopes
+    );
+
+    for(auto [i, conditionContext, thenContext] : group) {
+      this->visit(conditionContext);
+
+      llvm::Value* conditionValue = this->emit_value($(conditionContext).value);
+      llvm::BasicBlock* thenBlock = llvm::BasicBlock::Create(LLVM.context(), "if.then");
+
+      llvm::BasicBlock* nextBlock = nullptr;
+      if(i+1 < ctx->conditions.size()) {
+        nextBlock = llvm::BasicBlock::Create(LLVM.context(), "elif.condition");
+      } else if(ctx->elseStatement != nullptr) {
+        nextBlock = llvm::BasicBlock::Create(LLVM.context(), "else.body");
+      } else nextBlock = mergeBlock;
+
+      LLVM.builder().CreateCondBr(conditionValue, thenBlock, nextBlock);
+
+      function->insert(function->end(), thenBlock);
+      LLVM.builder().SetInsertPoint(thenBlock);
+      this->visit(thenContext);
+
+      if(LLVM.builder().GetInsertBlock()->getTerminator() == nullptr) {
+        LLVM.builder().CreateBr(mergeBlock);
+      }
+
+      if(nextBlock != mergeBlock) {
+        function->insert(function->end(), nextBlock);
+        LLVM.builder().SetInsertPoint(nextBlock);
+      }
+    }
+
+    if(ctx->elseStatement != nullptr) {
+      this->visit(ctx->elseStatement);
+
+      if(LLVM.builder().GetInsertBlock()->getTerminator() == nullptr) {
+        LLVM.builder().CreateBr(mergeBlock);
+      }
+    }
+
+    function->insert(function->end(), mergeBlock);
+    LLVM.builder().SetInsertPoint(mergeBlock);
+
     return {};
   }
 
   auto LLVMObjectEmitterVisitor::visitForStatement(FridayParser::ForStatementContext *ctx) -> any {
-    this->visitChildren(ctx);
+    llvm::Function* func = LLVM.builder().GetInsertBlock()->getParent();
+
+    llvm::BasicBlock* condBlock = llvm::BasicBlock::Create(LLVM.context(), "for.cond", func);
+    llvm::BasicBlock* whereBlock = nullptr;
+
+    if(ctx->WHERE() != nullptr) {
+      whereBlock = llvm::BasicBlock::Create(LLVM.context(), "for.where", func);
+    }
+
+    llvm::BasicBlock* bodyBlock = llvm::BasicBlock::Create(LLVM.context(), "for.body", func);
+    llvm::BasicBlock* incrBlock = llvm::BasicBlock::Create(LLVM.context(), "for.incr", func);
+    llvm::BasicBlock* afterBlock = llvm::BasicBlock::Create(LLVM.context(), "for.after", func);
+
+
+    if(ctx->varname != nullptr) {
+      // Indexed for loop
+      
+      this->visit(ctx->from);
+      llvm::Value* lowerBound = this->emit_value($(ctx->from).value);
+
+      this->visit(ctx->to);
+      llvm::Value* upperBound = this->emit_value($(ctx->to).value);
+
+      llvm::Value* indexAlloca = this->emit_alloca(Type::get_int_type()->to_llvm_type());
+      LLVM.builder().CreateStore(lowerBound, indexAlloca);
+
+      ISymbol* symbol = $(ctx->scope).scope->retrieve_if(
+        ctx->varname->getText(), 
+        &Variable::is_variable
+      );
+      this->bind(symbol, indexAlloca);
+
+      LLVM.builder().CreateBr(condBlock);
+      LLVM.builder().SetInsertPoint(condBlock);
+
+      llvm::Value* index = LLVM.builder().CreateLoad(Type::get_int_type()->to_llvm_type(), indexAlloca);
+      llvm::Value* condition = ctx->DOTDOT() ? 
+        LLVM.builder().CreateICmpSLT(index, upperBound)
+      : LLVM.builder().CreateICmpSLE(index, upperBound);
+
+      LLVM.builder().CreateCondBr(condition, whereBlock ? whereBlock : bodyBlock, afterBlock);
+
+      if(whereBlock != nullptr) {
+        LLVM.builder().SetInsertPoint(whereBlock);
+
+        this->visit(ctx->filterExpr);
+        llvm::Value* filterExpr = this->emit_value($(ctx->filterExpr).value);
+        LLVM.builder().CreateCondBr(filterExpr, bodyBlock, incrBlock);
+      }
+
+      LLVM.builder().SetInsertPoint(bodyBlock);
+      this->visit(ctx->scope);
+      if(LLVM.builder().GetInsertBlock()->getTerminator() == nullptr) {
+        LLVM.builder().CreateBr(incrBlock);
+      }
+
+      LLVM.builder().SetInsertPoint(incrBlock);
+      
+      llvm::Value* nextIdx = LLVM.builder().CreateAdd(index, LLVM.builder().getInt64(1));
+      LLVM.builder().CreateStore(nextIdx, indexAlloca);
+      LLVM.builder().CreateBr(condBlock);
+      
+      LLVM.builder().SetInsertPoint(afterBlock);
+    } else {
+      // Slice for loop
+
+    }
+
     return {};
   }
 
@@ -169,22 +293,63 @@ namespace friday::inline api {
   }
 
   auto LLVMObjectEmitterVisitor::visitDeferStatement(FridayParser::DeferStatementContext *ctx) -> any {
-    this->visitChildren(ctx);
+    if(this->M_deferred != nullptr) {
+      this->M_deferred->push(ctx->statement());
+    } else this->visit(ctx->statement());
+
     return {};
   }
 
   auto LLVMObjectEmitterVisitor::visitScopeStatement(FridayParser::ScopeStatementContext *ctx) -> any {
+    stack<FridayParser::StatementContext*> deferred { };
+    stack<FridayParser::StatementContext*>* previous = this->M_deferred;
+
+    this->M_deferred = &deferred;
     this->visitChildren(ctx);
+    
+    while(not deferred.empty()) {
+      auto stmt = deferred.top();
+      this->visit(stmt);
+      deferred.pop();
+    }
+
+    this->M_deferred = previous;
+
     return {};
   }
 
   auto LLVMObjectEmitterVisitor::visitSyntacticalScope(FridayParser::SyntacticalScopeContext *ctx) -> any {
+    stack<FridayParser::StatementContext*> deferred { };
+    stack<FridayParser::StatementContext*>* previous = this->M_deferred;
+    
+    this->M_deferred = &deferred;
     this->visitChildren(ctx);
+    
+    while(not deferred.empty()) {
+      auto stmt = deferred.top();
+      this->visit(stmt);
+      deferred.pop();
+    }
+
+    this->M_deferred = previous;
+
     return {};
   }
 
   auto LLVMObjectEmitterVisitor::visitBasicBlock(FridayParser::BasicBlockContext *ctx) -> any {
+    stack<FridayParser::StatementContext*> deferred { };
+    stack<FridayParser::StatementContext*>* previous = this->M_deferred;
+    
+    this->M_deferred = &deferred;
     this->visitChildren(ctx);
+    
+    while(not deferred.empty()) {
+      auto stmt = deferred.top();
+      this->visit(stmt);
+      deferred.pop();
+    }
+
+    this->M_deferred = previous;
     return {};
   }
 
@@ -192,7 +357,7 @@ namespace friday::inline api {
     this->visitChildren(ctx);
     
     Value value = $(ctx->expression()).value;
-    if(value.type()->to_llvm_type() == this->get_void()) {
+    if(value.type()->to_llvm_type() == LLVM.get_void_type()) {
       LLVM.builder().CreateRetVoid();
     } else LLVM.builder().CreateRet(this->emit_value(value));
 

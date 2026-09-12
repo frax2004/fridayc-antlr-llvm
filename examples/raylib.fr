@@ -1,8 +1,2541 @@
 namespace Raylib;
 
-public native fn InitWindow(title: *byte, width: int, height: int) -> void;
+// Vector2, 2 components
+public struct Vector2 {
+  // Vector x component
+  x: c_float;
+  // Vector y component
+  y: c_float;
+}
+
+// Vector3, 3 components
+public struct Vector3 {
+  //: Vector3;Vector x component
+  x: c_float;
+  // Vector y component
+  y: c_float;
+  // Vector z component
+  z: c_float;
+}
+
+// Vector4, 4 components
+public struct Vector4 {
+  // Vector x component
+  x: c_float;
+  // Vector y component
+  y: c_float;
+  // Vector z component
+  z: c_float;
+  // Vector w component
+  w: c_float;
+}
+
+// Matrix, 4x4 components, column major, OpenGL style, right-handed
+public struct Matrix {
+  // Matrix first row (4 components)
+  m0: c_float; m4: c_float; m8: c_float; m12: c_float;
+  // Matrix second row (4 components)
+  m1: c_float; m5: c_float; m9: c_float; m13: c_float;
+  // Matrix third row (4 components)
+  m2: c_float; m6: c_float; m10: c_float; m14: c_float;
+  // Matrix fourth row (4 components)
+  m3: c_float; m7: c_float; m11: c_float; m15: c_float;
+}
+
+// Color, 4 components, R8G8B8A8 (32bit)
+public struct Color {
+  // Color red value
+  r: byte;
+  // Color green value
+  g: byte;
+  // Color blue value
+  b: byte;
+  // Color alpha value
+  a: byte;
+
+  public fn rgb(r: int, g: int, b: int) -> Color => new Color {
+    r: r as byte,
+    g: g as byte,
+    b: b as byte,
+    a: 255 as byte
+  };
+  
+  public fn rgba(r: int, g: int, b: int, a: int) -> Color => new Color {
+    r: r as byte,
+    g: g as byte,
+    b: b as byte,
+    a: a as byte
+  };
+}
+
+// Rectangle, 4 components
+public struct Rectangle {
+  // Rectangle top-left corner position x
+  x: c_float;
+  // Rectangle top-left corner position y
+  y: c_float;
+  // Rectangle width
+  width: c_float;
+  // Rectangle height
+  height: c_float;
+}
+
+// Image, pixel data stored in CPU memory (RAM)
+public struct Image {
+  // Image raw data
+  data: *void;
+  // Image base width
+  width: c_int;
+  // Image base height
+  height: c_int;
+  // Mipmap levels, 1 by default
+  mipmaps: c_int;
+  // Data format (PixelFormat type)
+  format: c_int;
+}
+
+// Texture, tex data stored in GPU memory (VRAM)
+public struct Texture {
+  // OpenGL texture id
+  id: c_int;
+  // Texture base width
+  width: c_int;
+  // Texture base height
+  height: c_int;
+  // Mipmap levels, 1 by default
+  mipmaps: c_int;
+  // Data format (PixelFormat type)
+  format: c_int;
+}
+
+// RenderTexture, fbo for texture rendering
+public struct RenderTexture {
+  // OpenGL framebuffer object id
+  id: c_int;
+  // Color buffer attachment texture
+  texture: Texture;
+  // Depth buffer attachment texture
+  depth: Texture;
+}
+
+// NPatchInfo, n-patch layout info
+public struct NPatchInfo {
+  // Texture source rectangle
+  source: Rectangle;
+  // Left border offset
+  left: c_int;
+  // Top border offset
+  top: c_int;
+  // Right border offset
+  right: c_int;
+  // Bottom border offset
+  bottom: c_int;
+  // Layout of the n-patch: 3x3, 1x3 or 3x1
+  layout: c_int;
+}
+
+// GlyphInfo, font characters glyphs info
+public struct GlyphInfo {
+  // Character value (Unicode)
+  value: c_int;
+  // Character offset X when drawing
+  offsetX: c_int;
+  // Character offset Y when drawing
+  offsetY: c_int;
+  // Character advance position X
+  advanceX: c_int;
+  // Character image data
+  image: Image;
+}
+
+// Font, font texture and GlyphInfo array data
+public struct Font {
+  // Base size (default chars height)
+  baseSize: c_int;
+  // Number of glyph characters
+  glyphCount: c_int;
+  // Padding around the glyph characters
+  glyphPadding: c_int;
+  // Texture atlas containing the glyphs
+  texture: Texture;
+  // Rectangles in texture for the glyphs
+  recs: *Rectangle;
+  // Glyphs info data
+  glyphs: *GlyphInfo;
+}
+
+// Camera3D, defines position/orientation in 3d space
+public struct Camera3D {
+  // Camera3D position
+  position: Vector3;
+  // Camera3D target it looks-at
+  target: Vector3;
+  // Camera3D up vector (rotation over its axis)
+  up: Vector3;
+  // Camera3D field-of-view aperture in Y (degrees) in perspective, used as near plane width in orthographic
+  fovy: c_float;
+  // Camera3D projection: CAMERA_PERSPECTIVE or CAMERA_ORTHOGRAPHIC
+  projection: c_int;
+}
+
+// Camera2D, defines position/orientation in 2d space
+public struct Camera2D {
+  // Camera2D offset (displacement from target)
+  offset: Vector2;
+  // Camera2D target (rotation and zoom origin)
+  target: Vector2;
+  // Camera2D rotation in degrees
+  rotation: c_float;
+  // Camera2D zoom (scaling), should be 1.0f by default
+  zoom: c_float;
+}
+
+// Mesh, vertex data and vao/vbo
+public struct Mesh {
+  // Number of vertices stored in arrays
+  vertexCount: c_int;
+  // Number of triangles stored (indexed or not)
+  triangleCount: c_int;
+
+  // Vertex attributes data
+
+  // Vertex position (XYZ - 3 components per vertex) (shader-location = 0)
+  vertices: *c_float;
+  // Vertex texture coordinates (UV - 2 components per vertex) (shader-location = 1)
+  texcoords: *c_float;
+  // Vertex texture second coordinates (UV - 2 components per vertex) (shader-location = 5)
+  texcoords2: *c_float;
+  // Vertex normals (XYZ - 3 components per vertex) (shader-location = 2)
+  normals: *c_float;
+  // Vertex tangents (XYZW - 4 components per vertex) (shader-location = 4)
+  tangents: *c_float;
+  // Vertex colors (RGBA - 4 components per vertex) (shader-location = 3)
+  colors: *byte;
+  // Vertex indices (in case vertex data comes indexed)
+  indices: *c_short;
+
+  // Animation vertex data
+
+  // Animated vertex positions (after bones transformations)
+  animVertices: *c_float;
+  // Animated normals (after bones transformations)
+  animNormals: *c_float;
+  // Vertex bone ids, max 255 bone ids, up to 4 bones influence by vertex (skinning) (shader-location = 6)
+  boneIds: *byte;
+  // Vertex bone weight, up to 4 bones influence by vertex (skinning) (shader-location = 7)
+  boneWeights: *c_float;
+  // Bones animated transformation matrices
+  boneMatrices: *Matrix;
+  // Number of bones
+  boneCount: c_int;
+
+  // OpenGL identifiers
+
+  // OpenGL Vertex Array Object id
+  vaoId: c_int;
+  // OpenGL Vertex Buffer Objects id (default vertex data)
+  vboId: *c_int;
+}
+
+// Shader
+public struct Shader {
+  // Shader program id
+  id: c_int;
+  // Shader locations array (RL_MAX_SHADER_LOCATIONS)
+  locs: *c_int;
+}
+
+// MaterialMap
+public struct MaterialMap {
+  // Material map texture
+  texture: Texture;
+  // Material map color
+  color: Color;
+  // Material map value
+  value: c_float;
+}
+
+public struct Float4 {
+  _0: c_float;
+  _1: c_float;
+  _2: c_float;
+  _3: c_float;
+}
+
+// Material, includes shader and maps
+public struct Material {
+  // Material shader
+  shader: Shader;
+  // Material maps array (MAX_MATERIAL_MAPS)
+  maps: *MaterialMap;
+  // Material generic parameters (if required)
+  params: Float4;
+}
+
+// Transform, vertex transformation data
+public struct Transform {
+  // Translation
+  translation: Vector3;
+  // Rotation
+  rotation: Vector4;
+  // Scale
+  scale: Vector3;
+}
+
+public struct Byte32 {
+  _1_8: int;
+  _9_16: int;
+  _17_24: int;
+  _25_32: int;
+}
+
+// Bone, skeletal animation bone
+public struct BoneInfo {
+  // Bone name
+  name: Byte32;
+  // Bone parent
+  parent: c_int;
+}
+
+// Model, meshes, materials and animation data
+public struct Model {
+  // Local transform matrix
+  transform: Matrix;
+
+  // Number of meshes
+  meshCount: c_int;
+  // Number of materials
+  materialCount: c_int;
+  // Meshes array
+  meshes: *Mesh;
+  // Materials array
+  materials: *Material;
+  // Mesh material number
+  meshMaterial: *c_int;
+
+  // Animation data
+
+  // Number of bones
+  boneCount: c_int;
+  // Bones information (skeleton)
+  bones: *BoneInfo;
+  // Bones base transformation (pose)
+  bindPose: *Transform;
+}
+
+// ModelAnimation
+public struct ModelAnimation {
+  // Number of bones
+  boneCount: c_int;
+  // Number of animation frames
+  frameCount: c_int;
+  // Bones information (skeleton)
+  bones: *BoneInfo;
+  // Poses array by frame
+  framePoses: **Transform;
+  // Animation name
+  name: Byte32;
+}
+
+// Ray, ray for raycasting
+public struct Ray {
+  // Ray position (origin)
+  position: Vector3;
+  // Ray direction (normalized)
+  direction: Vector3;
+}
+
+// RayCollision, ray hit information
+public struct RayCollision {
+  // Did the ray hit something?
+  hit: bool;
+  // Distance to the nearest hit
+  distance: c_float;
+  // Point of the nearest hit
+  point: Vector3;
+  // Surface normal of hit
+  normal: Vector3;
+}
+
+// BoundingBox
+public struct BoundingBox {
+  // Minimum vertex box-corner
+  min: Vector3;
+  // Maximum vertex box-corner
+  max: Vector3;
+}
+
+// Wave, audio wave data
+public struct Wave {
+  // Total number of frames (considering channels)
+  frameCount: c_int;
+  // Frequency (samples per second)
+  sampleRate: c_int;
+  // Bit depth (bits per sample): 8, 16, 32 (24 not supported)
+  sampleSize: c_int;
+  // Number of channels (1-mono, 2-stereo, ...)
+  channels: c_int;
+  // Buffer data pointer
+  data: *void;
+}
+
+// AudioStream, custom audio stream
+public struct AudioStream {
+  // Pointer to internal data used by the audio system
+  buffer: *void;
+  // Pointer to internal data processor, useful for audio effects
+  processor: *void;
+
+  // Frequency (samples per second)
+  sampleRate: c_int;
+  // Bit depth (bits per sample): 8, 16, 32 (24 not supported)
+  sampleSize: c_int;
+  // Number of channels (1-mono, 2-stereo, ...)
+  channels: c_int;
+}
+
+// Sound
+public struct Sound {
+  // Audio stream
+  stream: AudioStream;
+  // Total number of frames (considering channels)
+  frameCount: c_int;
+}
+
+// Music, audio stream, anything longer than ~10 seconds should be streamed
+public struct Music {
+  // Audio stream
+  stream: AudioStream;
+  // Total number of frames (considering channels)
+  frameCount: c_int;
+  // Music looping enable
+  looping: bool;
+
+  // Type of music context (audio filetype)
+  ctxType: c_int;
+  // Audio context data, depends on type
+  ctxData: *void;
+}
+
+// VrDeviceInfo, Head-Mounted-Display device parameters
+public struct VrDeviceInfo {
+  // Horizontal resolution in pixels
+  hResolution: c_int;
+  // Vertical resolution in pixels
+  vResolution: c_int;
+  // Horizontal size in meters
+  hScreenSize: c_float;
+  // Vertical size in meters
+  vScreenSize: c_float;
+  // Distance between eye and display in meters
+  eyeToScreenDistance: c_float;
+  // Lens separation distance in meters
+  lensSeparationDistance: c_float;
+  // IPD (distance between pupils) in meters
+  interpupillaryDistance: c_float;
+  // Lens distortion constant parameters
+  lensDistortionValues: Float4;
+  // Chromatic aberration correction parameters
+  chromaAbCorrection: Float4;
+}
+
+public struct Float2 {
+  _0: c_float;
+  _1: c_float;
+}
+
+// VrStereoConfig, VR stereo rendering configuration for simulator
+public struct VrStereoConfig {
+  // VR projection matrices (per eye)
+  projectionLeft: Matrix;
+  projectionRight: Matrix;
+  // VR view offset matrices (per eye)
+  viewOffsetLeft: Matrix;
+  viewOffsetRight: Matrix;
+  // VR left lens center
+  leftLensCenter: Float2;
+  // VR right lens center
+  rightLensCenter: Float2;
+  // VR left screen center
+  leftScreenCenter: Float2;
+  // VR right screen center
+  rightScreenCenter: Float2;
+  // VR distortion scale
+  scale: Float2;
+  // VR distortion scale in
+  scaleIn: Float2;
+}
+
+// File path list
+public struct FilePathList {
+  // Filepaths max entries
+  capacity: c_int;
+  // Filepaths entries count
+  count: c_int;
+  // Filepaths entries
+  paths: **byte;
+}
+
+public struct Int4 {
+  _0: c_int;
+  _1: c_int;
+  _2: c_int;
+  _3: c_int;
+}
+
+// Automation event
+public struct AutomationEvent {
+  // Event frame
+  frame: c_int;
+  // Event type (AutomationEventType)
+  type: c_int;
+  // Event parameters (if required)
+  params: Int4;
+}
+
+// Automation event list
+public struct AutomationEventList {
+  // Events max entries (MAX_AUTOMATION_EVENTS)
+  capacity: c_int;
+  // Events entries count
+  count: c_int;
+  // Events entries
+  events: *AutomationEvent;
+}
+
+// Window-related functions
+// Initialize window and OpenGL contexts
+public native fn InitWindow(width: c_int, height: c_int, title: *byte) -> void;
+
+// Close window and unload OpenGL context
 public native fn CloseWindow() -> void;
+
+// Check if application should close (pressed: KEY_ESCAPE or windows close icon clicked)
 public native fn WindowShouldClose() -> bool;
 
+// Check if window has been initialized successfully
+public native fn IsWindowReady() -> bool;
+
+// Check if window is currently fullscreen
+public native fn IsWindowFullscreen() -> bool;
+
+// Check if window is currently hidden
+public native fn IsWindowHidden() -> bool;
+
+// Check if window is currently minimized
+public native fn IsWindowMinimized() -> bool;
+
+// Check if window is currently maximized
+public native fn IsWindowMaximized() -> bool;
+
+// Check if window is currently focused
+public native fn IsWindowFocused() -> bool;
+
+// Check if window has been resized last frame
+public native fn IsWindowResized() -> bool;
+
+// Check if one specific window flag is enabled
+public native fn IsWindowState(flag: c_int) -> bool;
+
+// Set window configuration state using flags
+public native fn SetWindowState(flags: c_int) -> void;
+
+// Clear window configuration state flags
+public native fn ClearWindowState(flags: c_int) -> void;
+
+// Toggle window state: fullscreen/windowed, resizes monitor to match window resolution
+public native fn ToggleFullscreen() -> void;
+
+// Toggle window state: borderless windowed, resizes window to match monitor resolution
+public native fn ToggleBorderlessWindowed() -> void;
+
+// Set window state: maximized, if resizable
+public native fn MaximizeWindow() -> void;
+
+// Set window state: minimized, if resizable
+public native fn MinimizeWindow() -> void;
+
+// Restore window from being minimized/maximized
+public native fn RestoreWindow() -> void;
+
+// Set icon for window (single image, RGBA 32bit)
+public native fn SetWindowIcon(image: Image) -> void;
+
+// Set icon for window (multiple images, RGBA 32bit)
+public native fn SetWindowIcons(images: *Image, count: c_int) -> void;
+
+// Set title for window
+public native fn SetWindowTitle(title: *byte) -> void;
+
+// Set window position on screen
+public native fn SetWindowPosition(x: c_int, y: c_int) -> void;
+
+// Set monitor for the current window
+public native fn SetWindowMonitor(monitor: c_int) -> void;
+
+// Set window minimum dimensions (for FLAG_WINDOW_RESIZABLE)
+public native fn SetWindowMinSize(width: c_int, height: c_int) -> void;
+
+// Set window maximum dimensions (for FLAG_WINDOW_RESIZABLE)
+public native fn SetWindowMaxSize(width: c_int, height: c_int) -> void;
+
+// Set window dimensions
+public native fn SetWindowSize(width: c_int, height: c_int) -> void;
+
+// Set window opacity [0.0f..1.0f]
+public native fn SetWindowOpacity(opacity: c_float) -> void;
+
+// Set window focused
+public native fn SetWindowFocused() -> void;
+
+// Get native window handle
+public native fn GetWindowHandle() -> *void;
+
+// Get current screen width
+public native fn GetScreenWidth() -> c_int;
+
+// Get current screen height
+public native fn GetScreenHeight() -> c_int;
+
+// Get current render width (it considers HiDPI)
+public native fn GetRenderWidth() -> c_int;
+
+// Get current render height (it considers HiDPI)
+public native fn GetRenderHeight() -> c_int;
+
+// Get number of connected monitors
+public native fn GetMonitorCount() -> c_int;
+
+// Get current monitor where window is placed
+public native fn GetCurrentMonitor() -> c_int;
+
+// Get specified monitor position
+public native fn GetMonitorPosition(monitor: c_int) -> Vector2;
+
+// Get specified monitor width (current video mode used by monitor)
+public native fn GetMonitorWidth(monitor: c_int) -> c_int;
+
+// Get specified monitor height (current video mode used by monitor)
+public native fn GetMonitorHeight(monitor: c_int) -> c_int;
+
+// Get specified monitor physical width in millimetres
+public native fn GetMonitorPhysicalWidth(monitor: c_int) -> c_int;
+
+// Get specified monitor physical height in millimetres
+public native fn GetMonitorPhysicalHeight(monitor: c_int) -> c_int;
+
+// Get specified monitor refresh rate
+public native fn GetMonitorRefreshRate(monitor: c_int) -> c_int;
+
+// Get window position XY on monitor
+public native fn GetWindowPosition() -> Vector2;
+
+// Get window scale DPI factor
+public native fn GetWindowScaleDPI() -> Vector2;
+
+// Get the human-readable, UTF-8 encoded name of the specified monitor
+public native fn GetMonitorName(monitor: c_int) -> *byte;
+
+// Set clipboard text content
+public native fn SetClipboardText(text: *byte) -> void;
+
+// Get clipboard text content
+public native fn GetClipboardText() -> *byte;
+
+// Get clipboard image content
+public native fn GetClipboardImage() -> Image;
+
+// Enable waiting for events on EndDrawing(), no automatic event polling
+public native fn EnableEventWaiting() -> void;
+
+// Disable waiting for events on EndDrawing(), automatic events polling
+public native fn DisableEventWaiting() -> void;
+
+
+// Cursor-related functions
+
+// Shows cursor
+public native fn ShowCursor() -> void;
+
+// Hides cursor
+public native fn HideCursor() -> void;
+
+// Check if cursor is not visible
+public native fn IsCursorHidden() -> bool;
+
+// Enables cursor (unlock cursor)
+public native fn EnableCursor() -> void;
+
+// Disables cursor (lock cursor)
+public native fn DisableCursor() -> void;
+
+// Check if cursor is on the screen
+public native fn IsCursorOnScreen() -> bool;
+
+
+// Drawing-related functions
+
+
+// Set background color (framebuffer clear color)
+public native fn ClearBackground(color: Color) -> void;
+
+// Setup canvas (framebuffer) to start drawing
 public native fn BeginDrawing() -> void;
+
+// End canvas drawing and swap buffers (double buffering)
 public native fn EndDrawing() -> void;
+
+// Begin 2D mode with custom camera (2D)
+public native fn BeginMode2D(camera: Camera2D) -> void;
+
+// Ends 2D mode with custom camera
+public native fn EndMode2D() -> void;
+
+// Begin 3D mode with custom camera (3D)
+public native fn BeginMode3D(camera: Camera3D) -> void;
+
+// Ends 3D mode and returns to default 2D orthographic mode
+public native fn EndMode3D() -> void;
+
+// Begin drawing to render texture
+public native fn BeginTextureMode(target: RenderTexture) -> void;
+
+// Ends drawing to render texture
+public native fn EndTextureMode() -> void;
+
+// Begin custom shader drawing
+public native fn BeginShaderMode(shader: Shader) -> void;
+
+// End custom shader drawing (use default shader)
+public native fn EndShaderMode() -> void;
+
+// Begin blending mode (alpha, additive, multiplied, subtract, custom)
+public native fn BeginBlendMode(mode: c_int) -> void;
+
+// End blending mode (reset to default: alpha blending)
+public native fn EndBlendMode() -> void;
+
+// Begin scissor mode (define screen area for following drawing)
+public native fn BeginScissorMode(x: c_int, y: c_int, width: c_int, height: c_int) -> void;
+
+// End scissor mode
+public native fn EndScissorMode() -> void;
+
+// Begin stereo rendering (requires VR simulator)
+public native fn BeginVrStereoMode(config: VrStereoConfig) -> void;
+
+// End stereo rendering (requires VR simulator)
+public native fn EndVrStereoMode() -> void;
+
+
+// VR stereo config functions for VR simulator
+
+
+// Load VR stereo config for VR simulator device parameters
+public native fn LoadVrStereoConfig(device: VrDeviceInfo) -> VrStereoConfig;
+
+// Unload VR stereo config
+public native fn UnloadVrStereoConfig(config: VrStereoConfig) -> void;
+
+
+// Shader management functions
+
+
+// NOTE: Shader functionality is not available on OpenGL 1.1
+
+
+// Load shader from files and bind default locations
+public native fn LoadShader(vsFileName: *byte, fsFileName: *byte) -> Shader;
+
+// Load shader from code strings and bind default locations
+public native fn LoadShaderFromMemory(vsCode: *byte, fsCode: *byte) -> Shader;
+
+// Check if a shader is valid (loaded on GPU)
+public native fn IsShaderValid(shader: Shader) -> bool;
+
+// Get shader uniform location
+public native fn GetShaderLocation(shader: Shader, uniformName: *byte) -> c_int;
+
+// Get shader attribute location
+public native fn GetShaderLocationAttrib(shader: Shader, attribName: *byte) -> c_int;
+
+// Set shader uniform value
+public native fn SetShaderValue(shader: Shader, locIndex: c_int, value: *void, uniformType: c_int) -> void;
+
+// Set shader uniform value vector
+public native fn SetShaderValueV(shader: Shader, locIndex: c_int, value: *void, uniformType: c_int, count: c_int) -> void;
+
+// Set shader uniform value (matrix 4x4)
+public native fn SetShaderValueMatrix(shader: Shader, locIndex: c_int, mat: Matrix) -> void;
+
+// Set shader uniform value and bind the texture (sampler2d)
+public native fn SetShaderValueTexture(shader: Shader, locIndex: c_int, texture: Texture) -> void;
+
+// Unload shader from GPU memory (VRAM)
+public native fn UnloadShader(shader: Shader) -> void;
+
+
+// Screen-space-related functions
+
+
+// Get a ray trace from screen position (i.e mouse)
+public native fn GetScreenToWorldRay(position: Vector2, camera: Camera3D) -> Ray;
+
+// Get a ray trace from screen position (i.e mouse) in a viewport
+public native fn GetScreenToWorldRayEx(position: Vector2, camera: Camera3D, width: c_int, height: c_int) -> Ray;
+
+// Get the screen space position for a 3d world space position
+public native fn GetWorldToScreen(position: Vector3, camera: Camera3D) -> Vector2;
+
+// Get size position for a 3d world space position
+public native fn GetWorldToScreenEx(position: Vector3, camera: Camera3D, width: c_int, height: c_int) -> Vector2;
+
+// Get the screen space position for a 2d camera world space position
+public native fn GetWorldToScreen2D(position: Vector2, camera: Camera2D) -> Vector2;
+
+// Get the world space position for a 2d camera screen space position
+public native fn GetScreenToWorld2D(position: Vector2, camera: Camera2D) -> Vector2;
+
+// Get camera transform matrix (view matrix)
+public native fn GetCameraMatrix(camera: Camera3D) -> Matrix;
+
+// Get camera 2d transform matrix
+public native fn GetCameraMatrix2D(camera: Camera2D) -> Matrix;
+
+
+// Timing-related functions
+
+
+// Set target FPS (maximum)
+public native fn SetTargetFPS(fps: c_int) -> void;
+
+// Get time in seconds for last frame drawn (delta time)
+public native fn GetFrameTime() -> c_float;
+
+// Get elapsed time in seconds since InitWindow()
+public native fn GetTime() -> float;
+
+// Get current FPS
+public native fn GetFPS() -> c_int;
+
+
+// Custom frame control functions
+
+
+// NOTE: Those functions are c_intended for advanced users that want full control over the frame processing
+
+
+// By default EndDrawing() does this job: draws everything + SwapScreenBuffer() + manage frame timing + PollInputEvents()
+
+
+// To avoid that behaviour and control frame processes manually, enable in config.h: SUPPORT_CUSTOM_FRAME_CONTROL
+
+
+// Swap back buffer with front buffer (screen drawing)
+public native fn SwapScreenBuffer() -> void;
+
+// Register all input events
+public native fn PollInputEvents() -> void;
+
+// Wait for some time (halt program execution)
+public native fn WaitTime(seconds: float) -> void;
+
+
+// Random values generation functions
+
+
+// Set the seed for the random number generator
+public native fn SetRandomSeed(seed: c_int) -> void;
+
+// Get a random value between min and max (both included)
+public native fn GetRandomValue(min: c_int, max: c_int) -> c_int;
+
+// Load random values sequence, no values repeated
+public native fn LoadRandomSequence(count: c_int, min: c_int, max: c_int) -> *c_int;
+
+// Unload random values sequence
+public native fn UnloadRandomSequence(sequence: *c_int) -> void;
+
+
+// Misc. functions
+
+
+// Takes a screenshot of current screen (filename extension defines format)
+public native fn TakeScreenshot(fileName: *byte) -> void;
+
+// Setup init configuration flags (view FLAGS)
+public native fn SetConfigFlags(flags: c_int) -> void;
+
+// Open URL with default system browser (if available)
+public native fn OpenURL(url: *byte) -> void;
+
+
+// Logging system
+
+
+// Set the current threshold (minimum) log level
+public native fn SetTraceLogLevel(logLevel: c_int) -> void;
+
+// Show trace log messages (LOG_DEBUG, LOG_INFO, LOG_WARNING, LOG_ERROR...)
+public native fn TraceLog(logLevel: c_int, text: *byte) -> void;
+
+// Set custom trace log
+public native fn SetTraceLogCallback(callback: fn(c_int, *byte) -> void) -> void;
+
+
+// Memory management, using c_internal allocators
+
+
+// c_internal memory allocator
+public native fn MemAlloc(size: c_int) -> *void;
+
+// c_internal memory reallocator
+public native fn MemRealloc(ptr: *void, size: c_int) -> *void;
+
+// c_internal memory free
+public native fn MemFree(ptr: *void) -> void;
+
+
+// File system management functions
+
+
+// Load file data as byte array (read)
+public native fn LoadFileData(fileName: *byte, dataSize: *c_int) -> *byte;
+
+// Unload file data allocated by LoadFileData()
+public native fn UnloadFileData(data: *byte) -> void;
+
+// Save data to file from byte array (write), returns true on success
+public native fn SaveFileData(fileName: *byte, data: *void, dataSize: c_int) -> bool;
+
+// Export data to code (.h), returns true on success
+public native fn ExportDataAsCode(data: *byte, dataSize: c_int, fileName: *byte) -> bool;
+
+// Load text data from file (read), returns a '\0' terminated string
+public native fn LoadFileText(fileName: *byte) -> *byte;
+
+// Unload file text data allocated by LoadFileText()
+public native fn UnloadFileText(text: *byte) -> void;
+
+// Save text data to file (write), string must be '\0' terminated, returns true on success
+public native fn SaveFileText(fileName: *byte, text: *byte) -> bool;
+
+
+// File access custom callbacks
+
+
+// WARNING: Callbacks setup is c_intended for advanced users
+
+
+// Set custom file binary data loader
+public native fn SetLoadFileDataCallback(callback: fn(*byte, *c_int) -> *byte) -> void;
+
+// Set custom file binary data saver
+public native fn SetSaveFileDataCallback(callback: fn(*byte, *void, c_int) -> bool) -> void;
+
+// Set custom file text data loader
+public native fn SetLoadFileTextCallback(callback: fn(*byte) -> *byte) -> void;
+
+// Set custom file text data saver
+public native fn SetSaveFileTextCallback(callback: fn(*byte, *byte) -> bool) -> void;
+
+
+// Rename file (if exists)
+public native fn FileRename(fileName: *byte, fileRename: *byte) -> c_int;
+
+// Remove file (if exists)
+public native fn FileRemove(fileName: *byte) -> c_int;
+
+// Copy file from one path to another, dstPath created if it doesn't exist
+public native fn FileCopy(srcPath: *byte, dstPath: *byte) -> c_int;
+
+// Move file from one directory to another, dstPath created if it doesn't exist
+public native fn FileMove(srcPath: *byte, dstPath: *byte) -> c_int;
+
+// Replace text in an existing file
+public native fn FileTextReplace(fileName: *byte, search: *byte, replacement: *byte) -> c_int;
+
+// Find text in existing file
+public native fn FileTextFindIndex(fileName: *byte, search: *byte) -> c_int;
+
+// Check if file exists
+public native fn FileExists(fileName: *byte) -> bool;
+
+// Check if a directory path exists
+public native fn DirectoryExists(dirPath: *byte) -> bool;
+
+// Check file extension (recommended include point: .png, .wav)
+public native fn IsFileExtension(fileName: *byte, ext: *byte) -> bool;
+
+// Get file length in bytes (NOTE: GetFileSize() conflicts with windows.h)
+public native fn GetFileLength(fileName: *byte) -> c_int;
+
+// Get file modification time (last write time)
+public native fn GetFileModTime(fileName: *byte) -> c_int;
+
+// Get pointer to extension for a filename string (includes dot: '.png')
+public native fn GetFileExtension(fileName: *byte) -> *byte;
+
+// Get pointer to filename for a path string
+public native fn GetFileName(filePath: *byte) -> *byte;
+
+// Get filename string without extension (uses static string)
+public native fn GetFileNameWithoutExt(filePath: *byte) -> *byte;
+
+// Get full path for a given fileName with path (uses static string)
+public native fn GetDirectoryPath(filePath: *byte) -> *byte;
+
+// Get previous directory path for a given path (uses static string)
+public native fn GetPrevDirectoryPath(dirPath: *byte) -> *byte;
+
+// Get current working directory (uses static string)
+public native fn GetWorkingDirectory() -> *byte;
+
+// Get the directory of the running application (uses static string)
+public native fn GetApplicationDirectory() -> *byte;
+
+// Create directories (including full path requested), returns 0 on success
+public native fn MakeDirectory(dirPath: *byte) -> c_int;
+
+// Change working directory, return true on success
+public native fn ChangeDirectory(dirPath: *byte) -> bool;
+
+// Check if a given path is a file or a directory
+public native fn IsPathFile(path: *byte) -> bool;
+
+// Check if fileName is valid for the platform/OS
+public native fn IsFileNameValid(fileName: *byte) -> bool;
+
+// Load directory filepaths, files and directories, no subdirs scan
+public native fn LoadDirectoryFiles(dirPath: *byte) -> FilePathList;
+
+// Load directory filepaths with extension filtering and subdir scan;some filters available: "*.*", "*FILES", "*DIRS"
+public native fn LoadDirectoryFilesEx(basePath: *byte, filter: *byte, scanSubdirs: bool) -> FilePathList;
+
+// Unload filepaths
+public native fn UnloadDirectoryFiles(files: FilePathList) -> void;
+
+// Check if a file has been dropped c_into window
+public native fn IsFileDropped() -> bool;
+
+// Load dropped filepaths
+public native fn LoadDroppedFiles() -> FilePathList;
+
+// Unload dropped filepaths
+public native fn UnloadDroppedFiles(files: FilePathList) -> void;
+
+// Get the file count in a directory
+public native fn GetDirectoryFileCount(dirPath: *byte) -> c_int;
+
+// Get the file count in a directory with extension filtering and recursive directory scan. Use 'DIR' in the filter string to include directories in the result
+public native fn GetDirectoryFileCountEx(basePath: *byte, filter: *byte, scanSubdirs: bool) -> c_int;
+
+
+// Compression/Encoding functionality
+
+// Compress data (algorithm: DEFLATE), memory must be MemFree()
+public native fn CompressData(data: *byte, dataSize: c_int, compDataSize: *c_int) -> *byte;
+
+// Decompress data (algorithm: DEFLATE), memory must be MemFree()
+public native fn DecompressData(compData: *byte, compDataSize: c_int, dataSize: *c_int) -> *byte;
+
+// Encode data to Base64 string (includes NULL terminator), memory must be MemFree()
+public native fn EncodeDataBase64(data: *byte, dataSize: c_int, outputSize: *c_int) -> *byte;
+
+// Decode Base64 string (expected NULL terminated), memory must be MemFree()
+public native fn DecodeDataBase64(text: *byte, outputSize: *c_int) -> *byte;
+
+// Compute CRC32 hash code
+public native fn ComputeCRC32(data: *byte, dataSize: c_int) -> c_int;
+
+// Compute MD5 hash code, returns static c_int[4] (16 bytes)
+public native fn ComputeMD5(data: *byte, dataSize: c_int) -> *c_int;
+
+// Compute SHA1 hash code, returns static c_int[5] (20 bytes)
+public native fn ComputeSHA1(data: *byte, dataSize: c_int) -> *c_int;
+
+// Compute SHA256 hash code, returns static c_int[8] (32 bytes)
+public native fn ComputeSHA256(data: *byte, dataSize: c_int) -> *c_int;
+
+
+// Automation events functionality
+
+
+// Load automation events list from file, NULL for empty list, capacity = MAX_AUTOMATION_EVENTS
+public native fn LoadAutomationEventList(fileName: *byte) -> AutomationEventList;
+
+// Unload automation events list from file
+public native fn UnloadAutomationEventList(list: AutomationEventList) -> void;
+
+// Export automation events list as text file
+public native fn ExportAutomationEventList(list: AutomationEventList, fileName: *byte) -> bool;
+
+// Set automation event list to record to
+public native fn SetAutomationEventList(list: *AutomationEventList) -> void;
+
+// Set automation event c_internal base frame to start recording
+public native fn SetAutomationEventBaseFrame(frame: c_int) -> void;
+
+// Start recording automation events (must: AutomationEventList be set)
+public native fn StartAutomationEventRecording() -> void;
+
+// Stop recording automation events
+public native fn StopAutomationEventRecording() -> void;
+
+// Play a recorded automation event
+public native fn PlayAutomationEvent(event: AutomationEvent) -> void;
+
+
+//------------------------------------------------------------------------------------
+
+
+// Input Handling Functions (Module: core)
+
+
+//------------------------------------------------------------------------------------
+
+
+
+// Input-related functions: keyboard
+
+
+// Check if a key has been pressed once
+public native fn IsKeyPressed(key: c_int) -> bool;
+
+// Check if a key has been pressed again
+public native fn IsKeyPressedRepeat(key: c_int) -> bool;
+
+// Check if a key is being pressed
+public native fn IsKeyDown(key: c_int) -> bool;
+
+// Check if a key has been released once
+public native fn IsKeyReleased(key: c_int) -> bool;
+
+// Check if a key is NOT being pressed
+public native fn IsKeyUp(key: c_int) -> bool;
+
+// Get key pressed (keycode), call it multiple times for keys queued, returns 0 when the queue is empty
+public native fn GetKeyPressed() -> c_int;
+
+// Get byte pressed (unicode), call it multiple times for bytes queued, returns 0 when the queue is empty
+public native fn GetCharPressed() -> c_int;
+
+// Get name of a QWERTY key on the current keyboard layout (eg returns string 'q' for KEY_A on an AZERTY keyboard)
+public native fn GetKeyName(key: c_int) -> *byte;
+
+// Set a custom key to exit program (default is ESC)
+public native fn SetExitKey(key: c_int) -> void;
+
+
+// Input-related functions: gamepads
+
+
+// Check if a gamepad is available
+public native fn IsGamepadAvailable(gamepad: c_int) -> bool;
+
+// Get gamepad c_internal name id
+public native fn GetGamepadName(gamepad: c_int) -> *byte;
+
+// Check if a gamepad button has been pressed once
+public native fn IsGamepadButtonPressed(gamepad: c_int, button: c_int) -> bool;
+
+// Check if a gamepad button is being pressed
+public native fn IsGamepadButtonDown(gamepad: c_int, button: c_int) -> bool;
+
+// Check if a gamepad button has been released once
+public native fn IsGamepadButtonReleased(gamepad: c_int, button: c_int) -> bool;
+
+// Check if a gamepad button is NOT being pressed
+public native fn IsGamepadButtonUp(gamepad: c_int, button: c_int) -> bool;
+
+// Get the last gamepad button pressed
+public native fn GetGamepadButtonPressed() -> c_int;
+
+// Get axis count for a gamepad
+public native fn GetGamepadAxisCount(gamepad: c_int) -> c_int;
+
+// Get movement value for a gamepad axis
+public native fn GetGamepadAxisMovement(gamepad: c_int, axis: c_int) -> c_float;
+
+// Set c_internal gamepad mappings (SDL_GameControllerDB)
+public native fn SetGamepadMappings(mappings: *byte) -> c_int;
+
+// Set gamepad vibration for both motors (duration in seconds)
+public native fn SetGamepadVibration(gamepad: c_int, leftMotor: c_float, rightMotor: c_float, duration: c_float) -> void;
+
+
+// Input-related functions: mouse
+
+
+// Check if a mouse button has been pressed once
+public native fn IsMouseButtonPressed(button: c_int) -> bool;
+
+// Check if a mouse button is being pressed
+public native fn IsMouseButtonDown(button: c_int) -> bool;
+
+// Check if a mouse button has been released once
+public native fn IsMouseButtonReleased(button: c_int) -> bool;
+
+// Check if a mouse button is NOT being pressed
+public native fn IsMouseButtonUp(button: c_int) -> bool;
+
+// Get mouse position X
+public native fn GetMouseX() -> c_int;
+
+// Get mouse position Y
+public native fn GetMouseY() -> c_int;
+
+// Get mouse position XY
+public native fn GetMousePosition() -> Vector2;
+
+// Get mouse delta between frames
+public native fn GetMouseDelta() -> Vector2;
+
+// Set mouse position XY
+public native fn SetMousePosition(x: c_int, y: c_int) -> void;
+
+// Set mouse offset
+public native fn SetMouseOffset(offsetX: c_int, offsetY: c_int) -> void;
+
+// Set mouse scaling
+public native fn SetMouseScale(scaleX: c_float, scaleY: c_float) -> void;
+
+// Get mouse wheel movement for X or Y, whichever is larger
+public native fn GetMouseWheelMove() -> c_float;
+
+// Get mouse wheel movement for both X and Y
+public native fn GetMouseWheelMoveV() -> Vector2;
+
+// Set mouse cursor
+public native fn SetMouseCursor(cursor: c_int) -> void;
+
+
+// Input-related functions: touch
+
+
+// Get touch position X for touch point 0 (relative to screen size)
+public native fn GetTouchX() -> c_int;
+
+// Get touch position Y for touch point 0 (relative to screen size)
+public native fn GetTouchY() -> c_int;
+
+// Get touch position XY for a touch point index (relative to screen size)
+public native fn GetTouchPosition(index: c_int) -> Vector2;
+
+// Get touch point identifier for given index
+public native fn GetTouchPointId(index: c_int) -> c_int;
+
+// Get number of touch points
+public native fn GetTouchPointCount() -> c_int;
+
+
+//------------------------------------------------------------------------------------
+
+
+// Gestures and Touch Handling Functions (Module: rgestures)
+
+
+//------------------------------------------------------------------------------------
+
+
+// Enable a set of gestures using flags
+public native fn SetGesturesEnabled(flags: c_int) -> void;
+
+// Check if a gesture have been detected
+public native fn IsGestureDetected(gesture: c_int) -> bool;
+
+// Get latest detected gesture
+public native fn GetGestureDetected() -> c_int;
+
+// Get gesture hold time in seconds
+public native fn GetGestureHoldDuration() -> c_float;
+
+// Get gesture drag vector
+public native fn GetGestureDragVector() -> Vector2;
+
+// Get gesture drag angle
+public native fn GetGestureDragAngle() -> c_float;
+
+// Get gesture pinch delta
+public native fn GetGesturePinchVector() -> Vector2;
+
+// Get gesture pinch angle
+public native fn GetGesturePinchAngle() -> c_float;
+
+
+//------------------------------------------------------------------------------------
+
+
+// Camera3D System Functions (Module: rcamera)
+
+
+//------------------------------------------------------------------------------------
+
+
+// Update camera position for selected mode
+public native fn UpdateCamera(camera: *Camera3D, mode: c_int) -> void;
+
+// Update camera movement/rotation
+public native fn UpdateCameraPro(camera: *Camera3D, movement: Vector3, rotation: Vector3, zoom: c_float) -> void;
+
+// NOTE: It can be useful when using basic shapes and one single font,
+
+
+// defining a font byte white rectangle would allow drawing everything in a single draw call
+
+
+// Set texture and rectangle to be used on shapes drawing
+public native fn SetShapesTexture(texture: Texture, source: Rectangle) -> void;
+
+// Get texture that is used for shapes drawing
+public native fn GetShapesTexture() -> Texture;
+
+// Get texture source rectangle that is used for shapes drawing
+public native fn GetShapesTextureRectangle() -> Rectangle;
+
+
+// Basic shapes drawing functions
+
+
+// Draw a pixel using geometry [Can be slow, use with care]
+public native fn DrawPixel(posX: c_int, posY: c_int, color: Color) -> void;
+
+// Draw a pixel using geometry (version: Vector) [Can be slow, use with care]
+public native fn DrawPixelV(position: Vector2, color: Color) -> void;
+
+// Draw a line
+public native fn DrawLine(startPosX: c_int, startPosY: c_int, endPosX: c_int, endPosY: c_int, color: Color) -> void;
+
+// Draw a line (using gl lines)
+public native fn DrawLineV(startPos: Vector2, endPos: Vector2, color: Color) -> void;
+
+// Draw a line (using triangles/quads)
+public native fn DrawLineEx(startPos: Vector2, endPos: Vector2, thick: c_float, color: Color) -> void;
+
+// Draw lines sequence (using gl lines)
+public native fn DrawLineStrip(points: *Vector2, pointCount: c_int, color: Color) -> void;
+
+// Draw line segment cubic-bezier in-out c_interpolation
+public native fn DrawLineBezier(startPos: Vector2, endPos: Vector2, thick: c_float, color: Color) -> void;
+
+// Draw a dashed line
+public native fn DrawLineDashed(startPos: Vector2, endPos: Vector2, dashSize: c_int, spaceSize: c_int, color: Color) -> void;
+
+// Draw a color-filled circle
+public native fn DrawCircle(centerX: c_int, centerY: c_int, radius: c_float, color: Color) -> void;
+
+// Draw a color-filled circle (version: Vector)
+public native fn DrawCircleV(center: Vector2, radius: c_float, color: Color) -> void;
+
+// Draw a gradient-filled circle
+public native fn DrawCircleGradient(center: Vector2, radius: c_float, inner: Color, outer: Color) -> void;
+
+// Draw a piece of a circle
+public native fn DrawCircleSector(center: Vector2, radius: c_float, startAngle: c_float, endAngle: c_float, segments: c_int, color: Color) -> void;
+
+// Draw circle sector outline
+public native fn DrawCircleSectorLines(center: Vector2, radius: c_float, startAngle: c_float, endAngle: c_float, segments: c_int, color: Color) -> void;
+
+// Draw circle outline
+public native fn DrawCircleLines(centerX: c_int, centerY: c_int, radius: c_float, color: Color) -> void;
+
+// Draw circle outline (version: Vector)
+public native fn DrawCircleLinesV(center: Vector2, radius: c_float, color: Color) -> void;
+
+// Draw ellipse
+public native fn DrawEllipse(centerX: c_int, centerY: c_int, radiusH: c_float, radiusV: c_float, color: Color) -> void;
+
+// Draw ellipse (version: Vector)
+public native fn DrawEllipseV(center: Vector2, radiusH: c_float, radiusV: c_float, color: Color) -> void;
+
+// Draw ellipse outline
+public native fn DrawEllipseLines(centerX: c_int, centerY: c_int, radiusH: c_float, radiusV: c_float, color: Color) -> void;
+
+// Draw ellipse outline (version: Vector)
+public native fn DrawEllipseLinesV(center: Vector2, radiusH: c_float, radiusV: c_float, color: Color) -> void;
+
+// Draw ring
+public native fn DrawRing(center: Vector2, innerRadius: c_float, outerRadius: c_float, startAngle: c_float, endAngle: c_float, segments: c_int, color: Color) -> void;
+
+// Draw ring outline
+public native fn DrawRingLines(center: Vector2, innerRadius: c_float, outerRadius: c_float, startAngle: c_float, endAngle: c_float, segments: c_int, color: Color) -> void;
+
+// Draw a color-filled rectangle
+public native fn DrawRectangle(posX: c_int, posY: c_int, width: c_int, height: c_int, color: Color) -> void;
+
+// Draw a color-filled rectangle (version: Vector)
+public native fn DrawRectangleV(position: Vector2, size: Vector2, color: Color) -> void;
+
+// Draw a color-filled rectangle
+public native fn DrawRectangleRec(rec: Rectangle, color: Color) -> void;
+
+// Draw a color-filled rectangle with pro parameters
+public native fn DrawRectanglePro(rec: Rectangle, origin: Vector2, rotation: c_float, color: Color) -> void;
+
+// Draw a vertical-gradient-filled rectangle
+public native fn DrawRectangleGradientV(posX: c_int, posY: c_int, width: c_int, height: c_int, top: Color, bottom: Color) -> void;
+
+// Draw a horizontal-gradient-filled rectangle
+public native fn DrawRectangleGradientH(posX: c_int, posY: c_int, width: c_int, height: c_int, left: Color, right: Color) -> void;
+
+// Draw a gradient-filled rectangle with custom vertex colors
+public native fn DrawRectangleGradientEx(rec: Rectangle, topLeft: Color, bottomLeft: Color, bottomRight: Color, topRight: Color) -> void;
+
+// Draw rectangle outline
+public native fn DrawRectangleLines(posX: c_int, posY: c_int, width: c_int, height: c_int, color: Color) -> void;
+
+// Draw rectangle outline with extended parameters
+public native fn DrawRectangleLinesEx(rec: Rectangle, lineThick: c_float, color: Color) -> void;
+
+// Draw rectangle with rounded edges
+public native fn DrawRectangleRounded(rec: Rectangle, roundness: c_float, segments: c_int, color: Color) -> void;
+
+// Draw rectangle lines with rounded edges
+public native fn DrawRectangleRoundedLines(rec: Rectangle, roundness: c_float, segments: c_int, color: Color) -> void;
+
+// Draw rectangle with rounded edges outline
+public native fn DrawRectangleRoundedLinesEx(rec: Rectangle, roundness: c_float, segments: c_int, lineThick: c_float, color: Color) -> void;
+
+// Draw a color-filled triangle (vertex in counter-clockwise order!)
+public native fn DrawTriangle(v1: Vector2, v2: Vector2, v3: Vector2, color: Color) -> void;
+
+// Draw triangle outline (vertex in counter-clockwise order!)
+public native fn DrawTriangleLines(v1: Vector2, v2: Vector2, v3: Vector2, color: Color) -> void;
+
+// Draw a triangle fan defined by points (first vertex is the center)
+public native fn DrawTriangleFan(points: *Vector2, pointCount: c_int, color: Color) -> void;
+
+// Draw a triangle strip defined by points
+public native fn DrawTriangleStrip(points: *Vector2, pointCount: c_int, color: Color) -> void;
+
+// Draw a regular polygon (version: Vector)
+public native fn DrawPoly(center: Vector2, sides: c_int, radius: c_float, rotation: c_float, color: Color) -> void;
+
+// Draw a polygon outline of n sides
+public native fn DrawPolyLines(center: Vector2, sides: c_int, radius: c_float, rotation: c_float, color: Color) -> void;
+
+// Draw a polygon outline of n sides with extended parameters
+public native fn DrawPolyLinesEx(center: Vector2, sides: c_int, radius: c_float, rotation: c_float, lineThick: c_float, color: Color) -> void;
+
+
+// Splines drawing functions
+
+
+// Draw spline: Linear, minimum 2 points
+public native fn DrawSplineLinear(points: *Vector2, pointCount: c_int, thick: c_float, color: Color) -> void;
+
+// Draw spline: B-Spline, minimum 4 points
+public native fn DrawSplineBasis(points: *Vector2, pointCount: c_int, thick: c_float, color: Color) -> void;
+
+// Draw spline: Catmull-Rom, minimum 4 points
+public native fn DrawSplineCatmullRom(points: *Vector2, pointCount: c_int, thick: c_float, color: Color) -> void;
+
+// Draw spline: Quadratic Bezier, minimum 3 points (1 control point): [p1, c2, p3, c4...]
+public native fn DrawSplineBezierQuadratic(points: *Vector2, pointCount: c_int, thick: c_float, color: Color) -> void;
+
+// Draw spline: Cubic Bezier, minimum 4 points (2 control points): [p1, c2, c3, p4, c5, c6...]
+public native fn DrawSplineBezierCubic(points: *Vector2, pointCount: c_int, thick: c_float, color: Color) -> void;
+
+// Draw spline segment: Linear, 2 points
+public native fn DrawSplineSegmentLinear(p1: Vector2, p2: Vector2, thick: c_float, color: Color) -> void;
+
+// Draw spline segment: B-Spline, 4 points
+public native fn DrawSplineSegmentBasis(p1: Vector2, p2: Vector2, p3: Vector2, p4: Vector2, thick: c_float, color: Color) -> void;
+
+// Draw spline segment: Catmull-Rom, 4 points
+public native fn DrawSplineSegmentCatmullRom(p1: Vector2, p2: Vector2, p3: Vector2, p4: Vector2, thick: c_float, color: Color) -> void;
+
+// Draw spline segment: Quadratic Bezier, 2 points, 1 control point
+public native fn DrawSplineSegmentBezierQuadratic(p1: Vector2, c2: Vector2, p3: Vector2, thick: c_float, color: Color) -> void;
+
+// Draw spline segment: Cubic Bezier, 2 points, 2 control points
+public native fn DrawSplineSegmentBezierCubic(p1: Vector2, c2: Vector2, c3: Vector2, p4: Vector2, thick: c_float, color: Color) -> void;
+
+
+// Spline segment point evaluation functions, for a given t [0.0f .. 1.0f]
+
+
+// Get (evaluate) spline point: Linear
+public native fn GetSplinePointLinear(startPos: Vector2, endPos: Vector2, t: c_float) -> Vector2;
+
+// Get (evaluate) spline point: B-Spline
+public native fn GetSplinePointBasis(p1: Vector2, p2: Vector2, p3: Vector2, p4: Vector2, t: c_float) -> Vector2;
+
+// Get (evaluate) spline point: Catmull-Rom
+public native fn GetSplinePointCatmullRom(p1: Vector2, p2: Vector2, p3: Vector2, p4: Vector2, t: c_float) -> Vector2;
+
+// Get (evaluate) spline point: Quadratic Bezier
+public native fn GetSplinePointBezierQuad(p1: Vector2, c2: Vector2, p3: Vector2, t: c_float) -> Vector2;
+
+// Get (evaluate) spline point: Cubic Bezier
+public native fn GetSplinePointBezierCubic(p1: Vector2, c2: Vector2, c3: Vector2, p4: Vector2, t: c_float) -> Vector2;
+
+
+// Basic shapes collision detection functions
+
+// Check collision between two rectangles
+public native fn CheckCollisionRecs(rec1: Rectangle, rec2: Rectangle) -> bool;
+
+// Check collision between two circles
+public native fn CheckCollisionCircles(center1: Vector2, radius1: c_float, center2: Vector2, radius2: c_float) -> bool;
+
+// Check collision between circle and rectangle
+public native fn CheckCollisionCircleRec(center: Vector2, radius: c_float, rec: Rectangle) -> bool;
+
+// Check if circle collides with a line created betweeen two points [p1] and [p2]
+public native fn CheckCollisionCircleLine(center: Vector2, radius: c_float, p1: Vector2, p2: Vector2) -> bool;
+
+// Check if point is inside rectangle
+public native fn CheckCollisionPointRec(point: Vector2, rec: Rectangle) -> bool;
+
+// Check if point is inside circle
+public native fn CheckCollisionPointCircle(point: Vector2, center: Vector2, radius: c_float) -> bool;
+
+// Check if point is inside a triangle
+public native fn CheckCollisionPointTriangle(point: Vector2, p1: Vector2, p2: Vector2, p3: Vector2) -> bool;
+
+// Check if point belongs to line created between two points [p1] and [p2] with defined margin in pixels [threshold]
+public native fn CheckCollisionPointLine(point: Vector2, p1: Vector2, p2: Vector2, threshold: c_int) -> bool;
+
+// Check if point is within a polygon described by array of vertices
+public native fn CheckCollisionPointPoly(point: Vector2, points: *Vector2, pointCount: c_int) -> bool;
+
+// Check the collision between two lines defined by two points each, returns collision point by reference
+public native fn CheckCollisionLines(startPos1: Vector2, endPos1: Vector2, startPos2: Vector2, endPos2: Vector2, collisionPoint: *Vector2) -> bool;
+
+// Get collision rectangle for two rectangles collision
+public native fn GetCollisionRec(rec1: Rectangle, rec2: Rectangle) -> Rectangle;
+
+// Image loading functions
+
+// NOTE: These functions do not require GPU access
+
+// Load image from file c_into CPU memory (RAM)
+public native fn LoadImage(fileName: *byte) -> Image;
+
+// Load image from RAW file data
+public native fn LoadImageRaw(fileName: *byte, width: c_int, height: c_int, format: c_int, headerSize: c_int) -> Image;
+
+// Load image sequence from file (frames appended to image.data)
+public native fn LoadImageAnim(fileName: *byte, frames: *c_int) -> Image;
+
+// Load image sequence from memory buffer
+public native fn LoadImageAnimFromMemory(fileType: *byte, fileData: *byte, dataSize: c_int, frames: *c_int) -> Image;
+
+// Load image from memory buffer, fileType refers to extension: i.e. '.png'
+public native fn LoadImageFromMemory(fileType: *byte, fileData: *byte, dataSize: c_int) -> Image;
+
+// Load image from GPU texture data
+public native fn LoadImageFromTexture(texture: Texture) -> Image;
+
+// Load image from screen buffer and (screenshot)
+public native fn LoadImageFromScreen() -> Image;
+
+// Check if an image is valid (data and parameters)
+public native fn IsImageValid(image: Image) -> bool;
+
+// Unload image from CPU memory (RAM)
+public native fn UnloadImage(image: Image) -> void;
+
+// Export image data to file, returns true on success
+public native fn ExportImage(image: Image, fileName: *byte) -> bool;
+
+// Export image to memory buffer, memory must be MemFree()
+public native fn ExportImageToMemory(image: Image, fileType: *byte, fileSize: *c_int) -> *byte;
+
+// Export image as code file defining an array of bytes, returns true on success
+public native fn ExportImageAsCode(image: Image, fileName: *byte) -> bool;
+
+
+// Image generation functions
+
+// Generate image: plain color
+public native fn GenImageColor(width: c_int, height: c_int, color: Color) -> Image;
+
+// Generate image: linear gradient, direction in degrees [0..360], 0=Vertical gradient
+public native fn GenImageGradientLinear(width: c_int, height: c_int, direction: c_int, start: Color, end: Color) -> Image;
+
+// Generate image: radial gradient
+public native fn GenImageGradientRadial(width: c_int, height: c_int, density: c_float, inner: Color, outer: Color) -> Image;
+
+// Generate image: square gradient
+public native fn GenImageGradientSquare(width: c_int, height: c_int, density: c_float, inner: Color, outer: Color) -> Image;
+
+// Generate image: checked
+public native fn GenImageChecked(width: c_int, height: c_int, checksX: c_int, checksY: c_int, col1: Color, col2: Color) -> Image;
+
+// Generate image: white noise
+public native fn GenImageWhiteNoise(width: c_int, height: c_int, factor: c_float) -> Image;
+
+// Generate image: perlin noise
+public native fn GenImagePerlinNoise(width: c_int, height: c_int, offsetX: c_int, offsetY: c_int, scale: c_float) -> Image;
+
+// Generate image: cellular algorithm, bigger tileSize means bigger cells
+public native fn GenImageCellular(width: c_int, height: c_int, tileSize: c_int) -> Image;
+
+// Generate image: grayscale image from text data
+public native fn GenImageText(width: c_int, height: c_int, text: *byte) -> Image;
+
+
+// Image manipulation functions
+
+// Create an image duplicate (useful for transformations)
+public native fn ImageCopy(image: Image) -> Image;
+
+// Create an image from another image piece
+public native fn ImageFromImage(image: Image, rec: Rectangle) -> Image;
+
+// Create an image from a selected channel of another image (GRAYSCALE)
+public native fn ImageFromChannel(image: Image, selectedChannel: c_int) -> Image;
+
+// Create an image from text (default font)
+public native fn ImageText(text: *byte, fontSize: c_int, color: Color) -> Image;
+
+// Create an image from text (custom sprite font)
+public native fn ImageTextEx(font: Font, text: *byte, fontSize: c_float, spacing: c_float, tint: Color) -> Image;
+
+// Convert image data to desired format
+public native fn ImageFormat(image: *Image, newFormat: c_int) -> void;
+
+// Convert image to POT (power-of-two)
+public native fn ImageToPOT(image: *Image, fill: Color) -> void;
+
+// Crop an image to a defined rectangle
+public native fn ImageCrop(image: *Image, crop: Rectangle) -> void;
+
+// Crop image depending on alpha value
+public native fn ImageAlphaCrop(image: *Image, threshold: c_float) -> void;
+
+// Clear alpha channel to desired color
+public native fn ImageAlphaClear(image: *Image, color: Color, threshold: c_float) -> void;
+
+// Apply alpha mask to image
+public native fn ImageAlphaMask(image: *Image, alphaMask: Image) -> void;
+
+// Premultiply alpha channel
+public native fn ImageAlphaPremultiply(image: *Image) -> void;
+
+// Apply Gaussian blur using a box blur approximation
+public native fn ImageBlurGaussian(image: *Image, blurSize: c_int) -> void;
+
+// Apply custom square convolution kernel to image
+public native fn ImageKernelConvolution(image: *Image, kernel: *c_float, kernelSize: c_int) -> void;
+
+// Resize image (scaling: Bicubic algorithm)
+public native fn ImageResize(image: *Image, newWidth: c_int, newHeight: c_int) -> void;
+
+// Resize image (Nearest-Neighbor scaling algorithm)
+public native fn ImageResizeNN(image: *Image, newWidth: c_int, newHeight: c_int) -> void;
+
+// Resize canvas and fill with color
+public native fn ImageResizeCanvas(image: *Image, newWidth: c_int, newHeight: c_int, offsetX: c_int, offsetY: c_int, fill: Color) -> void;
+
+// Compute all mipmap levels for a provided image
+public native fn ImageMipmaps(image: *Image) -> void;
+
+// Dither image data to 16bpp or lower (Floyd-Steinberg dithering)
+public native fn ImageDither(image: *Image, rBpp: c_int, gBpp: c_int, bBpp: c_int, aBpp: c_int) -> void;
+
+// Flip image vertically
+public native fn ImageFlipVertical(image: *Image) -> void;
+
+// Flip image horizontally
+public native fn ImageFlipHorizontal(image: *Image) -> void;
+
+// Rotate image by input angle in degrees (-359 to 359)
+public native fn ImageRotate(image: *Image, degrees: c_int) -> void;
+
+// Rotate image clockwise 90deg
+public native fn ImageRotateCW(image: *Image) -> void;
+
+// Rotate image counter-clockwise 90deg
+public native fn ImageRotateCCW(image: *Image) -> void;
+
+// Modify image color: ttont
+public native fn ImageColorTint(image: *Image, color: Color) -> void;
+
+// Modify image color: invert
+public native fn ImageColorInvert(image: *Image) -> void;
+
+// Modify image color: grayscale
+public native fn ImageColorGrayscale(image: *Image) -> void;
+
+// Modify image color: contrast (-100 to 100)
+public native fn ImageColorContrast(image: *Image, contrast: c_float) -> void;
+
+// Modify image color: brightness (-255 to 255)
+public native fn ImageColorBrightness(image: *Image, brightness: c_int) -> void;
+
+// Modify image color: replace color
+public native fn ImageColorReplace(image: *Image, color: Color, replace: Color) -> void;
+
+// Load color data from image as a array: Color (RGBA - 32bit)
+public native fn LoadImageColors(image: Image) -> *Color;
+
+// Load colors palette from image as a array: Color (RGBA - 32bit)
+public native fn LoadImagePalette(image: Image, maxPaletteSize: c_int, colorCount: *c_int) -> *Color;
+
+// Unload color data loaded with LoadImageColors()
+public native fn UnloadImageColors(colors: *Color) -> void;
+
+// Unload colors palette loaded with LoadImagePalette()
+public native fn UnloadImagePalette(colors: *Color) -> void;
+
+// Get image alpha border rectangle
+public native fn GetImageAlphaBorder(image: Image, threshold: c_float) -> Rectangle;
+
+// Get image pixel color at (x, y) position
+public native fn GetImageColor(image: Image, x: c_int, y: c_int) -> Color;
+
+
+// Image drawing functions
+
+// NOTE: Image software-rendering functions (CPU)
+
+// Clear image background with given color
+public native fn ImageClearBackground(dst: *Image, color: Color) -> void;
+
+// Draw pixel within an image
+public native fn ImageDrawPixel(dst: *Image, posX: c_int, posY: c_int, color: Color) -> void;
+
+// Draw pixel within an image (version: Vector)
+public native fn ImageDrawPixelV(dst: *Image, position: Vector2, color: Color) -> void;
+
+// Draw line within an image
+public native fn ImageDrawLine(dst: *Image, startPosX: c_int, startPosY: c_int, endPosX: c_int, endPosY: c_int, color: Color) -> void;
+
+// Draw line within an image (version: Vector)
+public native fn ImageDrawLineV(dst: *Image, start: Vector2, end: Vector2, color: Color) -> void;
+
+// Draw a line defining thickness within an image
+public native fn ImageDrawLineEx(dst: *Image, start: Vector2, end: Vector2, thick: c_int, color: Color) -> void;
+
+// Draw a filled circle within an image
+public native fn ImageDrawCircle(dst: *Image, centerX: c_int, centerY: c_int, radius: c_int, color: Color) -> void;
+
+// Draw a filled circle within an image (version: Vector)
+public native fn ImageDrawCircleV(dst: *Image, center: Vector2, radius: c_int, color: Color) -> void;
+
+// Draw circle outline within an image
+public native fn ImageDrawCircleLines(dst: *Image, centerX: c_int, centerY: c_int, radius: c_int, color: Color) -> void;
+
+// Draw circle outline within an image (version: Vector)
+public native fn ImageDrawCircleLinesV(dst: *Image, center: Vector2, radius: c_int, color: Color) -> void;
+
+// Draw rectangle within an image
+public native fn ImageDrawRectangle(dst: *Image, posX: c_int, posY: c_int, width: c_int, height: c_int, color: Color) -> void;
+
+// Draw rectangle within an image (version: Vector)
+public native fn ImageDrawRectangleV(dst: *Image, position: Vector2, size: Vector2, color: Color) -> void;
+
+// Draw rectangle within an image
+public native fn ImageDrawRectangleRec(dst: *Image, rec: Rectangle, color: Color) -> void;
+
+// Draw rectangle lines within an image
+public native fn ImageDrawRectangleLines(dst: *Image, rec: Rectangle, thick: c_int, color: Color) -> void;
+
+// Draw triangle within an image
+public native fn ImageDrawTriangle(dst: *Image, v1: Vector2, v2: Vector2, v3: Vector2, color: Color) -> void;
+
+// Draw triangle with c_interpolated colors within an image
+public native fn ImageDrawTriangleEx(dst: *Image, v1: Vector2, v2: Vector2, v3: Vector2, c1: Color, c2: Color, c3: Color) -> void;
+
+// Draw triangle outline within an image
+public native fn ImageDrawTriangleLines(dst: *Image, v1: Vector2, v2: Vector2, v3: Vector2, color: Color) -> void;
+
+// Draw a triangle fan defined by points within an image (first vertex is the center)
+public native fn ImageDrawTriangleFan(dst: *Image, points: *Vector2, pointCount: c_int, color: Color) -> void;
+
+// Draw a triangle strip defined by points within an image
+public native fn ImageDrawTriangleStrip(dst: *Image, points: *Vector2, pointCount: c_int, color: Color) -> void;
+
+// Draw a source image within a destination image (tint applied to source)
+public native fn ImageDraw(dst: *Image, src: Image, srcRec: Rectangle, dstRec: Rectangle, tint: Color) -> void;
+
+// Draw text (using default font) within an image (destination)
+public native fn ImageDrawText(dst: *Image, text: *byte, posX: c_int, posY: c_int, fontSize: c_int, color: Color) -> void;
+
+// Draw text (custom sprite font) within an image (destination)
+public native fn ImageDrawTextEx(dst: *Image, font: Font, text: *byte, position: Vector2, fontSize: c_float, spacing: c_float, tint: Color) -> void;
+
+
+// Texture loading functions
+
+// NOTE: These functions require GPU access
+
+// Load texture from file c_into GPU memory (VRAM)
+public native fn LoadTexture(fileName: *byte) -> Texture;
+
+// Load texture from image data
+public native fn LoadTextureFromImage(image: Image) -> Texture;
+
+// Load cubemap from image, multiple image cubemap layouts supported
+public native fn LoadTextureCubemap(image: Image, layout: c_int) -> Texture;
+
+// Load texture for rendering (framebuffer)
+public native fn LoadRenderTexture(width: c_int, height: c_int) -> RenderTexture;
+
+// Check if a texture is valid (loaded in GPU)
+public native fn IsTextureValid(texture: Texture) -> bool;
+
+// Unload texture from GPU memory (VRAM)
+public native fn UnloadTexture(texture: Texture) -> void;
+
+// Check if a render texture is valid (loaded in GPU)
+public native fn IsRenderTextureValid(target: RenderTexture) -> bool;
+
+// Unload render texture from GPU memory (VRAM)
+public native fn UnloadRenderTexture(target: RenderTexture) -> void;
+
+// Update GPU texture with new data (pixels should be able to fill texture)
+public native fn UpdateTexture(texture: Texture, pixels: *void) -> void;
+
+// Update GPU texture rectangle with new data (pixels and rec should fit in texture)
+public native fn UpdateTextureRec(texture: Texture, rec: Rectangle, pixels: *void) -> void;
+
+
+// Texture configuration functions
+
+// Generate GPU mipmaps for a texture
+public native fn GenTextureMipmaps(texture: *Texture) -> void;
+
+// Set texture scaling filter mode
+public native fn SetTextureFilter(texture: Texture, filter: c_int) -> void;
+
+// Set texture wrapping mode
+public native fn SetTextureWrap(texture: Texture, wrap: c_int) -> void;
+
+
+// Texture drawing functions
+
+// Draw a Texture
+public native fn DrawTexture(texture: Texture, posX: c_int, posY: c_int, tint: Color) -> void;
+
+// Draw a Texture with position defined as Vector2
+public native fn DrawTextureV(texture: Texture, position: Vector2, tint: Color) -> void;
+
+// Draw a Texture with extended parameters
+public native fn DrawTextureEx(texture: Texture, position: Vector2, rotation: c_float, scale: c_float, tint: Color) -> void;
+
+// Draw a part of a texture defined by a rectangle
+public native fn DrawTextureRec(texture: Texture, source: Rectangle, position: Vector2, tint: Color) -> void;
+
+// Draw a part of a texture defined by a rectangle with 'pro' parameters
+public native fn DrawTexturePro(texture: Texture, source: Rectangle, dest: Rectangle, origin: Vector2, rotation: c_float, tint: Color) -> void;
+
+// Draws a texture (or part of it) that stretches or shrinks nicely
+public native fn DrawTextureNPatch(texture: Texture, nPatchInfo: NPatchInfo, dest: Rectangle, origin: Vector2, rotation: c_float, tint: Color) -> void;
+
+
+// Color/pixel related functions
+
+// Check if two colors are equal
+public native fn ColorIsEqual(col1: Color, col2: Color) -> bool;
+
+// Get color with alpha applied, alpha goes from 0.0f to 1.0f
+public native fn Fade(color: Color, alpha: c_float) -> Color;
+
+// Get hexadecimal value for a (0xRRGGBBAA: Color)
+public native fn ColorToInt(color: Color) -> c_int;
+
+// Get normalized: Color as c_float [0..1]
+public native fn ColorNormalize(color: Color) -> Vector4;
+
+// Get from: Color normalized values [0..1]
+public native fn ColorFromNormalized(normalized: Vector4) -> Color;
+
+// Get HSV values for a Color, hue [0..360], saturation/value [0..1]
+public native fn ColorToHSV(color: Color) -> Vector3;
+
+// Get a from: Color HSV values, hue [0..360], saturation/value [0..1]
+public native fn ColorFromHSV(hue: c_float, saturation: c_float, value: c_float) -> Color;
+
+// Get color multiplied with another color
+public native fn ColorTint(color: Color, tint: Color) -> Color;
+
+// Get color with brightness correction, brightness factor goes from -1.0f to 1.0f
+public native fn ColorBrightness(color: Color, factor: c_float) -> Color;
+
+// Get color with contrast correction, contrast values between -1.0f and 1.0f
+public native fn ColorContrast(color: Color, contrast: c_float) -> Color;
+
+// Get color with alpha applied, alpha goes from 0.0f to 1.0f
+public native fn ColorAlpha(color: Color, alpha: c_float) -> Color;
+
+// Get src alpha-blended c_into dst color with tint
+public native fn ColorAlphaBlend(dst: Color, src: Color, tint: Color) -> Color;
+
+// Get color lerp c_interpolation between two colors, factor [0.0f..1.0f]
+public native fn ColorLerp(color1: Color, color2: Color, factor: c_float) -> Color;
+
+// Get structure: Color from hexadecimal value
+public native fn GetColor(hexValue: c_int) -> Color;
+
+// Get from: Color a source pixel pointer of certain format
+public native fn GetPixelColor(srcPtr: *void, format: c_int) -> Color;
+
+// Set color formatted c_into destination pixel pointer
+public native fn SetPixelColor(dstPtr: *void, color: Color, format: c_int) -> void;
+
+// Get pixel data size in bytes for certain format
+public native fn GetPixelDataSize(width: c_int, height: c_int, format: c_int) -> c_int;
+
+// Font loading/unloading functions
+
+// Get the default Font
+public native fn GetFontDefault() -> Font;
+
+// Load font from file c_into GPU memory (VRAM)
+public native fn LoadFont(fileName: *byte) -> Font;
+
+// Load font from file with extended parameters, use NULL for codepoints and 0 for codepointCount to load the default byteacter set, font size is provided in pixels height
+public native fn LoadFontEx(fileName: *byte, fontSize: c_int, codepoints: *c_int, codepointCount: c_int) -> Font;
+
+// Load font from Image (style: XNA)
+public native fn LoadFontFromImage(image: Image, key: Color, firstChar: c_int) -> Font;
+
+// Load font from memory buffer, fileType refers to extension: i.e. '.ttf'
+public native fn LoadFontFromMemory(fileType: *byte, dataSize: *byte, fileData: c_int, fontSize: c_int, codepoints: *c_int, codepointCount: c_int) -> Font;
+
+// Check if a font is valid (font data loaded, WARNING: GPU texture not checked)
+public native fn IsFontValid(font: Font) -> bool;
+
+// Load font data for further use
+public native fn LoadFontData(fileData: *byte, dataSize: c_int, fontSize: c_int, codepoints: *c_int, codepointCount: c_int, type: c_int, glyphCount: *c_int) -> *GlyphInfo;
+
+// Generate image font atlas using bytes info
+public native fn GenImageFontAtlas(glyphs: *GlyphInfo, glyphRecs: **Rectangle, glyphCount: c_int, fontSize: c_int, padding: c_int, packMethod: c_int) -> Image;
+
+// Unload font bytes info data (RAM)
+public native fn UnloadFontData(glyphs: *GlyphInfo, glyphCount: c_int) -> void;
+
+// Unload font from GPU memory (VRAM)
+public native fn UnloadFont(font: Font) -> void;
+
+// Export font as code file, returns true on success
+public native fn ExportFontAsCode(font: Font, fileName: *byte) -> bool;
+
+
+// Text drawing functions
+
+// Draw current FPS
+public native fn DrawFPS(posX: c_int, posY: c_int) -> void;
+
+// Draw text (using default font)
+public native fn DrawText(text: *byte, posX: c_int, posY: c_int, fontSize: c_int, color: Color) -> void;
+
+// Draw text using font and additional parameters
+public native fn DrawTextEx(font: Font, text: *byte, position: Vector2, fontSize: c_float, spacing: c_float, tint: Color) -> void;
+
+// Draw text using Font and pro parameters (rotation)
+public native fn DrawTextPro(font: Font, text: *byte, position: Vector2, origin: Vector2, rotation: c_float, fontSize: c_float, spacing: c_float, tint: Color) -> void;
+
+// Draw one byteacter (codepoint)
+public native fn DrawTextCodepoint(font: Font, codepoint: c_int, position: Vector2, fontSize: c_float, tint: Color) -> void;
+
+// Draw multiple byteacter (codepoint)
+public native fn DrawTextCodepoints(font: Font, codepoints: *c_int, codepointCount: c_int, position: Vector2, fontSize: c_float, spacing: c_float, tint: Color) -> void;
+
+
+// Text font info functions
+
+// Set vertical line spacing when drawing with line-breaks
+public native fn SetTextLineSpacing(spacing: c_int) -> void;
+
+// Measure string width for default font
+public native fn MeasureText(text: *byte, fontSize: c_int) -> c_int;
+
+// Measure string size for Font
+public native fn MeasureTextEx(font: Font, text: *byte, fontSize: c_float, spacing: c_float) -> Vector2;
+
+// Measure string size for an existing array of codepoints for Font
+public native fn MeasureTextCodepoints(font: Font, codepoints: *c_int, length: c_int, fontSize: c_float, spacing: c_float) -> Vector2;
+
+// Get glyph index position in font for a codepoint (unicode byteacter), fallback to '?' if not found
+public native fn GetGlyphIndex(font: Font, codepoint: c_int) -> c_int;
+
+// Get glyph font info data for a codepoint (unicode byteacter), fallback to '?' if not found
+public native fn GetGlyphInfo(font: Font, codepoint: c_int) -> GlyphInfo;
+
+// Get glyph rectangle in font atlas for a codepoint (unicode byteacter), fallback to '?' if not found
+public native fn GetGlyphAtlasRec(font: Font, codepoint: c_int) -> Rectangle;
+
+
+// Text codepoints management functions (unicode byteacters)
+
+// Load UTF-8 text encoded from codepoints array
+public native fn LoadUTF8(codepoints: *c_int, length: c_int) -> *byte;
+
+// Unload UTF-8 text encoded from codepoints array
+public native fn UnloadUTF8(text: *byte) -> void;
+
+// Load all codepoints from a UTF-8 text string, codepoints count returned by parameter
+public native fn LoadCodepoints(text: *byte, count: *c_int) -> *c_int;
+
+// Unload codepoints data from memory
+public native fn UnloadCodepoints(codepoints: *c_int) -> void;
+
+// Get total number of codepoints in a UTF-8 encoded string
+public native fn GetCodepointCount(text: *byte) -> c_int;
+
+// Get next codepoint in a UTF-8 encoded string, 0x3f('?') is returned on failure
+public native fn GetCodepoint(text: *byte, codepointSize: *c_int) -> c_int;
+
+// Get next codepoint in a UTF-8 encoded string, 0x3f('?') is returned on failure
+public native fn GetCodepointNext(text: *byte, codepointSize: *c_int) -> c_int;
+
+// Get previous codepoint in a UTF-8 encoded string, 0x3f('?') is returned on failure
+public native fn GetCodepointPrevious(text: *byte, codepointSize: *c_int) -> c_int;
+
+// Encode one codepoint c_into UTF-8 byte array (array length returned as parameter)
+public native fn CodepointToUTF8(codepoint: c_int, utf8Size: *c_int) -> *byte;
+
+
+// Text strings management functions (no UTF-8 strings, only byte bytes)
+
+// WARNING 1: Most of these functions use c_internal static buffers[], it's recommended to store returned data on user-side for re-use
+
+// WARNING 2: Some functions allocate memory c_internally for the returned strings, those strings must be freed by user using MemFree()
+
+// Load text as separate lines ('\n')
+public native fn LoadTextLines(text: *byte, count: *c_int) -> **byte;
+
+// Unload text lines
+public native fn UnloadTextLines(text: **byte, lineCount: c_int) -> void;
+
+// Copy one string to another, returns bytes copied
+public native fn TextCopy(dst: *byte, src: *byte) -> c_int;
+
+// Check if two text string are equal
+public native fn TextIsEqual(text1: *byte, text2: *byte) -> bool;
+
+// Get text length, checks for '\0' ending
+public native fn TextLength(text: *byte) -> c_int;
+
+// Text formatting with variables (sprintf() style)
+public native fn TextFormat(text: *byte) -> *byte;
+
+// Get a piece of a text string
+public native fn TextSubtext(text: *byte, position: c_int, length: c_int) -> *byte;
+
+// Remove text spaces, concat words
+public native fn TextRemoveSpaces(text: *byte) -> *byte;
+
+// Get text between two strings
+public native fn GetTextBetween(text: *byte, begin: *byte, end: *byte) -> *byte;
+
+// Replace text string with new string
+public native fn TextReplace(text: *byte, search: *byte, replacement: *byte) -> *byte;
+
+// Replace text string with new string, memory must be MemFree()
+public native fn TextReplaceAlloc(text: *byte, search: *byte, replacement: *byte) -> *byte;
+
+// Replace text between two specific strings
+public native fn TextReplaceBetween(text: *byte, begin: *byte, end: *byte, replacement: *byte) -> *byte;
+
+// Replace text between two specific strings, memory must be MemFree()
+public native fn TextReplaceBetweenAlloc(text: *byte, begin: *byte, end: *byte, replacement: *byte) -> *byte;
+
+// Insert text in a defined byte position
+public native fn TextInsert(text: *byte, insert: *byte, position: c_int) -> *byte;
+
+// Insert text in a defined byte position, memory must be MemFree()
+public native fn TextInsertAlloc(text: *byte, insert: *byte, position: c_int) -> *byte;
+
+// Join text strings with delimiter
+public native fn TextJoin(textList: **byte, count: c_int, delimiter: *byte) -> *byte;
+
+// Split text c_into multiple strings, using MAX_TEXTSPLIT_COUNT static strings
+public native fn TextSplit(text: *byte, delimiter: byte, count: *c_int) -> **byte;
+
+// Append text at specific position and move cursor
+public native fn TextAppend(text: *byte, append: *byte, position: *c_int) -> void;
+
+// Find first text occurrence within a string, -1 if not found
+public native fn TextFindIndex(text: *byte, search: *byte) -> c_int;
+
+// Get upper case version of provided string
+public native fn TextToUpper(text: *byte) -> *byte;
+
+// Get lower case version of provided string
+public native fn TextToLower(text: *byte) -> *byte;
+
+// Get Pascal case notation version of provided string
+public native fn TextToPascal(text: *byte) -> *byte;
+
+// Get Snake case notation version of provided string
+public native fn TextToSnake(text: *byte) -> *byte;
+
+// Get Camel case notation version of provided string
+public native fn TextToCamel(text: *byte) -> *byte;
+
+// Get c_integer value from text
+public native fn TextToInteger(text: *byte) -> c_int;
+
+// Get value: c_float from text
+public native fn TextToFloat(text: *byte) -> c_float;
+
+// Basic geometric 3D shapes drawing functions
+
+// Draw a line in 3D world space
+public native fn DrawLine3D(startPos: Vector3, endPos: Vector3, color: Color) -> void;
+
+// Draw a point in 3D space, actually a small line
+public native fn DrawPoint3D(position: Vector3, color: Color) -> void;
+
+// Draw a circle in 3D world space
+public native fn DrawCircle3D(center: Vector3, radius: c_float, rotationAxis: Vector3, rotationAngle: c_float, color: Color) -> void;
+
+// Draw a color-filled triangle (vertex in counter-clockwise order!)
+public native fn DrawTriangle3D(v1: Vector3, v2: Vector3, v3: Vector3, color: Color) -> void;
+
+// Draw a triangle strip defined by points
+public native fn DrawTriangleStrip3D(points: *Vector3, pointCount: c_int, color: Color) -> void;
+
+// Draw cube
+public native fn DrawCube(position: Vector3, width: c_float, height: c_float, length: c_float, color: Color) -> void;
+
+// Draw cube (version: Vector)
+public native fn DrawCubeV(position: Vector3, size: Vector3, color: Color) -> void;
+
+// Draw cube wires
+public native fn DrawCubeWires(position: Vector3, width: c_float, height: c_float, length: c_float, color: Color) -> void;
+
+// Draw cube wires (version: Vector)
+public native fn DrawCubeWiresV(position: Vector3, size: Vector3, color: Color) -> void;
+
+// Draw sphere
+public native fn DrawSphere(centerPos: Vector3, radius: c_float, color: Color) -> void;
+
+// Draw sphere with extended parameters
+public native fn DrawSphereEx(centerPos: Vector3, radius: c_float, rings: c_int, slices: c_int, color: Color) -> void;
+
+// Draw sphere wires
+public native fn DrawSphereWires(centerPos: Vector3, radius: c_float, rings: c_int, slices: c_int, color: Color) -> void;
+
+// Draw a cylinder/cone
+public native fn DrawCylinder(position: Vector3, radiusTop: c_float, radiusBottom: c_float, height: c_float, slices: c_int, color: Color) -> void;
+
+// Draw a cylinder with base at startPos and top at endPos
+public native fn DrawCylinderEx(startPos: Vector3, endPos: Vector3, startRadius: c_float, endRadius: c_float, sides: c_int, color: Color) -> void;
+
+// Draw a cylinder/cone wires
+public native fn DrawCylinderWires(position: Vector3, radiusTop: c_float, radiusBottom: c_float, height: c_float, slices: c_int, color: Color) -> void;
+
+// Draw a cylinder wires with base at startPos and top at endPos
+public native fn DrawCylinderWiresEx(startPos: Vector3, endPos: Vector3, startRadius: c_float, endRadius: c_float, sides: c_int, color: Color) -> void;
+
+// Draw a capsule with the center of its sphere caps at startPos and endPos
+public native fn DrawCapsule(startPos: Vector3, endPos: Vector3, radius: c_float, slices: c_int, rings: c_int, color: Color) -> void;
+
+// Draw capsule wireframe with the center of its sphere caps at startPos and endPos
+public native fn DrawCapsuleWires(startPos: Vector3, endPos: Vector3, radius: c_float, slices: c_int, rings: c_int, color: Color) -> void;
+
+// Draw a plane XZ
+public native fn DrawPlane(centerPos: Vector3, size: Vector2, color: Color) -> void;
+
+// Draw a ray line
+public native fn DrawRay(ray: Ray, color: Color) -> void;
+
+// Draw a grid (centered at (0, 0, 0))
+public native fn DrawGrid(slices: c_int, spacing: c_float) -> void;
+
+
+//------------------------------------------------------------------------------------
+
+// Model 3d Loading and Drawing Functions (Module: models)
+
+//------------------------------------------------------------------------------------
+
+
+// Model management functions
+
+// Load model from files (meshes and materials)
+public native fn LoadModel(fileName: *byte) -> Model;
+
+// Load model from generated mesh (default material)
+public native fn LoadModelFromMesh(mesh: Mesh) -> Model;
+
+// Check if a model is valid (loaded in GPU, VAO/VBOs)
+public native fn IsModelValid(model: Model) -> bool;
+
+// Unload model (including meshes) from memory (and: RAM/or VRAM)
+public native fn UnloadModel(model: Model) -> void;
+
+// Compute model bounding box limits (considers all meshes)
+public native fn GetModelBoundingBox(model: Model) -> BoundingBox;
+
+
+// Model drawing functions
+
+// Draw a model (with texture if set)
+public native fn DrawModel(model: Model, position: Vector3, scale: c_float, tint: Color) -> void;
+
+// Draw a model with extended parameters
+public native fn DrawModelEx(model: Model, position: Vector3, rotationAxis: Vector3, rotationAngle: c_float, scale: Vector3, tint: Color) -> void;
+
+// Draw a model wires (with texture if set)
+public native fn DrawModelWires(model: Model, position: Vector3, scale: c_float, tint: Color) -> void;
+
+// Draw a model wires (with texture if set) with extended parameters
+public native fn DrawModelWiresEx(model: Model, position: Vector3, rotationAxis: Vector3, rotationAngle: c_float, scale: Vector3, tint: Color) -> void;
+
+// Draw bounding box (wires)
+public native fn DrawBoundingBox(box: BoundingBox, color: Color) -> void;
+
+// Draw a billboard texture
+public native fn DrawBillboard(camera: Camera3D, texture: Texture, position: Vector3, scale: c_float, tint: Color) -> void;
+
+// Draw a billboard texture defined by source
+public native fn DrawBillboardRec(camera: Camera3D, texture: Texture, source: Rectangle, position: Vector3, size: Vector2, tint: Color) -> void;
+
+// Draw a billboard texture defined by source and rotation
+public native fn DrawBillboardPro(camera: Camera3D, texture: Texture, source: Rectangle, position: Vector3, up: Vector3, size: Vector2, origin: Vector2, rotation: c_float, tint: Color) -> void;
+
+
+// Mesh management functions
+
+// Upload mesh vertex data in GPU and provide VAO/VBO ids
+public native fn UploadMesh(mesh: *Mesh, dynamic: bool) -> void;
+
+// Update mesh vertex data in GPU for a specific buffer index
+public native fn UpdateMeshBuffer(mesh: Mesh, index: c_int, data: *void, dataSize: c_int, offset: c_int) -> void;
+
+// Unload mesh data from CPU and GPU
+public native fn UnloadMesh(mesh: Mesh) -> void;
+
+// Draw a 3d mesh with material and transform
+public native fn DrawMesh(mesh: Mesh, material: Material, transform: Matrix) -> void;
+
+// Draw multiple mesh instances with material and different transforms
+public native fn DrawMeshInstanced(mesh: Mesh, material: Material, transforms: *Matrix, instances: c_int) -> void;
+
+// Compute mesh bounding box limits
+public native fn GetMeshBoundingBox(mesh: Mesh) -> BoundingBox;
+
+// Compute mesh tangents
+public native fn GenMeshTangents(mesh: *Mesh) -> void;
+
+// Export mesh data to file, returns true on success
+public native fn ExportMesh(mesh: Mesh, fileName: *byte) -> bool;
+
+// Export mesh as code file (.h) defining multiple arrays of vertex attributes
+public native fn ExportMeshAsCode(mesh: Mesh, fileName: *byte) -> bool;
+
+
+// Mesh generation functions
+
+// Generate polygonal mesh
+public native fn GenMeshPoly(sides: c_int, radius: c_float) -> Mesh;
+
+// Generate plane mesh (with subdivisions)
+public native fn GenMeshPlane(width: c_float, length: c_float, resX: c_int, resZ: c_int) -> Mesh;
+
+// Generate cuboid mesh
+public native fn GenMeshCube(width: c_float, height: c_float, length: c_float) -> Mesh;
+
+// Generate sphere mesh (standard sphere)
+public native fn GenMeshSphere(radius: c_float, rings: c_int, slices: c_int) -> Mesh;
+
+// Generate half-sphere mesh (no bottom cap)
+public native fn GenMeshHemiSphere(radius: c_float, rings: c_int, slices: c_int) -> Mesh;
+
+// Generate cylinder mesh
+public native fn GenMeshCylinder(radius: c_float, height: c_float, slices: c_int) -> Mesh;
+
+// Generate cone/pyramid mesh
+public native fn GenMeshCone(radius: c_float, height: c_float, slices: c_int) -> Mesh;
+
+// Generate torus mesh
+public native fn GenMeshTorus(radius: c_float, size: c_float, radSeg: c_int, sides: c_int) -> Mesh;
+
+// Generate trefoil knot mesh
+public native fn GenMeshKnot(radius: c_float, size: c_float, radSeg: c_int, sides: c_int) -> Mesh;
+
+// Generate heightmap mesh from image data
+public native fn GenMeshHeightmap(heightmap: Image, size: Vector3) -> Mesh;
+
+// Generate cubes-based map mesh from image data
+public native fn GenMeshCubicmap(cubicmap: Image, cubeSize: Vector3) -> Mesh;
+
+
+// Material loading/unloading functions
+
+// Load materials from model file
+public native fn LoadMaterials(fileName: *byte, materialCount: *c_int) -> *Material;
+
+// Load default material (Supports: DIFFUSE, SPECULAR, NORMAL maps)
+public native fn LoadMaterialDefault() -> Material;
+
+// Check if a material is valid (shader assigned, map textures loaded in GPU)
+public native fn IsMaterialValid(material: Material) -> bool;
+
+// Unload material from GPU memory (VRAM)
+public native fn UnloadMaterial(material: Material) -> void;
+
+// Set texture for a material map type (MATERIAL_MAP_DIFFUSE, MATERIAL_MAP_SPECULAR...)
+public native fn SetMaterialTexture(material: *Material, mapType: c_int, texture: Texture) -> void;
+
+// Set material for a mesh
+public native fn SetModelMeshMaterial(model: *Model, meshId: c_int, materialId: c_int) -> void;
+
+
+// Model animations loading/unloading functions
+
+// Load model animations from file
+public native fn LoadModelAnimations(fileName: *byte, animCount: *c_int) -> *ModelAnimation;
+
+// Update model animation pose (vertex buffers and bone matrices)
+public native fn UpdateModelAnimation(model: Model, anim: ModelAnimation, frame: c_float) -> void;
+
+// Update model animation pose, blending two animations
+public native fn UpdateModelAnimationEx(model: Model, animA: ModelAnimation, frameA: c_float, animB: ModelAnimation, frameB: c_float, blend: c_float) -> void;
+
+// Unload animation array data
+public native fn UnloadModelAnimations(animations: *ModelAnimation, animCount: c_int) -> void;
+
+// Check model animation skeleton match
+public native fn IsModelAnimationValid(model: Model, anim: ModelAnimation) -> bool;
+
+
+// Collision detection functions
+
+// Check collision between two spheres
+public native fn CheckCollisionSpheres(center1: Vector3, radius1: c_float, center2: Vector3, radius2: c_float) -> bool;
+
+// Check collision between two bounding boxes
+public native fn CheckCollisionBoxes(box1: BoundingBox, box2: BoundingBox) -> bool;
+
+// Check collision between box and sphere
+public native fn CheckCollisionBoxSphere(box: BoundingBox, center: Vector3, radius: c_float) -> bool;
+
+// Get collision info between ray and sphere
+public native fn GetRayCollisionSphere(ray: Ray, center: Vector3, radius: c_float) -> RayCollision;
+
+// Get collision info between ray and box
+public native fn GetRayCollisionBox(ray: Ray, box: BoundingBox) -> RayCollision;
+
+// Get collision info between ray and mesh
+public native fn GetRayCollisionMesh(ray: Ray, mesh: Mesh, transform: Matrix) -> RayCollision;
+
+// Get collision info between ray and triangle
+public native fn GetRayCollisionTriangle(ray: Ray, p1: Vector3, p2: Vector3, p3: Vector3) -> RayCollision;
+
+// Get collision info between ray and quad
+public native fn GetRayCollisionQuad(ray: Ray, p1: Vector3, p2: Vector3, p3: Vector3, p4: Vector3) -> RayCollision;
+
+
+// Audio device management functions
+
+// Initialize audio device and context
+public native fn InitAudioDevice() -> void;
+
+// Close the audio device and context
+public native fn CloseAudioDevice() -> void;
+
+// Check if audio device has been initialized successfully
+public native fn IsAudioDeviceReady() -> bool;
+
+// Set master volume (listener)
+public native fn SetMasterVolume(volume: c_float) -> void;
+
+// Get master volume (listener)
+public native fn GetMasterVolume() -> c_float;
+
+
+// Wave/Sound loading/unloading functions
+
+// Load wave data from file
+public native fn LoadWave(fileName: *byte) -> Wave;
+
+// Load wave from memory buffer, fileType refers to extension: i.e. '.wav'
+public native fn LoadWaveFromMemory(fileType: *byte, fileData: *byte, dataSize: c_int) -> Wave;
+
+// Checks if wave data is valid (data loaded and parameters)
+public native fn IsWaveValid(wave: Wave) -> bool;
+
+// Load sound from file
+public native fn LoadSound(fileName: *byte) -> Sound;
+
+// Load sound from wave data
+public native fn LoadSoundFromWave(wave: Wave) -> Sound;
+
+// Create a new sound that shares the same sample data as the source sound, does not own the sound data
+public native fn LoadSoundAlias(source: Sound) -> Sound;
+
+// Checks if a sound is valid (data loaded and buffers initialized)
+public native fn IsSoundValid(sound: Sound) -> bool;
+
+// Update sound buffer with new data (default data format: 32 bit c_float, stereo)
+public native fn UpdateSound(sound: Sound, data: *void, sampleCount: c_int) -> void;
+
+// Unload wave data
+public native fn UnloadWave(wave: Wave) -> void;
+
+// Unload sound
+public native fn UnloadSound(sound: Sound) -> void;
+
+// Unload a sound alias (does not deallocate sample data)
+public native fn UnloadSoundAlias(alias: Sound) -> void;
+
+// Export wave data to file, returns true on success
+public native fn ExportWave(wave: Wave, fileName: *byte) -> bool;
+
+// Export wave sample data to code (.h), returns true on success
+public native fn ExportWaveAsCode(wave: Wave, fileName: *byte) -> bool;
+
+
+// Wave/Sound management functions
+
+// Play a sound
+public native fn PlaySound(sound: Sound) -> void;
+
+// Stop playing a sound
+public native fn StopSound(sound: Sound) -> void;
+
+// Pause a sound
+public native fn PauseSound(sound: Sound) -> void;
+
+// Resume a paused sound
+public native fn ResumeSound(sound: Sound) -> void;
+
+// Check if a sound is currently playing
+public native fn IsSoundPlaying(sound: Sound) -> bool;
+
+// Set volume for a sound (1.0 is max level)
+public native fn SetSoundVolume(sound: Sound, volume: c_float) -> void;
+
+// Set pitch for a sound (1.0 is base level)
+public native fn SetSoundPitch(sound: Sound, pitch: c_float) -> void;
+
+// Set pan for a sound (-1.0 left, 0.0 center, 1.0 right)
+public native fn SetSoundPan(sound: Sound, pan: c_float) -> void;
+
+// Copy a wave to a new wave
+public native fn WaveCopy(wave: Wave) -> Wave;
+
+// Crop a wave to defined frames range
+public native fn WaveCrop(wave: *Wave, initFrame: c_int, finalFrame: c_int) -> void;
+
+// Convert wave data to desired format
+public native fn WaveFormat(wave: *Wave, sampleRate: c_int, sampleSize: c_int, channels: c_int) -> void;
+
+// Load samples data from wave as a 32bit data: c_float array
+public native fn LoadWaveSamples(wave: Wave) -> *c_float;
+
+// Unload samples data loaded with LoadWaveSamples()
+public native fn UnloadWaveSamples(samples: *c_float) -> void;
+
+
+// Music management functions
+
+// Load music stream from file
+public native fn LoadMusicStream(fileName: *byte) -> Music;
+
+// Load music stream from data
+public native fn LoadMusicStreamFromMemory(fileType: *byte, data: *byte, dataSize: c_int) -> Music;
+
+// Checks if a music stream is valid (context and buffers initialized)
+public native fn IsMusicValid(music: Music) -> bool;
+
+// Unload music stream
+public native fn UnloadMusicStream(music: Music) -> void;
+
+// Start music playing
+public native fn PlayMusicStream(music: Music) -> void;
+
+// Check if music is playing
+public native fn IsMusicStreamPlaying(music: Music) -> bool;
+
+// Updates buffers for music streaming
+public native fn UpdateMusicStream(music: Music) -> void;
+
+// Stop music playing
+public native fn StopMusicStream(music: Music) -> void;
+
+// Pause music playing
+public native fn PauseMusicStream(music: Music) -> void;
+
+// Resume playing paused music
+public native fn ResumeMusicStream(music: Music) -> void;
+
+// Seek music to a position (in seconds)
+public native fn SeekMusicStream(music: Music, position: c_float) -> void;
+
+// Set volume for music (1.0 is max level)
+public native fn SetMusicVolume(music: Music, volume: c_float) -> void;
+
+// Set pitch for a music (1.0 is base level)
+public native fn SetMusicPitch(music: Music, pitch: c_float) -> void;
+
+// Set pan for a music (-1.0 left, 0.0 center, 1.0 right)
+public native fn SetMusicPan(music: Music, pan: c_float) -> void;
+
+// Get music time length (in seconds)
+public native fn GetMusicTimeLength(music: Music) -> c_float;
+
+// Get current music time played (in seconds)
+public native fn GetMusicTimePlayed(music: Music) -> c_float;
+
+
+// AudioStream management functions
+
+// Load audio stream (to stream raw audio pcm data)
+public native fn LoadAudioStream(sampleRate: c_int, sampleSize: c_int, channels: c_int) -> AudioStream;
+
+// Checks if an audio stream is valid (buffers initialized)
+public native fn IsAudioStreamValid(stream: AudioStream) -> bool;
+
+// Unload audio stream and free memory
+public native fn UnloadAudioStream(stream: AudioStream) -> void;
+
+// Update audio stream buffers with data
+public native fn UpdateAudioStream(stream: AudioStream, data: *void, frameCount: c_int) -> void;
+
+// Check if any audio stream buffers requires refill
+public native fn IsAudioStreamProcessed(stream: AudioStream) -> bool;
+
+// Play audio stream
+public native fn PlayAudioStream(stream: AudioStream) -> void;
+
+// Pause audio stream
+public native fn PauseAudioStream(stream: AudioStream) -> void;
+
+// Resume audio stream
+public native fn ResumeAudioStream(stream: AudioStream) -> void;
+
+// Check if audio stream is playing
+public native fn IsAudioStreamPlaying(stream: AudioStream) -> bool;
+
+// Stop audio stream
+public native fn StopAudioStream(stream: AudioStream) -> void;
+
+// Set volume for audio stream (1.0 is max level)
+public native fn SetAudioStreamVolume(stream: AudioStream, volume: c_float) -> void;
+
+// Set pitch for audio stream (1.0 is base level)
+public native fn SetAudioStreamPitch(stream: AudioStream, pitch: c_float) -> void;
+
+// Set pan for audio stream (-1.0 to 1.0 range, 0.0 is centered)
+public native fn SetAudioStreamPan(stream: AudioStream, pan: c_float) -> void;
+
+// Default size for new audio streams
+public native fn SetAudioStreamBufferSizeDefault(size: c_int) -> void;
+
+// Audio thread callback to request new data
+public native fn SetAudioStreamCallback(stream: AudioStream, callback: fn(*void, c_int) -> void) -> void;
+
+
+// Attach audio stream processor to stream, receives frames x 2 samples as 'c_float' (stereo)
+public native fn AttachAudioStreamProcessor(stream: AudioStream, processor: fn(*void, c_int) -> void) -> void;
+
+// Detach audio stream processor from stream
+public native fn DetachAudioStreamProcessor(stream: AudioStream, processor: fn(*void, c_int) -> void) -> void;
+
+
+// Attach audio stream processor to the entire audio pipeline, receives frames x 2 samples as 'c_float' (stereo)
+public native fn AttachAudioMixedProcessor(processor: fn(*void, c_int) -> void) -> void;
+
+// Detach audio stream processor from the entire audio pipeline
+public native fn DetachAudioMixedProcessor(processor: fn(*void, c_int) -> void) -> void;
+

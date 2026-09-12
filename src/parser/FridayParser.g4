@@ -84,7 +84,20 @@ options {
   | IF conditions += expression scopes += syntacticalScope (
       ELIF conditions += expression scopes += syntacticalScope
     )*? (ELSE elseStatement = statement)?                                                       # IfStatement
-  | FOR statement expression SEMI expression statement                                          # ForStatement
+  | FOR (
+    (
+      varname = IDENTIFIER COL 
+      from = expression 
+      rangeOp = (DOTDOT | DOTDOTEQ) 
+      to = expression
+    ) | (
+      (enumerator = IDENTIFIER COMMA)? 
+      itername = IDENTIFIER COL slice = expression 
+    )
+  ) 
+    (WHERE filterExpr = expression)?
+    
+    scope = syntacticalScope                                                                    # ForStatement
   | WHILE condition = expression scope = syntacticalScope                                       # WhileStatement
   | declarator = (LET | CONST) id = IDENTIFIER (COL type)? ASSIGN initializer = expression SEMI # DeclarationStatement
   | DEFER statement                                                                             # DeferStatement

@@ -36,7 +36,7 @@ namespace friday::inline api {
   auto LLVMObjectEmitterVisitor::emit_function(Function* func, llvm::GlobalValue::LinkageTypes linkage, function<string(Function*)> get_name) -> llvm::Value* {
     return llvm::dyn_cast<llvm::Value>(
       llvm::Function::Create(
-        llvm::cast<llvm::FunctionType>(FunctionType::to_function(func->get_type())->to_llvm_signature_type()),
+        llvm::cast<llvm::FunctionType>(FunctionType::to_function(func->get_type())->to_llvm_signature_type(func->is_native())),
         linkage,
         get_name(func),
         LLVM.module()
@@ -150,37 +150,12 @@ namespace friday::inline api {
   auto LLVMObjectEmitterVisitor::on_unit_end(TranslationUnit& unit) -> void {
     (void)unit;
   }
-  
-  auto LLVMObjectEmitterVisitor::get_byte() -> llvm::Type* {
-    return dynamic_cast<Type*>(Namespace::get_global_namespace()->find_struct("byte"))->to_llvm_type();
-  }
-
-  auto LLVMObjectEmitterVisitor::get_int() -> llvm::Type* {
-    return dynamic_cast<Type*>(Namespace::get_global_namespace()->find_struct("int"))->to_llvm_type();
-  }
-
-  auto LLVMObjectEmitterVisitor::get_bool() -> llvm::Type* {
-    return dynamic_cast<Type*>(Namespace::get_global_namespace()->find_struct("bool"))->to_llvm_type();
-  }
-
-  auto LLVMObjectEmitterVisitor::get_void() -> llvm::Type* {
-    return dynamic_cast<Type*>(Namespace::get_global_namespace()->find_struct("void"))->to_llvm_type();
-  }
-
-  auto LLVMObjectEmitterVisitor::get_voidptr() -> llvm::Type* {
-    auto Void = dynamic_cast<Type*>(Namespace::get_global_namespace()->find_struct("void"));
-    return PointerType::get(*Void, 1)->to_llvm_type();
-  }
-
-  auto LLVMObjectEmitterVisitor::get_float() -> llvm::Type* {
-    return dynamic_cast<Type*>(Namespace::get_global_namespace()->find_struct("float"))->to_llvm_type();
-  }
 
   auto LLVMObjectEmitterVisitor::get_printf() -> llvm::Function* {
     static llvm::Function* S_printf = llvm::Function::Create(
       llvm::FunctionType::get(
-        llvm::Type::getInt32Ty(LLVM.context()),
-        llvm::PointerType::get(LLVM.context(), 0),
+        LLVM.get_int_type(32),
+        LLVM.get_pointer_type(),
         true
       ),
       llvm::GlobalValue::LinkageTypes::ExternalLinkage,

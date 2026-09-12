@@ -1,5 +1,0 @@
-using Raylib;
-
-public fn main() -> void {
-  
-}

@@ -15,6 +15,9 @@ namespace friday::inline api {
     struct Factory {
       static auto create(Namespace& parent, string name) -> Struct*;
     };
+  
+  public:
+    constexpr static u64 FIELD_NPOS = -1ULL;
 
   private:
     /// @brief The name of the struct
@@ -24,7 +27,7 @@ namespace friday::inline api {
     Namespace* M_declaryingNamespace { nullptr };
 
     /// @brief The fields
-    vector<Variable*> M_fields { };
+    map<string, u64> M_fields { };
 
   protected:
     /// @brief Construct a struct
@@ -37,12 +40,13 @@ namespace friday::inline api {
     ~Struct() override = default;
 
   public:
+    auto get_field_index(string const& name) const -> u64;
     auto add_field(Variable* field) -> void;
     auto find_field(string_view name) const noexcept -> Variable*;
     auto find_method(string_view name) const noexcept -> Overload*;
-    auto get_name() const noexcept -> string_view override;
     auto to_llvm_type() const noexcept -> llvm::Type* override;
-    auto get_fields() const -> vector<Variable*> const&;
+    auto get_fields() const -> vector<Variable*>;
+    auto get_name() const noexcept -> string_view override;
     auto get_qualified_id() const -> string override;
     auto get_attributes() const -> Attributes override;
     auto get_parent() const -> ISymbolTable* override;
@@ -51,7 +55,9 @@ namespace friday::inline api {
     auto get_type() const -> Type* override;
 
     static auto is_struct(ISymbol* symbol) -> bool;
+    static auto is_struct_type(Type* type) -> bool;
     static auto to_struct(ISymbol* symbol) -> Struct*;
+    static auto to_struct_type(Type* symbol) -> Struct*;
 
   };
 }

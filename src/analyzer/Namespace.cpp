@@ -81,7 +81,7 @@ namespace friday::inline api {
   Namespace::Namespace(string name)
     : M_name { name }
   {
-    if(Namespace::S_globalNamespace != nullptr and name != "") {
+    if(Namespace::S_globalNamespace != nullptr) {
       //*/ 'this' is not the global namespace because its already initialized
       this->M_parentNamespace = Namespace::get_global_namespace();
     }
@@ -103,7 +103,7 @@ namespace friday::inline api {
 
   auto Namespace::find_struct(string_view id) -> Struct* {
     ISymbol* candidate = this->retrieve_if(id, &Struct::is_struct);
-    return candidate != nullptr ? dynamic_cast<Struct*>(candidate) : nullptr;
+    return candidate != nullptr ? Struct::to_struct(candidate) : nullptr;
   }
 
   auto Namespace::find_variable(string_view id) -> Variable* {
@@ -134,6 +134,10 @@ namespace friday::inline api {
       auto Float = dynamic_cast<Type*>(PrimitiveType::Factory::create("float", LLVM.get_double_type()));
       auto Void = dynamic_cast<Type*>(PrimitiveType::Factory::create("void", LLVM.get_void_type()));
       auto VoidPtr = dynamic_cast<Type*>(PointerType::get(*Void, 1));
+
+      auto CShort = dynamic_cast<Type*>(PrimitiveType::Factory::create("c_short", LLVM.get_int_type(16)));
+      auto CInt = dynamic_cast<Type*>(PrimitiveType::Factory::create("c_int", LLVM.get_int_type(32)));
+      auto CFloat = dynamic_cast<Type*>(PrimitiveType::Factory::create("c_float", LLVM.get_float_type()));
 
       auto plus = "operator+"s
       | ($$("lhs", Int) & $$("rhs", Int)) >> Int
@@ -283,6 +287,9 @@ namespace friday::inline api {
       Namespace::S_globalNamespace->define(dynamic_cast<ISymbol*>(Bool));
       Namespace::S_globalNamespace->define(dynamic_cast<ISymbol*>(Float));
       Namespace::S_globalNamespace->define(dynamic_cast<ISymbol*>(Void));
+      Namespace::S_globalNamespace->define(dynamic_cast<ISymbol*>(CShort));
+      Namespace::S_globalNamespace->define(dynamic_cast<ISymbol*>(CInt));
+      Namespace::S_globalNamespace->define(dynamic_cast<ISymbol*>(CFloat));
       
       //*/ Operators
       Namespace::S_globalNamespace->define(dynamic_cast<ISymbol*>(plus));

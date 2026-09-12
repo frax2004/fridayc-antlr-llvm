@@ -149,13 +149,16 @@ namespace friday::inline api {
     return llvm::PointerType::get(LLVM.context(), 0);
   }
   
-  auto FunctionType::to_llvm_signature_type() const noexcept -> llvm::Type* {
+  auto FunctionType::to_llvm_signature_type(bool isNative) const noexcept -> llvm::Type* {
+
+    auto toLLVMType = isNative ? &Type::to_llvm_abi_type : &Type::to_llvm_type;
+
     auto args = this->M_parameters
-    | views::transform(&Type::to_llvm_type)
-    | ranges::to<vector>();
+    | views::transform(toLLVMType)
+    | ranges::to<vector<llvm::Type*>>();
   
     return LLVM.get_function_type(
-      this->M_returnType->to_llvm_type(),
+      invoke(toLLVMType, this->M_returnType),
       span{ args.data(), args.size() }
     );
   }

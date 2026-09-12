@@ -24,94 +24,55 @@ namespace friday::inline api {
     return this->M_symbolTables.top();
   }
 
-  auto TypeCheckerVisitor::BYTE() -> Type* {
-    return dynamic_cast<Type*>(Namespace::get_global_namespace()->find_struct("byte"));
-  }
-
-  auto TypeCheckerVisitor::INT() -> Type* {
-    return dynamic_cast<Type*>(Namespace::get_global_namespace()->find_struct("int"));
-  }
-
-  auto TypeCheckerVisitor::BOOL() -> Type* {
-    return dynamic_cast<Type*>(Namespace::get_global_namespace()->find_struct("bool"));
-  }
-
-  auto TypeCheckerVisitor::VOID() -> Type* {
-    return dynamic_cast<Type*>(Namespace::get_global_namespace()->find_struct("void"));
-  }
-
-  auto TypeCheckerVisitor::VOIDPTR() -> Type* {
-    return PointerType::get(*this->VOID(), 1);
-  }
-
-  auto TypeCheckerVisitor::FLOAT() -> Type* {
-    return dynamic_cast<Type*>(Namespace::get_global_namespace()->find_struct("float"));
-  }
-
   auto TypeCheckerVisitor::find_binary_operator(string_view name, Type* lhsType, Type* rhsType) -> Function* {
 
-    auto unit = this->get_current_unit();
+    TranslationUnit* unit = this->get_current_unit();
+    Overload* overload = nullptr;
 
-    auto try_match = [lhsType, rhsType](Overload* ref) { 
-      auto obj = ref->try_match(vector{ lhsType, rhsType });
-      return obj != nullptr ? optional{ obj } : nullopt;
-    };
-
-    auto search_within_global_scope = [unit, name]() {
-      auto obj = unit->look_up_if(
+    if(overload == nullptr) {
+      ISymbol* candidate = unit->look_up_if(
         name, 
         dynamic_cast<ISymbolTable*>(unit->get_owned_namespace()), 
         &Overload::is_overload, 
-        {}
+        nullptr
       );
-      return obj != nullptr ? optional{ obj } : nullopt;
-    };
 
-    auto search_within_left_struct = [lhsType, name]() -> optional<ISymbol*> {
-      if(auto lhsAsStruct = dynamic_cast<Struct*>(lhsType); lhsAsStruct != nullptr) {
-        auto obj = lhsAsStruct->find_method(name);
-        return obj != nullptr ? optional{ obj } : nullopt;
-      } else return nullopt;
-    };
+      if(candidate != nullptr) {
+        overload = Overload::to_overload(candidate);
+      }
+    }
 
-    return search_within_left_struct()
-    .or_else(search_within_global_scope)
-    .transform(&Overload::to_overload)
-    .and_then(try_match)
-    .value_or({});
+    if(auto lhsAsStruct = Struct::to_struct_type(lhsType); overload == nullptr and lhsAsStruct != nullptr) {
+      overload = lhsAsStruct->find_method(name);
+    }
+
+    return overload != nullptr ? overload->try_match({ lhsType, rhsType }) : nullptr;
   }
 
   auto TypeCheckerVisitor::find_unary_operator(string_view name, Type* type) -> Function* {
 
-    auto unit = this->get_current_unit();
+    TranslationUnit* unit = this->get_current_unit();
+    Overload* overload = nullptr;
 
-    auto search_within_global_scope = [unit, name]() {
-      auto obj = unit->look_up_if(
+    if(overload == nullptr) {
+      ISymbol* candidate = unit->look_up_if(
         name, 
         dynamic_cast<ISymbolTable*>(unit->get_owned_namespace()), 
         &Overload::is_overload, 
-        {}
+        nullptr
       );
-      return obj != nullptr ? optional{ obj } : nullopt;
-    };
 
-    auto try_match = [type](Overload* ref) { 
-      auto obj = ref->try_match(vector{ type });
-      return obj != nullptr ? optional{ obj } : nullopt;
-    };
+      if(candidate != nullptr) {
+        overload = Overload::to_overload(candidate);
+      }
+    }
 
-    auto search_within_left_struct = [type, name]() -> optional<ISymbol*> {
-      if(auto lhsAsStruct = dynamic_cast<Struct*>(type); lhsAsStruct != nullptr) {
-        auto obj = lhsAsStruct->find_method(name);
-        return obj != nullptr ? optional{ obj } : nullopt;
-      } else return nullopt;
-    };
 
-    return search_within_left_struct()
-    .or_else(search_within_global_scope)
-    .transform(&Overload::to_overload)
-    .and_then(try_match)
-    .value_or({});
+    if(auto lhsAsStruct = Struct::to_struct_type(type); overload == nullptr and lhsAsStruct != nullptr) {
+      overload = lhsAsStruct->find_method(name);
+    }
+
+    return overload != nullptr ? overload->try_match({ type }) : nullptr;
   }
 
   auto TypeCheckerVisitor::on_unit_begin(TranslationUnit& unit) -> void {
@@ -121,6 +82,31 @@ namespace friday::inline api {
   auto TypeCheckerVisitor::on_unit_end(TranslationUnit& _) -> void {
     (void)_;
     this->pop();
+  }
+
+  auto TypeCheckerVisitor::check_scope(FridayParser::SyntacticalScopeContext* ctx) -> void {
+    this->visitChildren(ctx);
+    this->pop();
+  }
+  
+  auto TypeCheckerVisitor::prepare_scope(FridayParser::SyntacticalScopeContext* ctx, vector<pair<string, Type*>> locals) -> void {
+    ISymbolTable* parent = this->top();
+    
+    if(not parent) throw OperationNotSupportedError{};
+    
+    Scope* current = Scope::Factory::create(*parent);
+    
+    for(auto local : locals) {
+      Variable* var = Variable::Factory::create(
+        *dynamic_cast<ISymbolTable*>(current), 
+        local.first, 
+        *local.second
+      );
+      current->define(var);
+    }
+    
+    $(ctx).scope = current;
+    this->push($(ctx).scope);
   }
 
 }

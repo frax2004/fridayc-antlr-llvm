@@ -65,6 +65,12 @@ namespace friday::inline api {
       ctx->fieldsTypes | views::transform([](FridayParser::TypeContext* typeCtx) { return $(typeCtx).type; })
     );
 
+    Type* VOID = dynamic_cast<Type*>(Namespace::get_global_namespace()->find_struct("void"));
+
+    auto isProibited = [VOID](Type* type) -> bool {
+      return ErrorType::is_error_type(type) or type == VOID;
+    };
+
     for(u64 i = 0; auto [fieldName, fieldType] : fields) {
       if(asStruct->is_defined(fieldName, &Variable::is_variable)) {
         this->error_at(
@@ -76,12 +82,12 @@ namespace friday::inline api {
             fieldName
           )
         );
-      } else if(ErrorType::is_error_type(fieldType)) {
+      } else if(isProibited(fieldType)) {
         this->error_at(
           ctx,
           ctx->fieldsTypes[i]->getStart(),
           format(
-            "In definition of struct \"{}\", field named \"{}\" as an invalid error type \"{}\"",
+            "In definition of struct \"{}\", field named \"{}\" has an invalid type \"{}\"",
             structName,
             fieldName,
             ctx->fieldsTypes[i]->getText()
@@ -90,7 +96,7 @@ namespace friday::inline api {
       } else {
         Variable* field = Variable::Factory::create(*asStruct, fieldName, *fieldType);
         asStruct->add_field(field);
-        if(auto fieldAsStruct = dynamic_cast<Struct*>(fieldType)) {
+        if(auto fieldAsStruct = Struct::to_struct_type(fieldType)) {
           this->M_dependencyGraph.add_edge(
             static_cast<void*>(asStruct), 
             static_cast<void*>(fieldAsStruct)

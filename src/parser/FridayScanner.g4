@@ -27,6 +27,7 @@ ELSE: 'else';
 AS: 'as';
 SIZEOF: 'sizeof';
 ALIGNOF: 'alignof';
+WHERE: 'where';
 
 // Literals
 BOOL_LIT: 'true' | 'false';
@@ -48,10 +49,10 @@ COL: ':';
 COMMA: ',';
 ARROW: '->';
 FAT_ARROW: '=>';
-INCREMENT: '++';
-DECREMENT: '--';
 
 // Operators
+INCREMENT: '++';
+DECREMENT: '--';
 PLUS: '+';
 MINUS: '-';
 STAR: '*';
@@ -77,6 +78,8 @@ LSHIFT_ASSIGN: '<<=';
 RSHIFT_ASSIGN: '>>=';
 AMPERSAND_ASSIGN: '&=';
 PIPELINE_ASSIGN: '|=';
+DOTDOT: '..';
+DOTDOTEQ: '..=';
 TILDE: '~';
 DOT: '.';
 AND: '&&';

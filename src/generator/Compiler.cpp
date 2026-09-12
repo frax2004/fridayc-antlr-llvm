@@ -58,7 +58,7 @@ namespace friday::inline api {
           Console::Color::RESET
         )
       );
-
+      
       auto errors = visitor->analyze().errors();
       if(not errors.empty()) {
         ranges::for_each(errors, &SemanticError::report);

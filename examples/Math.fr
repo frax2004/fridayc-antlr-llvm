@@ -1,17 +1,18 @@
-namespace math;
+namespace Math;
 
 public native fn pow(x: float, y: float) -> float;
 public native fn sqrt(x: float) -> float;
 public native fn cbrt(x: float) -> float;
 public native fn exp(x: float) -> float;
 
-public fn add(x: int, y: int) -> int => x + y;
-public fn add(x: float, y: int) -> float => x + y;
-public fn add(x: int, y: float) -> float => x + y;
-public fn add(x: float, y: float) -> float => x + y;
+public fn clamp(min: int, x: int, max: int) -> int {
+  if x < min { return min; }
+  elif x > max { return max; }
+  else return x;
+}
 
-
-public struct Vector2 {
-  public x: float;
-  public y: float;
+public fn clamp(min: float, x: float, max: float) -> float {
+  if x < min { return min; }
+  elif x > max { return max; }
+  else return x;
 }

@@ -44,7 +44,7 @@ namespace friday::inline api {
   auto Overload::try_match(vector<Type*> const& argsTypes) -> Function* {
     if(auto it = this->M_overloads.find(argsTypes); it != this->M_overloads.end()) {
       return it->second;
-    } else return {};
+    } else return nullptr;
   }
 
   auto Overload::has_match(vector<Type*> const& argsTypes) const -> bool {

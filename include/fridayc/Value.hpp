@@ -117,6 +117,7 @@ namespace friday::inline api {
     static auto from_lvalue(Type* type, Variable* variable, llvm::Value* value) -> Value;
     static auto from_overload(Overload* overload) -> Value;
     static auto from_struct(Struct* _struct) -> Value;
+    static auto from_field(Variable* field, ValueCategory category) -> Value;
     static auto from_unknown(Type* type, ValueCategory category) -> Value;
 
     auto kind() const -> Kind;

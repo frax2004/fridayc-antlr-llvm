@@ -63,25 +63,21 @@ namespace friday::inline api {
     auto as_struct = dynamic_cast<Struct*>(this->M_owner->get_declaring_symbol_table());
     auto as_type = dynamic_cast<Type*>(as_struct);
 
-    return 
-    // parent is a struct
-    as_struct != nullptr
-    // method has at least 1 param
-    and this->M_signature->params_size() > 0
-    // first param is a pointer type
-    and PointerType::is_pointer(this->M_signature->get_param_type(0))
-    // the pointed type is the struct
-    and PointerType::to_pointer(this->M_signature->get_param_type(0))->get_pointed_type() == as_type;
+    if(as_struct == nullptr or this->M_signature->params_size() == 0) {
+      return false;
+    }
 
+    Type* first_type = this->M_signature->get_param_type(0);
 
+    auto as_pointer = PointerType::to_pointer(first_type);
+    // first param is a pointer type pointing to the struct
+    return (as_pointer != nullptr and as_pointer->get_pointed_type() == as_type) 
+    // the first param is the struct
+    or first_type == as_type;
   }
 
   auto Function::get_mangled_name_builder() const -> NameMangler {
-    auto parent = this->M_owner->get_declaring_symbol_table();
-    ISymbol* symbol = dynamic_cast<ISymbol*>(parent);
-
-    auto builder = symbol->get_mangled_name_builder();
-    builder.dot(this->M_owner->get_qualified_id());
+    auto builder = this->M_owner->get_mangled_name_builder();
 
     auto first = this->M_signature->param_begin();
     auto last = this->M_signature->param_end();

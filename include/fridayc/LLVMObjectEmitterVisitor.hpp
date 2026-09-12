@@ -10,6 +10,7 @@ namespace friday::inline api {
   // will emit the llvm object files
   struct LLVMObjectEmitterVisitor final : StaticAnalyzer {
   private:
+    stack<FridayParser::StatementContext*>* M_deferred = nullptr;
     unordered_map<ISymbol*, llvm::Value*> M_values { };
 
   public:
@@ -53,13 +54,8 @@ namespace friday::inline api {
 
   private:
     // Helpers
-    auto get_byte() -> llvm::Type*;
-    auto get_int() -> llvm::Type*;
-    auto get_bool() -> llvm::Type*;
-    auto get_void() -> llvm::Type*;
-    auto get_float() -> llvm::Type*;
-    auto get_voidptr() -> llvm::Type*;
     auto get_printf() -> llvm::Function*;
+    auto coerce_value(Value const& value) -> llvm::Value*;
 
     // Emitters
     auto emit_builtins() -> void;

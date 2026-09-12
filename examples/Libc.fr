@@ -1,0 +1,13 @@
+namespace Libc;
+
+public native fn calloc(count: int, size: int) -> *void;
+public native fn malloc(bytes: int) -> *void;
+public native fn realloc(ptr: *void, bytes: int) -> *void;
+public native fn free(ptr: *void) -> void;
+public native fn atof(str: *byte) -> float;
+public native fn atoi(str: *byte) -> int;
+
+public native fn strdup(s: *byte) -> *byte;
+public native fn strlen(s: *byte) -> int;
+
+public native fn memset(memory: *void, value: int, bytes: int) -> void;

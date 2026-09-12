@@ -8,8 +8,17 @@ namespace friday::inline api {
     this->visitChildren(ctx);
 
     Type* type = $(ctx->type()).type;
-
-    if(auto asStruct = dynamic_cast<Struct*>(type)) {
+    if(PrimitiveType::is_primitive(type)) {
+      this->error_at(
+        ctx,
+        ctx->type()->getStart(),
+        format(
+          "In new expression '{}', cannot create instance of primitive type '{}'",
+          ctx->getText(),
+          type->get_name()
+        )
+      );
+    } else if(auto asStruct = Struct::to_struct_type(type)) {
       auto actualFields = views::zip(
         ctx->fields 
         | views::transform(&ant::Token::getText),
@@ -18,12 +27,14 @@ namespace friday::inline api {
         | views::transform(&Value::type)
         | views::enumerate
       )
-      | ranges::to<map>();
+      | ranges::to<map<string, tuple<size_t, Type*>>>();
 
       bool ok = true;
-      for(auto [i, field] : asStruct->get_fields() | views::enumerate) {
+      for(auto field : asStruct->get_fields()) {
         // Field has no initializer value
         auto fieldIter = actualFields.find(field->get_qualified_id()); 
+        u64 fieldIndex = asStruct->get_field_index(field->get_qualified_id());
+
         if(fieldIter == actualFields.end()) {
           ok = false;
           this->error_at(
@@ -31,7 +42,7 @@ namespace friday::inline api {
             ctx->getStop(),
             format(
               "In new expression, required #{}-th field '{}' is missing an initializer value.",
-              i+1,
+              fieldIndex+1,
               field->get_qualified_id()
             )
           );
@@ -47,7 +58,7 @@ namespace friday::inline api {
           ok = false;
           this->error_at(
             ctx,
-            ctx->initializers[i]->getStart(),
+            ctx->initializers[fieldIndex]->getStart(),
             format(
               "In new expression, in the assignment of field '{}' requires an expression of type '{}' but got a value of type '{}'",
               field->get_qualified_id(),
@@ -101,11 +112,11 @@ namespace friday::inline api {
     switch(ctx->unaryOperator->getType()) {
       case FridayParser::SIZEOF: {
         i64 size = static_cast<i64>($(ctx->target).type->size());
-        $(ctx).value = Value::from_constant(this->INT(), Constant::from_int(size));
+        $(ctx).value = Value::from_constant(Type::get_int_type(), Constant::from_int(size));
         break;
       } case FridayParser::ALIGNOF: {
         i64 alignment = static_cast<i64>($(ctx->target).type->alignment());
-        $(ctx).value = Value::from_constant(this->INT(), Constant::from_int(alignment));
+        $(ctx).value = Value::from_constant(Type::get_int_type(), Constant::from_int(alignment));
         break;
       } default: throw InvalidArgumentError{};
     }
@@ -149,7 +160,7 @@ namespace friday::inline api {
       } case FridayParser::STAR: {
 
         auto pointer = PointerType::to_pointer($(ctx->operand).value.type());
-        if(not pointer or pointer->get_pointed_type() == this->VOID()) {
+        if(not pointer or pointer->get_pointed_type() == Type::get_void_type()) {
           this->error_at(
             ctx,
             ctx->unaryOperator,

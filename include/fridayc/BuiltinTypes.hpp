@@ -118,7 +118,7 @@ namespace friday::inline api {
     auto params_size() const noexcept -> u64;
     auto get_return_type() const noexcept -> Type*;
     auto to_llvm_type() const noexcept -> llvm::Type* override;
-    auto to_llvm_signature_type() const noexcept -> llvm::Type*;
+    auto to_llvm_signature_type(bool isNative = false) const noexcept -> llvm::Type*;
     auto get_name() const noexcept -> string_view override;
 
   };

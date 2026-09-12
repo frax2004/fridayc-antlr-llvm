@@ -1,6 +1,65 @@
 #include <fridayc.hpp>
+#include <llvm/Support/YAMLParser.h>
+
 
 namespace friday::inline api {
+
+  auto unescape_string(string_view s) -> string {
+    string r{};
+    r.reserve(r.length());
+
+    struct StringScanner {
+    private:
+      string_view M_source {};
+      u64 M_position { 0 };
+
+    public:
+      explicit StringScanner(string_view str)
+        : M_source { str }
+      {}
+
+    public:
+      auto peek(u64 offset = 0) -> i8 {
+        return this->M_position + offset >= this->M_source.length() ? 
+          '\0' : this->M_source[this->M_position + offset];
+      }
+
+      auto consume() -> i8 {
+        if(this->M_position >= this->M_source.length()) return '\0';
+        return this->M_source[this->M_position++];
+      }
+
+      auto finished() const -> bool {
+        return this->M_position >= this->M_source.length();
+      }
+
+      auto rewind() -> void {
+        this->M_position = 0;
+      }
+    };
+
+    StringScanner scanner{s};
+
+    while(not scanner.finished()) {
+      if(scanner.peek() == '\\') {
+        scanner.consume();
+        switch(scanner.peek()) {
+          case '\'': scanner.consume(); r.push_back('\''); break;
+          case '"': scanner.consume(); r.push_back('"'); break;
+          case '\\': scanner.consume(); r.push_back('\\'); break;
+          case 'a': scanner.consume(); r.push_back('\a'); break;
+          case 'b': scanner.consume(); r.push_back('\b'); break;
+          case 'f': scanner.consume(); r.push_back('\f'); break;
+          case 'n': scanner.consume(); r.push_back('\n'); break;
+          case 'r': scanner.consume(); r.push_back('\r'); break;
+          case 't': scanner.consume(); r.push_back('\t'); break;
+          case 'v': scanner.consume(); r.push_back('\v'); break;
+        }
+      } else r.push_back(scanner.consume());
+    }
+
+    return r;
+  }
 
   auto TypeCheckerVisitor::visitArrayLiteralExpression(FridayParser::ArrayLiteralExpressionContext *ctx) -> any {
     Console::debug(format("TypeCheckerVisitor::visitArrayLiteralExpression({})", ctx->getText()));
@@ -61,7 +120,7 @@ namespace friday::inline api {
 
   auto TypeCheckerVisitor::visitCharLiteralExpression(FridayParser::CharLiteralExpressionContext *ctx) -> any {
     Console::debug(format("TypeCheckerVisitor::visitCharLiteralExpression({})", ctx->getText()));
-    $(ctx).value = Value::from_constant(this->BYTE(), Constant::from_byte(ctx->getText()[1]));
+    $(ctx).value = Value::from_constant(Type::get_byte_type(), Constant::from_byte(ctx->getText()[1]));
     return {};
   }
 
@@ -74,8 +133,8 @@ namespace friday::inline api {
     unquoted.remove_suffix(1);
 
     $(ctx).value = Value::from_constant(
-      PointerType::get(*this->BYTE(), 1), 
-      Constant::from_str(string(unquoted))
+      Type::get_byteptr_type(), 
+      Constant::from_str(unescape_string(unquoted))
     );
 
     return {};
@@ -85,7 +144,7 @@ namespace friday::inline api {
     Console::debug(format("TypeCheckerVisitor::visitBoolLiteralExpression({})", ctx->getText()));
 
     $(ctx).value = Value::from_constant(
-      this->BOOL(), 
+      Type::get_bool_type(), 
       Constant::from_bool(ctx->getText() == "true")
     );
     return {};
@@ -95,7 +154,7 @@ namespace friday::inline api {
     Console::debug(format("TypeCheckerVisitor::visitFloatLiteralExpression({})", ctx->getText()));
     
     $(ctx).value = Value::from_constant(
-      this->FLOAT(), 
+      Type::get_float_type(), 
       Constant::from_float(stod(ctx->getText()))
     );
     return {};
@@ -105,7 +164,7 @@ namespace friday::inline api {
     Console::debug(format("TypeCheckerVisitor::visitIntLiteralExpression({})", ctx->getText()));
 
     $(ctx).value = Value::from_constant(
-      this->INT(), 
+      Type::get_int_type(), 
       Constant::from_int(stoll(ctx->getText()))
     );
     return {};
@@ -115,7 +174,7 @@ namespace friday::inline api {
     Console::debug(format("TypeCheckerVisitor::visitNullLiteralExpression({})", ctx->getText()));
 
     $(ctx).value = Value::from_constant(
-      this->VOIDPTR(),
+      Type::get_voidptr_type(),
       Constant::from_null()
     );
     return {};

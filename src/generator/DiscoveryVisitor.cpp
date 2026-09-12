@@ -90,12 +90,21 @@ namespace friday::inline api {
   auto DiscoveryVisitor::visitNativeFunctionStatement(FridayParser::NativeFunctionStatementContext *ctx) -> any {
     auto name = ctx->name->getText();
 
-    if(not this->M_currentSymbolTable->is_defined(name, &Overload::is_overload)) {
+    static unordered_map<string, Overload*> S_nativeFunctions {};
+
+    auto it = S_nativeFunctions.find(name);
+    if(it == S_nativeFunctions.end() and dynamic_cast<Struct*>(this->current()) == nullptr) {
       Overload* overload = Overload::Factory::create(*this->current(), name);
       $(ctx).overload = overload;
       this->current()->define(overload);
-    } else $(ctx).overload = dynamic_cast<Overload*>(
-      this->current()->retrieve_if(name, &Overload::is_overload)
+      S_nativeFunctions.emplace(name, overload);
+    } else this->error_at(
+      ctx,
+      ctx->name,
+      format(
+        "In declaration of function \"{}\", a native function cannot be overloaded and can only be defined once in a namespace.",
+        name
+      )
     );
 
     return {};

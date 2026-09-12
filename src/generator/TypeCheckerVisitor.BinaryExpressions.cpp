@@ -12,48 +12,54 @@ namespace friday::inline api {
     Value candidate = $(ctx->func).value;
     Type* callerType = candidate.type();
 
+
     if(UnresolvedOverloadType::is_unresolved_overload_type(callerType)) {
       Overload* overload = *candidate.unwrap<Overload*>();
+      vector<Type*> args = ctx->args
+      | views::transform([](FridayParser::ExpressionContext* expr) { return &$(expr).value; })
+      | views::transform(&Value::type)
+      | ranges::to<vector>();
 
-      auto try_member = [ctx, overload]() -> optional<Function*> {
-        auto memberAccess = to_member_access_expr(ctx->func);
-        if(memberAccess == nullptr) return nullopt;
+      Function* function = nullptr;
+      do {
+        auto MAEC = to_member_access_expr(ctx->func);
 
-        auto this_bound_args = [memberAccess, ctx] -> generator<Type*> {
-          co_yield PointerType::get(*$(memberAccess->object).value.type(), 1);
-          for(auto arg : ctx->args) co_yield $(arg).value.type();
-        };
+        if(MAEC == nullptr) break;
 
-        auto match = overload->try_match(this_bound_args() | ranges::to<vector>());
-        return match != nullptr ? make_optional(match) : nullopt;
-      };
+        Type* objectType = $(MAEC->object).value.type();
+        bool isStruct = objectType->is_aggregate_type();
+        bool isPointerToStruct = PointerType::is_pointer(objectType)
+        and PointerType::to_pointer(objectType)->get_pointed_type()->is_aggregate_type();
 
-      auto try_static = [ctx, overload]() {
-        auto obj = overload
-        ->try_match(
-          ctx->args 
-          | views::transform([](FridayParser::ExpressionContext* expr) { return &$(expr).value; })
-          | views::transform(&Value::type)
-          | ranges::to<vector>()
-        );
+        if(not (isStruct or isPointerToStruct)) break;
 
-        return obj != nullptr ? optional{ obj } : nullopt;
-      };
+        args.insert(args.begin(), objectType);
 
-      Function* function = try_member()
-      .or_else(try_static)
-      .value_or(nullptr);
+        // Try match as member function with no auto-reference/auto-dereference
+        function = overload->try_match(args);
+
+        if(function != nullptr) break;
+
+        // Attempt to auto reference
+        if(isStruct) args[0] = PointerType::get(*args[0], 1);
+        // Attempt to auto dereference
+        else args[0] = PointerType::to_pointer(args[0])->get_pointed_type();
+
+        // Try match as member function with auto-reference/auto-dereference
+        function = overload->try_match(args);
+      } while(false);
+
+      // Rematch with arguments (possibly with self argument) to try as static
+      function = overload->try_match(args);
 
       if(function == nullptr) {
         this->error_at(
           ctx,
           ctx->func->getStart(),
           format(
-            "No overload of function '{}' matches the given arguments ({}):\nAvailable overloads:\n{}",
-            overload->get_qualified_id(),
-            ctx->args
-            | views::transform([](FridayParser::ExpressionContext* expr) { return &$(expr).value; })
-            | views::transform(&Value::type)
+            "No instance of overloaded function '{}' matches the given arguments ({}):\nAvailable overloads:\n{}",
+            overload->get_full_qualified_id(),
+            args
             | views::transform(&Type::get_name)
             | views::join_with(", "s)
             | ranges::to<string>(),
@@ -135,7 +141,7 @@ namespace friday::inline api {
     Type* indexType = $(ctx->index).value.type();
 
     bool ok = true;
-    if(not ArrayType::is_array(arrayType) or ArrayType::to_array(arrayType)->get_element_type() == this->VOID()) {
+    if(not ArrayType::is_array(arrayType) or ArrayType::to_array(arrayType)->get_element_type() == Type::get_void_type()) {
       ok = false;
       this->error_at(
         ctx,
@@ -148,7 +154,7 @@ namespace friday::inline api {
       );
     }
 
-    if(indexType != this->INT()) {
+    if(indexType != Type::get_int_type()) {
       ok = false;
       this->error_at(
         ctx,
@@ -210,20 +216,23 @@ namespace friday::inline api {
     Console::debug(format("TypeCheckerVisitor::visitMemberAccessExpression({})", ctx->getText()));
     this->visitChildren(ctx);
 
-    auto memberName = ctx->member->getText();
+    string memberName = ctx->member->getText();
+    Value object = $(ctx->object).value;
+
     auto always = [](ISymbol* symbol) { (void)symbol; return true; };
+
     auto is_value = [](Value const& value) {
       return (value.is(ValueCategory::RVALUE) or value.is(ValueCategory::LVALUE)) and (
-        dynamic_cast<Struct*>(value.type()) != nullptr or (
+        value.type()->is_aggregate_type() or (
           PointerType::is_pointer(value.type()) and 
-          dynamic_cast<Struct*>(PointerType::to_pointer(value.type())->get_pointed_type()) != nullptr
+          PointerType::to_pointer(value.type())->get_pointed_type()->is_aggregate_type()
         )
       );
     };
 
-    bool ok = $(ctx->object).value.holds(Value::Kind::STRUCT) 
-    or $(ctx->object).value.holds(Value::Kind::NAMESPACE)
-    or is_value($(ctx->object).value);
+    bool ok = object.holds(Value::Kind::STRUCT) 
+    or object.holds(Value::Kind::NAMESPACE)
+    or is_value(object);
 
     if(not ok) {
       this->error_at(
@@ -232,15 +241,17 @@ namespace friday::inline api {
         format(
           "The underlined expression '{}' of type '{}' is not an instance of a struct or a struct or a namespace",
           ctx->object->getText(),
-          $(ctx->object).value.type()->get_name()
+          object.type()->get_name()
         )
       );
     } 
 
-    if(is_value($(ctx->object).value)) {
-      auto asStruct = dynamic_cast<Struct*>($(ctx->object).value.type());
+    if(is_value(object)) {
+      auto asStruct = Struct::to_struct_type(object.type());
       // attempt auto dereference
-      if(not asStruct) asStruct = dynamic_cast<Struct*>(PointerType::to_pointer($(ctx->object).value.type())->get_pointed_type());
+      if(not asStruct) {
+        asStruct = Struct::to_struct_type(PointerType::to_pointer(object.type())->get_pointed_type());
+      }
 
       if(not asStruct->is_defined(memberName, always)) {
         this->error_at(
@@ -248,22 +259,34 @@ namespace friday::inline api {
           ctx->IDENTIFIER()->getSymbol(),
           format("Struct '{}' has no field or method called '{}'", asStruct->get_name(), memberName)
         );
-      } else $(ctx).value = Value::from_symbol(asStruct->retrieve(memberName));
+      } else {
+        ISymbol* member = asStruct->retrieve(memberName);
+        if(auto field = Variable::to_variable(member)) {
+          $(ctx).value = Value::from_field(field, object.category());
+        } else $(ctx).value = Value::from_symbol(asStruct->retrieve(memberName));
+      }
     }
 
-    if($(ctx->object).value.holds(Value::Kind::STRUCT)) {
-      auto asStruct = *$(ctx->object).value.unwrap<Struct*>();
-      if(not asStruct->is_defined(memberName, always)) {
+    if(object.holds(Value::Kind::STRUCT)) {
+      auto asStruct = *object.unwrap<Struct*>();
+      ISymbol* member = asStruct->retrieve(memberName);
+      if(member == nullptr) {
         this->error_at(
           ctx,
           ctx->IDENTIFIER()->getSymbol(),
           format("Struct '{}' has no field or method called '{}'", asStruct->get_name(), memberName)
         );
-      } else $(ctx).value = Value::from_symbol(asStruct->retrieve(memberName));
+      } else if(Variable::is_variable(member)) {
+        this->error_at(
+          ctx,
+          ctx->IDENTIFIER()->getSymbol(),
+          format("Field '{}' of struct '{}' cannot be accessed in a static way", memberName, asStruct->get_name())
+        );
+      } else $(ctx).value = Value::from_symbol(member);
     }
 
-    if($(ctx->object).value.holds(Value::Kind::NAMESPACE)) {
-      auto asNamespace = *$(ctx->object).value.unwrap<Namespace*>();
+    if(object.holds(Value::Kind::NAMESPACE)) {
+      auto asNamespace = *object.unwrap<Namespace*>();
       if(not asNamespace->is_defined(memberName, always)) {
         this->error_at(
           ctx,
@@ -285,39 +308,8 @@ namespace friday::inline api {
     Type* valueType = lhsType;
     Type* targetType = rhsType;
 
-    if(PointerType::is_pointer(valueType)) {
-      valueType = this->VOIDPTR();
-    }
-
-    if(PointerType::is_pointer(valueType)) {
-      targetType = this->VOIDPTR();
-    }
-
-    auto to_type_index = [this](Type* type) -> i32 {
-      if(type == this->VOIDPTR()) return 0;
-      else if(type == this->INT()) return 1;
-      else if(type == this->FLOAT()) return 2;
-      else if(type == this->BYTE()) return 3;
-      else if(type == this->BOOL()) return 4;
-      else return -1;
-    };
-
-    using __entry_type = bool;
-    using __coercion_table = __entry_type[5][5];
-
-    static constexpr __coercion_table coercion_table = {
-                  /* *any   int    float  byte   bool */
-      /* *any  */   {true,  false, false, false, false},
-      /* int   */   {false, true , true , true , false},
-      /* float */   {false, true , true , false, false},
-      /* byte  */   {false, true , false, true , false},
-      /* bool  */   {false, false, false, false, true },
-    };
-
-    i32 lhs = to_type_index(valueType);
-    i32 rhs = to_type_index(targetType);
-
-    if((lhs < 0 or rhs < 0) or not coercion_table[lhs][rhs]) {
+    auto castInfo = valueType->is_convertible_to(targetType);
+    if(not castInfo) {
       this->error_at(
         ctx,
         ctx->AS()->getSymbol(),
@@ -327,7 +319,10 @@ namespace friday::inline api {
           rhsType->get_name()
         )
       );
-    } else $(ctx).value = Value::from_rvalue(rhsType, nullptr);
+    } else {
+      $(ctx).value = Value::from_rvalue(rhsType, nullptr);
+      $(ctx).castOp = castInfo.value();
+    }
 
     return {};
   }
@@ -382,7 +377,10 @@ namespace friday::inline api {
             suggestion
           )
         );
-      } else resultType = function->get_return_type();
+      } else {
+        resultType = function->get_return_type();
+        $(ctx)._operator = function;
+      }
     }
 
     bool ok = true;

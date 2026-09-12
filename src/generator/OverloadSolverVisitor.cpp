@@ -24,8 +24,7 @@ namespace friday::inline api {
     auto toVisibility = [](u64 vis) {
       switch(vis) {
         case FridayParser::PUBLIC: return Visibility::PUBLIC;
-        case FridayParser::PRIVATE: return Visibility::PRIVATE;
-        default: throw InvalidArgumentError{};
+        default: return Visibility::PRIVATE;
       }
     };
     
@@ -38,13 +37,19 @@ namespace friday::inline api {
     Type* retType = $(ctx->returnType).type;
     bool ok = true;
 
-    for(auto [i, type] : paramsTypes | views::filter(&ErrorType::is_error_type) | views::enumerate) {
+    Type* VOID = dynamic_cast<Type*>(Namespace::get_global_namespace()->find_struct("void"));
+
+    auto isProibited = [VOID](Type* type) -> bool {
+      return ErrorType::is_error_type(type) or type == VOID;
+    };
+
+    for(auto [i, type] : paramsTypes | views::filter(isProibited) | views::enumerate) {
       ok = false;
       this->error_at(
         ctx,
         ctx->paramsTypes[i]->getStart(),
         format(
-          "In function declaration, #{} parameter named \"{}\" is of an invalid error type \"{}\"",
+          "In function declaration, #{} parameter named \"{}\" is of an invalid type \"{}\"",
           i,
           ctx->paramsNames[i]->getText(),
           ctx->paramsTypes[i]->getText()
@@ -93,7 +98,7 @@ namespace friday::inline api {
       *retType, 
       parameters, 
       Attributes{
-        .visibility = toVisibility(ctx->accessModifier->getType()),
+        .visibility = toVisibility(ctx->accessModifier ? ctx->accessModifier->getType() : 0),
         .linkage = Linkage::INTERNAL,
         .isConst = true
       }
@@ -130,8 +135,7 @@ namespace friday::inline api {
     auto toVisibility = [](u64 vis) {
       switch(vis) {
         case FridayParser::PUBLIC: return Visibility::PUBLIC;
-        case FridayParser::PRIVATE: return Visibility::PRIVATE;
-        default: throw InvalidArgumentError{};
+        default: return Visibility::PRIVATE;
       }
     };
 
@@ -145,14 +149,20 @@ namespace friday::inline api {
     | ranges::to<vector>();
 
     bool ok = true;
+    
+    Type* VOID = dynamic_cast<Type*>(Namespace::get_global_namespace()->find_struct("void"));
 
-    for(auto [i, type] : paramsTypes | views::filter(&ErrorType::is_error_type) | views::enumerate) {
+    auto isProibited = [VOID](Type* type) -> bool {
+      return ErrorType::is_error_type(type) or type == VOID;
+    };
+
+    for(auto [i, type] : paramsTypes | views::filter(isProibited) | views::enumerate) {
       ok = false;
       this->error_at(
         ctx,
         ctx->paramsTypes[i]->getStart(),
         format(
-          "In function declaration, #{} parameter named \"{}\" is of an invalid error type \"{}\"",
+          "In function declaration, #{} parameter named \"{}\" is of an invalid type \"{}\"",
           i,
           ctx->paramsNames[i]->getText(),
           ctx->paramsTypes[i]->getText()
@@ -204,7 +214,7 @@ namespace friday::inline api {
       *retType, 
       parameters,
       Attributes{
-        .visibility = toVisibility(ctx->accessModifier->getType()),
+        .visibility = toVisibility(ctx->accessModifier ? ctx->accessModifier->getType() : 0),
         .linkage = Linkage::EXTERNAL,
         .isConst = true
       }

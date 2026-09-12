@@ -1,5 +1,0 @@
-namespace collections;
-
-public struct ArrayList {
-
-}

@@ -31,6 +31,12 @@ namespace friday::inline api {
     return this->M_name;
   }
 
+  auto Struct::get_field_index(string const& name) const -> u64 {
+    if(auto iter = this->M_fields.find(name); iter != this->M_fields.end()) {
+      return iter->second;
+    } else return Struct::FIELD_NPOS;
+  }
+
   auto Struct::to_llvm_type() const noexcept -> llvm::Type* {
     string mangled_name = this->get_mangled_id();
     if(auto type = llvm::StructType::getTypeByName(LLVM.context(), mangled_name); type != nullptr) {
@@ -50,13 +56,19 @@ namespace friday::inline api {
     return this->M_name;
   }
 
-  auto Struct::add_field(Variable* field) -> void {
-    this->M_fields.push_back(field);
-    this->define(dynamic_cast<ISymbol*>(field));
+  auto Struct::get_fields() const -> vector<Variable*> {
+    auto name2field = [this](string const& name) { return this->find_field(name); };
+
+    return this->M_fields
+    | views::keys
+    | views::transform(name2field)
+    | ranges::to<vector>();
   }
 
-  auto Struct::get_fields() const -> vector<Variable*> const& {
-    return this->M_fields;
+  auto Struct::add_field(Variable* field) -> void {
+    u64 fieldCount = this->M_fields.size();
+    this->M_fields.emplace(field->get_qualified_id(), fieldCount);
+    this->define(dynamic_cast<ISymbol*>(field));
   }
 
   auto Struct::get_mangled_name_builder() const -> NameMangler {
@@ -87,6 +99,14 @@ namespace friday::inline api {
 
   auto Struct::to_struct(ISymbol* symbol) -> Struct* {
     return dynamic_cast<Struct*>(symbol);
+  }
+
+  auto Struct::to_struct_type(Type* type) -> Struct* {
+    return dynamic_cast<Struct*>(type);
+  }
+
+  auto Struct::is_struct_type(Type* type) -> bool {
+    return dynamic_cast<Struct*>(type) != nullptr;
   }
 
 }

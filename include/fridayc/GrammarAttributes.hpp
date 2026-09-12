@@ -162,7 +162,7 @@ namespace friday::inline api {
   };
 
   struct PrintStatementAttributes : public StatementAttributes {
-
+    string fmt = "";
   };
 
   struct ReturnStatementAttributes : public StatementAttributes {
@@ -203,7 +203,6 @@ namespace friday::inline api {
   };
 
   struct MemberAccessExpressionAttributes : public ExpressionAttributes {
-
   };
 
   struct UnaryPostfixExpressionAttributes : public ExpressionAttributes {
@@ -223,7 +222,7 @@ namespace friday::inline api {
   };
 
   struct ExplicitCastExpressionAttributes : public ExpressionAttributes {
-
+    llvm::Instruction::CastOps castOp {};
   };
 
   struct IntLiteralExpressionAttributes : public ExpressionAttributes {
@@ -243,7 +242,7 @@ namespace friday::inline api {
   };
 
   struct AssignmentExpressionAttributes : public ExpressionAttributes {
-
+    Function* _operator = nullptr;
   };
 
   struct GroupingExpressionAttributes : public ExpressionAttributes {

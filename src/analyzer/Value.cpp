@@ -72,6 +72,14 @@ namespace friday::inline api {
     };
   }
 
+  auto Value::from_field(Variable* field, ValueCategory category) -> Value {
+    return Value {
+      field->get_type(),
+      category,
+      pair<Variable*, llvm::Value*>(field, nullptr)
+    };
+  }
+
   auto Value::from_symbol(ISymbol* symbol) -> Value {
     if(symbol == nullptr) return Value::error_value();
 

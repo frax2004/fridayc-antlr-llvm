@@ -1,0 +1,239 @@
+using Libc;
+using Raylib;
+using Math;
+
+fn neighborhood(grid: []bool, cells: int, linidx: int) -> int => grid[linidx-1] as int
+  + grid[linidx+1] as int
+  + grid[linidx-cells-1] as int
+  + grid[linidx-cells] as int
+  + grid[linidx-cells+1] as int
+  + grid[linidx+cells-1] as int
+  + grid[linidx+cells] as int
+  + grid[linidx+cells+1] as int
+;
+
+fn main(argc: int, argv: **byte) -> void {
+  const args = new []*byte {
+    ptr: argv,
+    len: argc
+  };
+
+  const CELLS = 50;
+
+  let front_grid = new []bool {
+    ptr: Libc.calloc(CELLS*CELLS, sizeof bool) as *bool,
+    len: CELLS*CELLS
+  };
+  defer Libc.free(front_grid.ptr as *void);
+
+  let back_grid = new []bool {
+    ptr: Libc.calloc(CELLS*CELLS, sizeof bool) as *bool,
+    len: CELLS*CELLS
+  };
+  defer Libc.free(back_grid.ptr as *void);
+
+  for i : 1 .. args.len-1 where i%2 == 1 {
+    back_grid[Libc.atoi(args[i])*CELLS + Libc.atoi(args[i+1])] = true;
+  }
+
+  Raylib.InitWindow(800 as c_int, 800 as c_int, "Friday - GameOfLife");
+  defer Raylib.CloseWindow();
+  Raylib.SetTargetFPS(60 as c_int);
+
+  const cell_w = (Raylib.GetRenderWidth() as int)/CELLS;
+  const cell_h = (Raylib.GetRenderHeight() as int)/CELLS;
+
+  while !Raylib.WindowShouldClose() {
+
+    Raylib.BeginDrawing();
+
+    for i : 0 .. CELLS {
+      for j : 0 .. CELLS {
+        let color = Raylib.Color.rgb(255, 215, 0);
+        if !back_grid[i*CELLS+j] {
+          color = Raylib.Color.rgb(0, 0, 0);
+        }
+        Raylib.DrawRectangle(
+          (i * cell_w) as c_int, 
+          (j * cell_h) as c_int, 
+          cell_w as c_int, 
+          cell_h as c_int, 
+          color
+        );
+      }
+    }
+
+    Raylib.EndDrawing();
+
+    for i : 1 .. CELLS-1 {
+      for j : 1 .. CELLS-1 {
+        const idx = i*CELLS+j;
+        const n = neighborhood(back_grid, CELLS, idx);
+        const self_alive = back_grid[idx];
+        if self_alive && n < 2 { 
+          front_grid[idx] = false; 
+        } elif self_alive && (n == 2 || n == 3) {
+          front_grid[idx] = true;
+        } elif self_alive && n > 3 { 
+          front_grid[idx] = false; 
+        } elif !self_alive && n == 3 {
+          front_grid[idx] = true;
+        }
+      }
+    }
+
+    if Raylib.IsMouseButtonDown(0 as c_int) {
+      const pos = Raylib.GetMousePosition();
+      const dx = pos.x as float/Raylib.GetRenderWidth() as int as float;
+      const dy = pos.y as float/Raylib.GetRenderHeight() as int as float;
+      const i = Math.clamp(0, (dx * CELLS as float) as int, CELLS-1);
+      const j = Math.clamp(0, (dy * CELLS as float) as int, CELLS-1);
+
+      front_grid[i*CELLS + j] = true;
+    }
+
+    Libc.memset(back_grid.ptr as *void, 0, sizeof bool * CELLS * CELLS);
+    const tmp = back_grid;
+    back_grid = front_grid;
+    front_grid = tmp;
+  }
+}
+
+let base: int = 3;
+let exp: int = 4;
+let res: int = 1;
+while exp > 0 {
+  res *= base;
+  exp -= 1;
+}
+print res;
+
+const numbers: []int = [6, 7, 3, 8, 9];
+let sum: int = 0;
+for i : 0 .. numbers.len where i%2 == 0 {
+  sum += numbers[i];
+}
+print sum;
+
+const numbers: []int = [6, 7, 3, 8, 9];
+let sum: int = 0;
+for i, val : numbers where i%2 == 0 {
+  sum += val;
+}
+print sum;
+
+
+const x = 5;
+if x < 0 {
+  print "Negative";
+} elif x == 0 {
+  print "Zero";
+} else print "Positive";
+
+
+
+public fn read_file(path: *byte) -> []byte {
+  const result = new []byte {
+    ptr: null as *byte,
+    len: 0
+  };
+
+  if path == null {
+    return result;
+  }
+
+  const fp = Libc.fopen(path, "r");
+  if fp == null { 
+    return result;
+  }
+  defer Libc.fclose(fp);
+
+  Libc.fseek(fp, 0, 2); // SEEK_END
+  result.len = Libc.ftell(fp) as int;
+  Libc.rewind(fp);
+
+  if result.len == 0 {
+    return result;
+  }
+
+  result.ptr = Libc.calloc(result.len+1, sizeof byte) as *byte;
+  if result.ptr == null {
+    result.len = 0;
+    return result;
+  }
+
+  if Libc.fread(result.ptr, sizeof byte, result.len, fp) < len {
+    Libc.free(result.ptr);
+    result.ptr = null as *byte;
+    result.len = 0;
+    return result;
+  }
+
+  result[len] = '\0';
+  return result;
+}
+
+
+fn compare(lhs: int  , rhs: int  ) -> int => lhs - rhs;
+fn compare(lhs: float, rhs: float) -> int => (lhs - rhs) as int;
+fn compare(lhs: byte , rhs: byte ) -> int => (lhs - rhs) as int;
+fn compare(lhs: *byte, rhs: *byte) -> int => Libc.strcmp(lhs, rhs) as int;
+
+
+
+public fn main(argc: int, argv: **byte) -> void {
+  randVec().toStdout();
+}
+
+public fn randVec() -> Vec2 => new Vector2 {
+  x: Libc.rand(),
+  y: Libc.rand()
+};
+
+public struct Vec2 {
+  x: int;
+  y: int;
+
+  public fn toStdout(this: Vec2) -> void {
+    print "[";
+    print this.x;
+    print ", ";
+    print this.y;
+    print "]";
+  }
+}
+
+
+// File A.fr
+namespace A;
+using B;
+
+public fn use() -> void {} 
+
+public fn Afunction() -> void {
+  B.use();
+}
+
+// File B.fr
+namespace B;
+using A;
+
+public fn use() -> void {} 
+
+public fn Bfunction() -> void {
+  A.use();
+}
+
+
+public struct A {
+  a: A; // ricorsione diretta
+}
+
+public struct B {
+  c: C; // mutua ricorsione con C
+}
+
+public struct C {
+  b: B; // mutua ricorsione con B
+}
+
