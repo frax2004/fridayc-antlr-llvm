@@ -1,0 +1,41 @@
+namespace Allocators;
+
+
+public struct Allocator {
+  private vpointer: *void;
+  private vtable: []*void;
+
+  public fn allocate(this: *Allocator, size: int) -> *void {
+    const allocateFn = this.vtable[0] as fn(*void, int) -> *void;
+    return allocateFn(this.vpointer, size);
+  } 
+
+  public fn deallocate(this: *Allocator, memory: *void) -> *void {
+    const deallocateFn = this.vtable[1] as fn(*void, *void) -> void;
+    return deallocateFn(this.vpointer, memory);
+  }
+
+  public fn from(
+    handle: *void, 
+    allocateFn: fn(*void, int) -> *void,
+    deallocateFn: fn(*void, *void) -> void
+  ) -> Allocator => new Allocator {
+    vpointer: handle,
+    vtable: [
+      allocateFn as *void,
+      deallocateFn as *void
+    ]
+  };
+}
+
+public struct GPA {
+  public fn allocate(this: *GPA, size: int) -> *void => Libc.calloc(1, size);
+  public fn deallocate(this: *GPA, memory: *void) -> void => Libc.free(memory);
+
+  public fn toInterface(this: *GPA) -> Allocator => Allocator.from(
+    this, 
+    GPA.allocate as fn(*void, int) -> *void,
+    GPA.deallocate as fn(*void, *void) -> void
+  );
+}
+
