@@ -9,7 +9,13 @@ auto to_string(Variable* self) -> string;
 auto to_string(Overload* self) -> string;
 
 
-auto Main(vector<string> paths) -> void {
+auto Main(vector<string> args) -> void {
+  auto cli = CLI::parse(args);
+
+  if(not cli.has_value()) {
+    ranges::for_each(cli.error(), Console::error);
+    return;
+  }
 
   auto settings = CompilationSettings::builder()
   .enable_debug(false)
@@ -20,9 +26,21 @@ auto Main(vector<string> paths) -> void {
   .redirect_warnings_to(stderr)
   .build();
 
-  auto context = CompilationContext::create(paths);
+  auto context = CompilationContext::create(cli->sources | ranges::to<vector>());
   auto compiler = Compiler::create(*context, settings);
   compiler->compile();
+
+  println(
+    "{}", 
+    Namespace::get_instances()
+    | views::transform([](Namespace* nsp) { return to_string(nsp); })
+    | views::join_with("\n"s)
+    | ranges::to<string>()
+  );
+
+  if(cli->flags.test(CLI::ODP)) {
+    debug::show_debugger();
+  }
 }
 
 auto to_string(Namespace* self) -> string {

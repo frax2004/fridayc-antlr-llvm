@@ -1,6 +1,7 @@
 #include <fridayc.hpp>
 
 namespace friday::inline api {
+  static vector<unique_ptr<Namespace>> S_instances { };
 
   using argument = pair<string, Type*>;
 
@@ -65,7 +66,6 @@ namespace friday::inline api {
   Namespace::namespace_map_type Namespace::S_namespaces { };
 
   auto Namespace::Factory::create(string name) -> Namespace* {
-    static vector<unique_ptr<Namespace>> S_instances { };
 
     if(Namespace::S_namespaces.contains(name)) {
       throw InvalidArgumentError{};
@@ -361,4 +361,9 @@ namespace friday::inline api {
     return candidate != nullptr ? candidate : Namespace::Factory::create(string{ name });
   }
 
+  auto Namespace::get_instances() -> vector<Namespace*> {
+    return S_instances
+    | views::transform(&unique_ptr<Namespace>::get)
+    | ranges::to<vector>();
+  }
 }

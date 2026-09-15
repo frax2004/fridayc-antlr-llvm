@@ -70,11 +70,11 @@ endif()
 
 set(ANTLR_GEN_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build/generated)
 
-set(ANTLR_LEXER_SOURCES
+set(ANTLR_FRIDAY_LEXER_SOURCES
   ${ANTLR_GEN_DIR}/FridayScanner.cpp
 )
 
-set(ANTLR_PARSER_SOURCES
+set(ANTLR_FRIDAY_PARSER_SOURCES
   ${ANTLR_GEN_DIR}/FridayParser.cpp
   ${ANTLR_GEN_DIR}/FridayParserBaseVisitor.cpp
   ${ANTLR_GEN_DIR}/FridayParserVisitor.cpp
@@ -82,27 +82,56 @@ set(ANTLR_PARSER_SOURCES
   ${ANTLR_GEN_DIR}/FridayParserListener.cpp
 )
 
-set(ANTLR_SOURCES 
-  ${ANTLR_LEXER_SOURCES}
-  ${ANTLR_PARSER_SOURCES}
+set(ANTLR_CMDLINE_LEXER_SOURCES
+  ${ANTLR_GEN_DIR}/CmdlineScanner.cpp
 )
 
-set(PARSER_GRAMMAR_FILE ${CMAKE_CURRENT_SOURCE_DIR}/src/parser/FridayParser.g4)
-set(LEXER_GRAMMAR_FILE ${CMAKE_CURRENT_SOURCE_DIR}/src/parser/FridayScanner.g4)
+set(ANTLR_CMDLINE_PARSER_SOURCES
+  ${ANTLR_GEN_DIR}/CmdlineParser.cpp
+  ${ANTLR_GEN_DIR}/CmdlineParserBaseVisitor.cpp
+  ${ANTLR_GEN_DIR}/CmdlineParserVisitor.cpp
+  ${ANTLR_GEN_DIR}/CmdlineParserBaseListener.cpp
+  ${ANTLR_GEN_DIR}/CmdlineParserListener.cpp
+)
 
+set(ANTLR_GEN_SOURCES 
+  ${ANTLR_FRIDAY_LEXER_SOURCES}
+  ${ANTLR_FRIDAY_PARSER_SOURCES}
+  ${ANTLR_CMDLINE_LEXER_SOURCES}
+  ${ANTLR_CMDLINE_PARSER_SOURCES}
+)
+
+set(ANTLR_FRIDAY_PARSER_GRAMMAR ${CMAKE_CURRENT_SOURCE_DIR}/src/parser/fridayc/FridayParser.g4)
+set(ANTLR_FRIDAY_LEXER_GRAMMAR ${CMAKE_CURRENT_SOURCE_DIR}/src/parser/fridayc/FridayScanner.g4)
+set(ANTLR_CMDLINE_PARSER_GRAMMAR ${CMAKE_CURRENT_SOURCE_DIR}/src/parser/cmdline/CmdlineParser.g4)
+set(ANTLR_CMDLINE_LEXER_GRAMMAR ${CMAKE_CURRENT_SOURCE_DIR}/src/parser/cmdline/CmdlineScanner.g4)
 
 add_custom_command(
-  OUTPUT ${ANTLR_LEXER_SOURCES}
-  COMMAND java -jar "${ANTLR_JAR}" -o "${ANTLR_GEN_DIR}" -Dlanguage=Cpp "${LEXER_GRAMMAR_FILE}"
-  DEPENDS ${LEXER_GRAMMAR_FILE}
-  COMMENT "Building Lexer Grammar ${LEXER_GRAMMAR_FILE}"
+  OUTPUT ${ANTLR_FRIDAY_LEXER_SOURCES}
+  COMMAND java -jar "${ANTLR_JAR}" -o "${ANTLR_GEN_DIR}" -Dlanguage=Cpp "${ANTLR_FRIDAY_LEXER_GRAMMAR}"
+  DEPENDS ${ANTLR_FRIDAY_LEXER_GRAMMAR}
+  COMMENT "Building Friday Lexer Grammar ${ANTLR_FRIDAY_LEXER_GRAMMAR}"
 )
 
 add_custom_command(
-  OUTPUT ${ANTLR_PARSER_SOURCES}
-  COMMAND java -jar "${ANTLR_JAR}" -o "${ANTLR_GEN_DIR}" -Dlanguage=Cpp -package friday -visitor -listener "${PARSER_GRAMMAR_FILE}"
-  DEPENDS ${PARSER_GRAMMAR_FILE} ${LEXER_SOURCES}
-  COMMENT "Building Parser Grammar ${PARSER_GRAMMAR_FILE}"
+  OUTPUT ${ANTLR_FRIDAY_PARSER_SOURCES}
+  COMMAND java -jar "${ANTLR_JAR}" -o "${ANTLR_GEN_DIR}" -Dlanguage=Cpp -package friday -visitor -listener "${ANTLR_FRIDAY_PARSER_GRAMMAR}"
+  DEPENDS ${ANTLR_PARSER_GRAMMAR_FILE} ${ANTLR_FRIDAY_LEXER_SOURCES}
+  COMMENT "Building Friday Parser Grammar ${ANTLR_FRIDAY_PARSER_GRAMMAR}"
+)
+
+add_custom_command(
+  OUTPUT ${ANTLR_CMDLINE_LEXER_SOURCES}
+  COMMAND java -jar "${ANTLR_JAR}" -o "${ANTLR_GEN_DIR}" -Dlanguage=Cpp "${ANTLR_CMDLINE_LEXER_GRAMMAR}"
+  DEPENDS ${ANTLR_CMDLINE_LEXER_GRAMMAR}
+  COMMENT "Building Friday Lexer Grammar ${ANTLR_CMDLINE_LEXER_GRAMMAR}"
+)
+
+add_custom_command(
+  OUTPUT ${ANTLR_CMDLINE_PARSER_SOURCES}
+  COMMAND java -jar "${ANTLR_JAR}" -o "${ANTLR_GEN_DIR}" -Dlanguage=Cpp -package friday -visitor -listener "${ANTLR_CMDLINE_PARSER_GRAMMAR}"
+  DEPENDS ${ANTLR_FRIDAY_PARSER_GRAMMAR} ${ANTLR_CMDLINE_LEXER_SOURCES}
+  COMMENT "Building Friday Parser Grammar ${ANTLR_CMDLINE_PARSER_GRAMMAR}"
 )
 
 
@@ -161,7 +190,7 @@ target_sources(friday_api PUBLIC
   ${DEBUG_SOURCES}
   ${STATIC_ANALYZER_SOURCES}
   ${CODE_GENERATOR_SOURCES}
-  ${ANTLR_SOURCES}
+  ${ANTLR_GEN_SOURCES}
 )
 
 add_executable(fridayc ${CLIENT_SOURCES})

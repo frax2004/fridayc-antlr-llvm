@@ -1,71 +1,84 @@
 #include <fridayc.hpp>
 
+
 namespace friday::inline debug {
-
-  enum Icons : u32 {
-    SIGNATURE,
-    POINTER_TYPE,
-    OVERLOAD,
-    ARRAY_TYPE,
-    STRUCT,
-    GLOBAL_NAMESPACE,
-    NAMESPACE,
-  };
-
-  consteval static auto rgb(u8 r, u8 g, u8 b) -> rl::Color {
-    return { r, g, b, 255 };
-  }
-
-  consteval static auto rgba(u8 r, u8 g, u8 b, u8 a) -> rl::Color {
-    return { r, g, b, a };
-  }
-
-  namespace theme {
-    constexpr rl::Color PRIMARY = rgb(78, 231, 137);
-    constexpr rl::Color SECONDARY = rgba(78, 231, 137, 235);
-    array<rl::Texture, 7> ICONS { };
-  };
-
-  namespace drawers {
-    static auto draw_icon(rl::Vector2 p, float r, Icons icon) -> void {
-      rl::Vector2 center = { p.x + r, p.y + r };
-      rl::Texture texture = theme::ICONS[icon];
-  
-      rl::DrawCircleV(center, r, theme::PRIMARY);
-      rl::DrawTextureV(
-        texture, 
-        rl::Vector2{
-          center.x - texture.width/2, 
-          center.y - texture.height/2 
-        }, 
-        rl::BLACK
-      );
-  
-    }
-
-  }
-
   auto show_debugger() -> void {
     rl::SetConfigFlags(rl::FLAG_WINDOW_RESIZABLE);
     rl::InitWindow(1200, 800, "Fridayc Debugger");
     rl::SetTargetFPS(60);
 
-    auto to_icon_path = [](u64 i) { return format("bin/res/icon{}.png", i); };
-    auto load_icon = [](string path) { return rl::LoadTexture(path.c_str()); };
+    rl::Font font = rl::LoadFont("c:\\WINDOWS\\Fonts\\COUR.TTF");
+    rl::Style style = rl::Style::GetTerminalStyle();
 
-    auto icons = views::iota(0ULL, theme::ICONS.size())
-    | views::transform(to_icon_path)
-    | views::transform(load_icon);
+    Textbox cmd { };
 
-    ranges::copy(icons, theme::ICONS.begin());
+    rl::GuiSetFont(font);
+    rl::GuiLoadStyleFromMemory(style.ptr, style.len);
+    rl::GuiSetStyle(
+      rl::GuiControl::TEXTBOX, 
+      rl::GuiControlProperty::BASE_COLOR_PRESSED, 
+      rl::GuiGetStyle(
+        rl::GuiControl::TEXTBOX, 
+        rl::GuiControlProperty::BASE_COLOR_DISABLED
+      )
+    );
 
     while(not rl::WindowShouldClose()) {
       rl::BeginDrawing();
       rl::ClearBackground(rl::BLACK);
+
+      VerticalLayout({
+        .bounds = rl::GetWindowBounds(), 
+        .children = {
+          {
+            .weight = .95,
+            .component = [&](rl::Rectangle bounds) {
+              HorizontalLayout({
+                .bounds = bounds,
+                .children = {
+                  {
+                    .weight = .75,
+                    .component = [&](rl::Rectangle bounds) {
+                      rl::GuiPanel(bounds, nullptr);
+                    }
+                  },
+                  {
+                    .weight = .25,
+                    .component = [&](rl::Rectangle bounds) {
+                      rl::GuiPanel(bounds, nullptr);
+                    }
+                  }
+                }
+              });
+            }
+          },
+          {
+            .weight = .05,
+            .component = [&](rl::Rectangle bounds) {
+              HorizontalLayout({
+                .bounds = bounds,
+                .children = {
+                  {
+                    .weight = .8,
+                    .component = cmd.build()
+                  },
+                  {
+                    .weight = .2,
+                    .component = [&](rl::Rectangle bounds) {
+                      rl::GuiLabelButton(bounds, "Submit");
+                    }
+                  }
+                }
+              });
+            }
+          }
+        }
+      });
+
       rl::EndDrawing();
     }
 
-    ranges::for_each(theme::ICONS, &rl::UnloadTexture);
+    rl::UnloadFont(font);
     rl::CloseWindow();
   }
 }

@@ -15,7 +15,7 @@ public struct Allocator {
     return deallocateFn(this.vpointer, memory);
   }
 
-  public fn from(
+  public fn init(
     handle: *void, 
     allocateFn: fn(*void, int) -> *void,
     deallocateFn: fn(*void, *void) -> void
@@ -26,16 +26,69 @@ public struct Allocator {
       deallocateFn as *void
     ]
   };
+
+  public fn deinit(this: *Allocator) -> void {}
 }
 
 public struct GPA {
   public fn allocate(this: *GPA, size: int) -> *void => Libc.calloc(1, size);
   public fn deallocate(this: *GPA, memory: *void) -> void => Libc.free(memory);
 
-  public fn toInterface(this: *GPA) -> Allocator => Allocator.from(
-    this, 
+  public fn toInterface(this: *GPA) -> Allocator => Allocator.init(
+    this as *void, 
     GPA.allocate as fn(*void, int) -> *void,
     GPA.deallocate as fn(*void, *void) -> void
   );
+
+  public fn init() -> GPA => new GPA{};
+  public fn deinit(this: *GPA) -> void {}
 }
 
+public struct StackAllocator {
+  private memory: *void;
+  private size: int;
+  private capacity: int;
+
+  public fn allocate(this: *StackAllocator, size: int) -> *void {
+    if this.size + size > this.capacity {
+      return null;
+    }
+
+    const mem = this.memory + this.size;
+    this.size += size;
+    return mem;
+  }
+
+  public fn deallocate(this: *StackAllocator, memory: *void) -> void {}
+
+  public fn toInterface(this: *StackAllocator) -> Allocator => Allocator.init(
+    this as *void,
+    StackAllocator.allocate as fn(*void, int) -> *void,
+    StackAllocator.deallocate as fn(*void, *void) -> void
+  );
+
+  public fn init(capacity: int) -> StackAllocator => new StackAllocator {
+    memory: Libc.calloc(capacity, sizeof byte),
+    size: 0,
+    capacity: capacity
+  };
+
+  public fn deinit(this: *StackAllocator) -> void => Libc.free(this.memory);
+}
+
+public fn useAllocator(alloc: Allocator) -> void {
+  const data = alloc.allocate(sizeof int) as *int;
+  defer alloc.deallocate(data as *void);
+
+  // ... //
+}
+
+public fn test() -> void {
+  const gpa = GPA.init();
+  const sa = StackAllocator.init(32);
+  useAllocator(sa.toInterface());
+  useAllocator(gpa.toInterface());
+}
+
+
+public native fn nativeFunction(unused: int, other: byte) -> void;

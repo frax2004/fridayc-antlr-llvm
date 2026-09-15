@@ -20,6 +20,7 @@
 //* ////////////////////////////////////////
 //* /// Utility
 //* ////////////////////////////////////////
+#include <fridayc/UI.hpp>
 #include <fridayc/SourceLocation.hpp>
 #include <fridayc/Debugging.hpp>
 #include <fridayc/Metadata.hpp>
@@ -65,6 +66,7 @@
 //* ////////////////////////////////////////
 //* /// Compiler
 //* ////////////////////////////////////////
+#include <fridayc/CLI.hpp>
 #include <fridayc/StaticAnalyzer.hpp>
 #include <fridayc/DiscoveryVisitor.hpp>
 #include <fridayc/NamespaceBindingVisitor.hpp>

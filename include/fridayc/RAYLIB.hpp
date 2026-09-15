@@ -2,6 +2,7 @@
 
 namespace raylib {
   #include <raylib.h>
+  #include "raygui.h"
 
   #undef LIGHTGRAY
   #undef GRAY
@@ -56,4 +57,23 @@ namespace raylib {
   static constexpr Color BLANK { 0, 0, 0, 0 };
   static constexpr Color MAGENTA { 255, 0, 255, 255 };
   static constexpr Color RAYWHITE { 245, 245, 245, 255 };
+
+  auto GetWindowBounds() -> Rectangle;
+
+  auto operator+(Vector2 lhs, Vector2 rhs) -> Vector2;
+  auto operator-(Vector2 lhs, Vector2 rhs) -> Vector2;
+  auto operator*(Vector2 lhs, Vector2 rhs) -> Vector2;
+  auto operator/(Vector2 lhs, Vector2 rhs) -> Vector2;
+  auto operator-(Vector2 lhs) -> Vector2;
+  auto operator+(Vector2 lhs) -> Vector2;
+  auto operator*(Vector2 lhs, float rhs) -> Vector2;
+  auto operator*(float lhs, Vector2 rhs) -> Vector2;
+  auto operator/(Vector2 lhs, float rhs) -> Vector2;
+
+  struct Style {
+    unsigned char* ptr;
+    unsigned int len;
+
+    static auto GetTerminalStyle() -> Style;
+  };
 }

@@ -43,131 +43,131 @@ source_filename = "out"
 
 declare i32 @printf(ptr, ...)
 
-declare double @_Zpl5float(double)
-
-declare double @_Zpl5float5float(double, double)
-
-declare i64 @_Zpl3int(i64)
-
-declare i64 @_Zpl3int3int(i64, i64)
+declare ptr @_ZplP4void3int(ptr, i64)
 
 declare i8 @_Zpl4byte(i8)
 
 declare i8 @_Zpl4byte4byte(i8, i8)
 
-declare ptr @_ZplP4void3int(ptr, i64)
+declare i64 @_Zpl3int(i64)
 
-declare double @_Zmi5float(double)
+declare i64 @_Zpl3int3int(i64, i64)
 
-declare double @_Zmi5float5float(double, double)
+declare double @_Zpl5float(double)
 
-declare i64 @_Zmi3int(i64)
+declare double @_Zpl5float5float(double, double)
 
-declare i64 @_Zmi3int3int(i64, i64)
+declare i64 @_ZmiP4voidP4void(ptr, ptr)
+
+declare ptr @_ZmiP4void3int(ptr, i64)
 
 declare i8 @_Zmi4byte(i8)
 
 declare i8 @_Zmi4byte4byte(i8, i8)
 
-declare ptr @_ZmiP4void3int(ptr, i64)
+declare i64 @_Zmi3int(i64)
 
-declare i64 @_ZmiP4voidP4void(ptr, ptr)
+declare i64 @_Zmi3int3int(i64, i64)
 
-declare double @_Zml5float5float(double, double)
+declare double @_Zmi5float(double)
 
-declare i64 @_Zml3int3int(i64, i64)
+declare double @_Zmi5float5float(double, double)
 
 declare i8 @_Zml4byte4byte(i8, i8)
 
-declare double @_Zdv5float5float(double, double)
+declare i64 @_Zml3int3int(i64, i64)
 
-declare i64 @_Zdv3int3int(i64, i64)
+declare double @_Zml5float5float(double, double)
 
 declare i8 @_Zdv4byte4byte(i8, i8)
 
-declare double @_Zrm5float5float(double, double)
+declare i64 @_Zdv3int3int(i64, i64)
 
-declare i64 @_Zrm3int3int(i64, i64)
+declare double @_Zdv5float5float(double, double)
 
 declare i8 @_Zrm4byte4byte(i8, i8)
 
-declare i1 @_Zeq5float5float(double, double)
+declare i64 @_Zrm3int3int(i64, i64)
 
-declare i1 @_Zeq3int3int(i64, i64)
-
-declare i1 @_Zeq4byte4byte(i8, i8)
-
-declare i1 @_Zeq4bool4bool(i1, i1)
+declare double @_Zrm5float5float(double, double)
 
 declare i1 @_ZeqP4voidP4void(ptr, ptr)
 
-declare i1 @_Zne5float5float(double, double)
+declare i1 @_Zeq4byte4byte(i8, i8)
 
-declare i1 @_Zne3int3int(i64, i64)
+declare i1 @_Zeq3int3int(i64, i64)
 
-declare i1 @_Zne4byte4byte(i8, i8)
+declare i1 @_Zeq4bool4bool(i1, i1)
 
-declare i1 @_Zne4bool4bool(i1, i1)
+declare i1 @_Zeq5float5float(double, double)
 
 declare i1 @_ZneP4voidP4void(ptr, ptr)
 
-declare i1 @_Zlt5float5float(double, double)
+declare i1 @_Zne4byte4byte(i8, i8)
 
-declare i1 @_Zlt3int3int(i64, i64)
+declare i1 @_Zne3int3int(i64, i64)
 
-declare i1 @_Zlt4byte4byte(i8, i8)
+declare i1 @_Zne4bool4bool(i1, i1)
+
+declare i1 @_Zne5float5float(double, double)
 
 declare i1 @_ZltP4voidP4void(ptr, ptr)
 
-declare i1 @_Zgt5float5float(double, double)
+declare i1 @_Zlt4byte4byte(i8, i8)
 
-declare i1 @_Zgt3int3int(i64, i64)
+declare i1 @_Zlt3int3int(i64, i64)
 
-declare i1 @_Zgt4byte4byte(i8, i8)
+declare i1 @_Zlt5float5float(double, double)
 
 declare i1 @_ZgtP4voidP4void(ptr, ptr)
 
-declare i1 @_Zle5float5float(double, double)
+declare i1 @_Zgt4byte4byte(i8, i8)
 
-declare i1 @_Zle3int3int(i64, i64)
+declare i1 @_Zgt3int3int(i64, i64)
 
-declare i1 @_Zle4byte4byte(i8, i8)
+declare i1 @_Zgt5float5float(double, double)
 
 declare i1 @_ZleP4voidP4void(ptr, ptr)
 
-declare i1 @_Zge5float5float(double, double)
+declare i1 @_Zle4byte4byte(i8, i8)
 
-declare i1 @_Zge3int3int(i64, i64)
+declare i1 @_Zle3int3int(i64, i64)
 
-declare i1 @_Zge4byte4byte(i8, i8)
+declare i1 @_Zle5float5float(double, double)
 
 declare i1 @_ZgeP4voidP4void(ptr, ptr)
 
-declare i64 @_Zan3int3int(i64, i64)
+declare i1 @_Zge4byte4byte(i8, i8)
+
+declare i1 @_Zge3int3int(i64, i64)
+
+declare i1 @_Zge5float5float(double, double)
 
 declare i8 @_Zan4byte4byte(i8, i8)
 
-declare i1 @_Zan4bool4bool(i1, i1)
+declare i64 @_Zan3int3int(i64, i64)
 
-declare i64 @_Zor3int3int(i64, i64)
+declare i1 @_Zan4bool4bool(i1, i1)
 
 declare i8 @_Zor4byte4byte(i8, i8)
 
-declare i1 @_Zor4bool4bool(i1, i1)
+declare i64 @_Zor3int3int(i64, i64)
 
-declare i64 @_Zco3int(i64)
+declare i1 @_Zor4bool4bool(i1, i1)
 
 declare i8 @_Zco4byte(i8)
 
-declare i1 @_Zco4bool(i1)
+declare i64 @_Zco3int(i64)
 
-declare double @_Zpp5float(double)
+declare i1 @_Zco4bool(i1)
 
 declare i64 @_Zpp3int(i64)
 
-declare double @_Zmm5float(double)
+declare double @_Zpp5float(double)
 
 declare i64 @_Zmm3int(i64)
+
+declare double @_Zmm5float(double)
 
 declare i1 @_Zaa4bool4bool(i1, i1)
 
@@ -191,7 +191,21 @@ declare ptr @strdup(ptr)
 
 declare i64 @strlen(ptr)
 
+declare ptr @strcat(ptr, ptr)
+
 declare void @memset(ptr, i64, i64)
+
+declare ptr @memcpy(ptr, ptr, i64)
+
+declare i64 @memcmp(ptr, ptr, i64)
+
+declare double @pow(double, double)
+
+declare double @sqrt(double)
+
+declare double @cbrt(double)
+
+declare double @exp(double)
 
 declare void @InitWindow(i32, i32, ptr)
 
@@ -1393,14 +1407,6 @@ declare void @AttachAudioMixedProcessor(ptr)
 
 declare void @DetachAudioMixedProcessor(ptr)
 
-declare double @pow(double, double)
-
-declare double @sqrt(double)
-
-declare double @cbrt(double)
-
-declare double @exp(double)
-
 define i64 @"_Z12neighborhood6[]bool3int3int"(%"_Z6[]bool" %0, i64 %1, i64 %2) {
 .alloca-block:
   %3 = alloca %"_Z6[]bool", align 8
@@ -1895,70 +1901,6 @@ if.merge25:                                       ; preds = %if.then24, %for.aft
   br label %.while-condition
 }
 
-define %_ZN6Raylib5ColorE @_ZN6Raylib5Color3rgbE3int3int3int(i64 %0, i64 %1, i64 %2) {
-.alloca-block:
-  %3 = alloca i64, align 8
-  %4 = alloca i64, align 8
-  %5 = alloca i64, align 8
-  %6 = alloca %_ZN6Raylib5ColorE, align 8
-  br label %.entry-block
-
-.entry-block:                                     ; preds = %.alloca-block
-  store i64 %0, ptr %3, align 4
-  store i64 %1, ptr %4, align 4
-  store i64 %2, ptr %5, align 4
-  %7 = load i64, ptr %3, align 4
-  %8 = trunc i64 %7 to i8
-  %9 = load i64, ptr %4, align 4
-  %10 = trunc i64 %9 to i8
-  %11 = load i64, ptr %5, align 4
-  %12 = trunc i64 %11 to i8
-  %13 = getelementptr inbounds nuw %_ZN6Raylib5ColorE, ptr %6, i32 0, i32 0
-  store i8 %8, ptr %13, align 1
-  %14 = getelementptr inbounds nuw %_ZN6Raylib5ColorE, ptr %6, i32 0, i32 1
-  store i8 %10, ptr %14, align 1
-  %15 = getelementptr inbounds nuw %_ZN6Raylib5ColorE, ptr %6, i32 0, i32 2
-  store i8 %12, ptr %15, align 1
-  %16 = getelementptr inbounds nuw %_ZN6Raylib5ColorE, ptr %6, i32 0, i32 3
-  store i8 -1, ptr %16, align 1
-  %17 = load %_ZN6Raylib5ColorE, ptr %6, align 1
-  ret %_ZN6Raylib5ColorE %17
-}
-
-define %_ZN6Raylib5ColorE @_ZN6Raylib5Color4rgbaE3int3int3int3int(i64 %0, i64 %1, i64 %2, i64 %3) {
-.alloca-block:
-  %4 = alloca i64, align 8
-  %5 = alloca i64, align 8
-  %6 = alloca i64, align 8
-  %7 = alloca i64, align 8
-  %8 = alloca %_ZN6Raylib5ColorE, align 8
-  br label %.entry-block
-
-.entry-block:                                     ; preds = %.alloca-block
-  store i64 %0, ptr %4, align 4
-  store i64 %1, ptr %5, align 4
-  store i64 %2, ptr %6, align 4
-  store i64 %3, ptr %7, align 4
-  %9 = load i64, ptr %4, align 4
-  %10 = trunc i64 %9 to i8
-  %11 = load i64, ptr %5, align 4
-  %12 = trunc i64 %11 to i8
-  %13 = load i64, ptr %6, align 4
-  %14 = trunc i64 %13 to i8
-  %15 = load i64, ptr %7, align 4
-  %16 = trunc i64 %15 to i8
-  %17 = getelementptr inbounds nuw %_ZN6Raylib5ColorE, ptr %8, i32 0, i32 0
-  store i8 %10, ptr %17, align 1
-  %18 = getelementptr inbounds nuw %_ZN6Raylib5ColorE, ptr %8, i32 0, i32 1
-  store i8 %12, ptr %18, align 1
-  %19 = getelementptr inbounds nuw %_ZN6Raylib5ColorE, ptr %8, i32 0, i32 2
-  store i8 %14, ptr %19, align 1
-  %20 = getelementptr inbounds nuw %_ZN6Raylib5ColorE, ptr %8, i32 0, i32 3
-  store i8 %16, ptr %20, align 1
-  %21 = load %_ZN6Raylib5ColorE, ptr %8, align 1
-  ret %_ZN6Raylib5ColorE %21
-}
-
 define i64 @_ZN4Math5clampE3int3int3int(i64 %0, i64 %1, i64 %2) {
 .alloca-block:
   %3 = alloca i64, align 8
@@ -2033,4 +1975,68 @@ else.body:                                        ; preds = %elif.condition
 
 if.merge:                                         ; No predecessors!
   unreachable
+}
+
+define %_ZN6Raylib5ColorE @_ZN6Raylib5Color3rgbE3int3int3int(i64 %0, i64 %1, i64 %2) {
+.alloca-block:
+  %3 = alloca i64, align 8
+  %4 = alloca i64, align 8
+  %5 = alloca i64, align 8
+  %6 = alloca %_ZN6Raylib5ColorE, align 8
+  br label %.entry-block
+
+.entry-block:                                     ; preds = %.alloca-block
+  store i64 %0, ptr %3, align 4
+  store i64 %1, ptr %4, align 4
+  store i64 %2, ptr %5, align 4
+  %7 = load i64, ptr %3, align 4
+  %8 = trunc i64 %7 to i8
+  %9 = load i64, ptr %4, align 4
+  %10 = trunc i64 %9 to i8
+  %11 = load i64, ptr %5, align 4
+  %12 = trunc i64 %11 to i8
+  %13 = getelementptr inbounds nuw %_ZN6Raylib5ColorE, ptr %6, i32 0, i32 0
+  store i8 %8, ptr %13, align 1
+  %14 = getelementptr inbounds nuw %_ZN6Raylib5ColorE, ptr %6, i32 0, i32 1
+  store i8 %10, ptr %14, align 1
+  %15 = getelementptr inbounds nuw %_ZN6Raylib5ColorE, ptr %6, i32 0, i32 2
+  store i8 %12, ptr %15, align 1
+  %16 = getelementptr inbounds nuw %_ZN6Raylib5ColorE, ptr %6, i32 0, i32 3
+  store i8 -1, ptr %16, align 1
+  %17 = load %_ZN6Raylib5ColorE, ptr %6, align 1
+  ret %_ZN6Raylib5ColorE %17
+}
+
+define %_ZN6Raylib5ColorE @_ZN6Raylib5Color4rgbaE3int3int3int3int(i64 %0, i64 %1, i64 %2, i64 %3) {
+.alloca-block:
+  %4 = alloca i64, align 8
+  %5 = alloca i64, align 8
+  %6 = alloca i64, align 8
+  %7 = alloca i64, align 8
+  %8 = alloca %_ZN6Raylib5ColorE, align 8
+  br label %.entry-block
+
+.entry-block:                                     ; preds = %.alloca-block
+  store i64 %0, ptr %4, align 4
+  store i64 %1, ptr %5, align 4
+  store i64 %2, ptr %6, align 4
+  store i64 %3, ptr %7, align 4
+  %9 = load i64, ptr %4, align 4
+  %10 = trunc i64 %9 to i8
+  %11 = load i64, ptr %5, align 4
+  %12 = trunc i64 %11 to i8
+  %13 = load i64, ptr %6, align 4
+  %14 = trunc i64 %13 to i8
+  %15 = load i64, ptr %7, align 4
+  %16 = trunc i64 %15 to i8
+  %17 = getelementptr inbounds nuw %_ZN6Raylib5ColorE, ptr %8, i32 0, i32 0
+  store i8 %10, ptr %17, align 1
+  %18 = getelementptr inbounds nuw %_ZN6Raylib5ColorE, ptr %8, i32 0, i32 1
+  store i8 %12, ptr %18, align 1
+  %19 = getelementptr inbounds nuw %_ZN6Raylib5ColorE, ptr %8, i32 0, i32 2
+  store i8 %14, ptr %19, align 1
+  %20 = getelementptr inbounds nuw %_ZN6Raylib5ColorE, ptr %8, i32 0, i32 3
+  store i8 %16, ptr %20, align 1
+  %21 = load %_ZN6Raylib5ColorE, ptr %8, align 1
+  ret %_ZN6Raylib5ColorE %21
 }

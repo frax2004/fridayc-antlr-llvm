@@ -133,7 +133,8 @@ namespace friday::inline api {
     if(this == to) return llvm::Instruction::BitCast;
 
     // true if they are both pointers of some kind
-    if(this->is_pointer_type() and to->is_pointer_type()) return llvm::Instruction::BitCast;
+    if(this->is_pointer_type() and to->is_pointer_type()) 
+      return llvm::Instruction::BitCast;
 
     static Type* INT = Type::get_int_type();
     static Type* BYTE = Type::get_byte_type();
@@ -171,7 +172,10 @@ namespace friday::inline api {
       pair{ pair{ CSHORT  , INT     }, llvm::Instruction::CastOps::SExt     },
     };
 
-    if(auto iter = S_coercionTable.find(make_pair(lhs, rhs)); iter != S_coercionTable.end()) {
+    if(
+      auto iter = S_coercionTable.find(make_pair(lhs, rhs)); 
+      iter != S_coercionTable.end()
+    ) {
       return iter->second;
     } else return nullopt;
   }

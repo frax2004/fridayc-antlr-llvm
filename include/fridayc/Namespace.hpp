@@ -91,5 +91,9 @@ namespace friday::inline api {
     /// @return the instance of the namespace or the new instance if not found
     static auto find_or_create_namespace(string_view name) -> Namespace*;
 
+    /// @brief Get all namespace instances
+    /// @return a vector with all the instanced namespaces
+    static auto get_instances() -> vector<Namespace*>;
+
   };
 }
