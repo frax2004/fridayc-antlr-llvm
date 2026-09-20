@@ -24,7 +24,8 @@ int main(int argc, const char** argv) {
   const int cell_w = GetRenderWidth()/CELLS;
   const int cell_h = GetRenderHeight()/CELLS;
 
-  while(!WindowShouldClose()) {
+  int iter = 120;
+  while(!WindowShouldClose() && iter --> 0) {
     BeginDrawing();
 
     for(int i = 0; i < CELLS; ++i)
@@ -55,37 +56,4 @@ int main(int argc, const char** argv) {
   free(back_grid);
   free(front_grid);
   CloseWindow();
-
-int base = 3;
-int exp = 4;
-int res = 1;
-while(exp > 0) {
-  res *= base;
-  exp -= 1;
 }
-printf("%d", res);
-
-int numbers[] = {6, 7, 3, 8, 9};
-int sum = 0;
-for(int i = 0; i < sizeof(numbers)/sizeof(*numbers); i+= 1) {
-  if(i%2 == 0) {
-    sum += numbers[i];
-  }
-}
-printf("%d", sum);
-
-const int x = 5;
-if(x < 0) {
-  puts("Negative");
-} else if(x == 0) {
-  puts("Zero");
-} else puts("Positive");
-
-}
-
-
-
-int int_compare   (int         lhs, int         rhs) { return lhs - rhs; }
-int float_compare (float       lhs, float       rhs) { return (int)(lhs - rhs); }
-int char_compare  (char        lhs, char        rhs) { return (int)(lhs - rhs); }
-int string_compare(const char* lhs, const char* rhs) { return strcmp(lhs, rhs); }

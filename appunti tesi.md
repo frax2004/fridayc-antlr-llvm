@@ -33,7 +33,6 @@ Presentazione:
 - 5 slide max
   - 1 descrizione del problema (motivazione): problemi dei linguaggi c-like
   - 2 come si risolvono (approcci grafici su defer e la pila delle istruzioni)
-  
   - 3 benchmarking (specificando gli strumenti utilizzati)
 
 - niente codice o pseudo codice (max 1 riga)

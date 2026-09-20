@@ -30,15 +30,15 @@ auto Main(vector<string> args) -> void {
   auto compiler = Compiler::create(*context, settings);
   compiler->compile();
 
-  println(
-    "{}", 
-    Namespace::get_instances()
-    | views::transform([](Namespace* nsp) { return to_string(nsp); })
-    | views::join_with("\n"s)
-    | ranges::to<string>()
-  );
-
+  
   if(cli->flags.test(CLI::ODP)) {
+    println(
+      "{}", 
+      Namespace::get_instances()
+      | views::transform([](Namespace* nsp) { return to_string(nsp); })
+      | views::join_with("\n"s)
+      | ranges::to<string>()
+    );
     debug::show_debugger();
   }
 }
