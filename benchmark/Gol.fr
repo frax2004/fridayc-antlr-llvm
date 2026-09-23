@@ -1,3 +1,4 @@
+
 using Libc;
 using Raylib;
 using Math;
@@ -38,14 +39,12 @@ fn main(argc: int, argv: **byte) -> void {
 
   Raylib.InitWindow(800 as c_int, 800 as c_int, "Friday - GameOfLife");
   defer Raylib.CloseWindow();
-  Raylib.SetTargetFPS(60 as c_int);
+  Raylib.SetTargetFPS(10 as c_int);
 
   const cell_w = (Raylib.GetRenderWidth() as int)/CELLS;
   const cell_h = (Raylib.GetRenderHeight() as int)/CELLS;
 
-  let iter = 120;
-  while !Raylib.WindowShouldClose() && iter > 0 {
-    iter -= 1;
+  while !Raylib.WindowShouldClose() {
 
     Raylib.BeginDrawing();
 
