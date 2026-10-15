@@ -17,6 +17,7 @@ WHILE: 'while';
 DEFER: 'defer';
 NATIVE: 'native';
 NAMESPACE: 'namespace';
+ENUM: 'enum';
 USING: 'using';
 CONST: 'const';
 LET: 'let';
@@ -49,6 +50,7 @@ COL: ':';
 COMMA: ',';
 ARROW: '->';
 FAT_ARROW: '=>';
+COLCOL: '::';
 
 // Operators
 INCREMENT: '++';
@@ -85,6 +87,33 @@ DOT: '.';
 AND: '&&';
 OR: '||';
 NOT: '!';
+
+
+OPERATOR_IDENTIFIER: 
+  'operator++'
+  | 'operator--'
+  | 'operator+'
+  | 'operator-'
+  | 'operator*'
+  | 'operator/'
+  | 'operator%'
+  | 'operator<<'
+  | 'operator>>'
+  | 'operator&'
+  | 'operator|'
+  | 'operator<'
+  | 'operator>'
+  | 'operator<='
+  | 'operator>='
+  | 'operator=='
+  | 'operator!='
+  | 'operator~'
+  | 'operator&&'
+  | 'operator||'
+  | 'operator!'
+  | 'operator()'
+  | 'operator[]'
+  ;
 
 // Identifier
 IDENTIFIER: [a-zA-Z_][a-zA-Z0-9_]*;
